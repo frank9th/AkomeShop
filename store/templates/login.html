@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+
+{%load static%}
+<html lang="en">
+<head>
+<title>Login V18</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+
+
+
+
+  <!-- reference your installed Font Awesome Free package's files here -->
+  <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script></head>
+
+
+<!--- Form css-->
+<link rel="stylesheet" type="text/css" href="{% static 'css/form_util.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form_main.css' %}">
+
+  <!---Bootstrap css -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	
+
+
+
+</head>
+<body style="background-color: #666666;">	
+<div class="limiter">
+<div class="container-login100">
+<div class="wrap-login100">
+<form action= "" class="login100-form validate-form" method= "POST" >
+	{% csrf_token %}
+<span class="login100-form-title p-b-43">
+
+Login to continue
+</span>
+<div class="wrap-input100 validate-input">
+<input class="input100" type="text" name="username">
+<span class="focus-input100"></span>
+<span class="label-">username</span>
+</div>
+<div class="wrap-input100 validate-input" data-validate="Password is required">
+<input class="input100" type="password" name="password">
+<span class="focus-input100"></span>
+<span class="label-">Password</span>
+</div>
+<div class="flex-sb-m w-full p-t-3 p-b-32">
+<div class="contact100-form-checkbox">
+<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+<label class="label-checkbox100" for="ckb1">
+Remember me
+</label>
+</div>
+<div>
+<a href="#" class="txt1">
+Forgot Password?
+</a>
+</div>
+</div>
+<div class="container-login100-form-btn">
+<button class="login100-form-btn">
+Login
+</button>
+</div>
+
+<div class="text-center p-t-46 p-b-20">
+<span class="txt2">
+<a href="{% url 'home' %}">Back to home </a>  | or <a href="{% url 'register'%}">sign up</a> 
+
+</span>
+</div>
+
+</form>
+{% for messages in message %}
+	{{message}}
+{% endfor %}
+<div class="login100-more" style="background-image: url( 'static/images/bg_01.jpg');">
+</div>
+</div>
+</div>
+
+</div>
+
+</body>
+</html>

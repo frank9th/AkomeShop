@@ -1,0 +1,16 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h4>Add Customer</h4>
+<form action="" method="POST">
+	{% csrf_token %}
+	
+
+	{{form}}
+	<input type="submit" name="Add Customer">
+</form>
+
+
+{% endblock %}

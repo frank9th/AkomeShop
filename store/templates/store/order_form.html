@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+		<div class="row">
+			  <div class="col-sm-6">
+			    <div class="card">
+			      <div class="card card-body">
+						<form action="" method="POST">
+							{% csrf_token %}
+							<br>
+							<hr>
+							{{form}}
+							
+							
+							<input class="btn btn-success " type="submit" name="confirm">
+						</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+{% endblock %}s

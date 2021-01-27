@@ -1,0 +1,6 @@
+# Environments
+ven 
+
+# Django stuff:
+*.log
+.env
