@@ -26,6 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = SECRET_KEY = config('SECRET_KEY')
 
 
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG')
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django_countries',
        #AllUth
     'allauth',
     'allauth.account',
@@ -152,3 +155,5 @@ STATICFILES_DIRS =[
 MEDIA_URL = '/images/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '/static/images')
+
+STRIPE_API_KEY = config('STRIPE_API_KEY')
