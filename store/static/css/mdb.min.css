@@ -7244,6 +7244,7 @@ a.btn:not([href]):not([tabindex]),a.btn:not([href]):not([tabindex]):focus,a.btn:
 .card {
     font-weight: 400;
     border: 0
+    padding: 15px;
 }
 
 .card[class*=border] {

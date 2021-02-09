@@ -1,0 +1,95 @@
+{% extends 'user_account/user_base.html' %}
+
+
+{% block content %}
+           <!--- SideBar Content---->   
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="">
+                      {% if messages %}
+                      {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                         {{message }} 
+                          <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
+                          </div>   
+                        {% endfor %}
+                      {% endif %}
+                      </div>
+                    <div class="container-fluid">
+                        <hr>  
+                    <div class="card">
+                        <form class="card-body" method="POST">
+                        {% csrf_token %}
+                            <div class="container">
+                                <div class="row" >
+                                    <div class="col">
+                                        <h3 style="text-align: center;"> Client Infor:</h3>
+                                        <div>
+                                            <h5> Personal Infor</h5>
+                                        </div>
+                                           <div class="md-form input-group pl-0 mb-5h">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-tie"></i></span>
+                                            </div>
+                                            {{form.title}}
+                                        </div>
+                                         <div class="md-form input-group pl-0 mb-5h">
+                                            <div class="input-group-prepend">
+                                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-user-alt"></i></span>
+                                            </div>
+                                            {{form.full_name}}
+                                        </div>
+                                        <br>
+                                         <h5> Contact Infor</h5>
+                                        <div class="md-form input-group pl-0 mb-5h">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-at"></i></span>
+                                        </div>
+                                         {{form.email}}
+                                        </div>
+                                         <div class="md-form input-group pl-0 mb-5h">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                                        </div>
+                                         {{form.phone}}
+                                        </div>
+                                         <div class="md-form input-group pl-0 mb-5h">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-city"></i></span>
+                                        </div>
+                                         {{form.town}}
+                                        </div>
+                                        <div class="md-form input-group pl-0 mb-5h">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-map-marker"></i></span>
+                                        </div>
+                                         {{form.land_mark}}
+                                        </div>
+                                        <div class="md-form input-group pl-0 mb-5h">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text" id="basic-addon1"><i class="fas fa-home"></i></span>
+                                        </div>
+                                         {{form.apartment_address}}
+                                        </div>
+                                    </div>
+                                        <div class="custom-control ">
+                                            <label for="agent_id" >Agent ID</label>
+                                            {{form.agent_id}}
+                                                
+                                        </div>         
+                                </div> 
+                                </div>
+                            </div>
+                             <hr class="mb-4">
+                            <button class="btn btn-primary btn-sm btn-block" type="submit">Register Client</button>
+                            <br>
+                         </form>
+                     </div>
+
+                    </div>
+                </main>
+                {% include "user_account/footer_snippet.html" %}
+             
+            </div>
+
+{% endblock %}

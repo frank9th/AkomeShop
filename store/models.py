@@ -4,6 +4,7 @@ from django.conf import settings
 from django.db.models import Sum
 from django.shortcuts import reverse 
 from django_countries.fields import CountryField
+from staffs.models import * 
 # Create your models here.
 
 class Customer(models.Model):
@@ -23,8 +24,8 @@ class Tag(models.Model):
 	def __str__(self):
 		return self.name 
 
-
-class Product(models.Model):
+# main store product model 
+class MallProduct(models.Model):
 	CATHEGORY= (
 		('Food', 'Food'),
 		('Food Item', 'Food Item')
@@ -34,7 +35,6 @@ class Product(models.Model):
 		('P', 'primary'),
 		('S', 'secondary'),
 		('D', 'danger'),
-
 
 		)
 	name = models.CharField(max_length=200, null=True )
@@ -47,9 +47,9 @@ class Product(models.Model):
 	lable = models.CharField(choices=LABEL_CHOICES, max_length=2, null=True,)
 	slug = models.SlugField()
 
-
 	def __str__(self):
 		return self.name 
+
 
 	def get_absolute_url(self):
 		return reverse("product", kwargs={
@@ -67,6 +67,24 @@ class Product(models.Model):
 			'slug':self.slug
 			}
 			)
+
+# product or service order model 
+class Product(models.Model):
+	CATHEGORY= (
+		('G', 'Goods'),
+		('S', 'Services')
+
+		)
+	name = models.CharField(max_length=200, null=True )
+	price = models.FloatField( null=True )
+	cathegory = models.CharField(max_length=200, null=True, choices=CATHEGORY)
+	description = models.CharField(max_length=200, null=True )
+	date_created = models.DateTimeField(auto_now_add= True, null=True )
+	slug = models.SlugField()
+
+
+	def __str__(self):
+		return self.name 
 
 class OrderItem(models.Model):
 	customer = models.ForeignKey(Customer, null=True, on_delete=models.SET_NULL)
@@ -99,8 +117,7 @@ class OrderItem(models.Model):
 		return total
 
 
-
-class BillingAddress(models.Model):
+class Address(models.Model):
 	customer = models.ForeignKey(Customer, null=True, on_delete=models.SET_NULL)
 	client_name = models.CharField(max_length=200 )
 	street_address = models.CharField(max_length=200 )
@@ -111,13 +128,10 @@ class BillingAddress(models.Model):
 	#save_info = models.CharField(max_length=200 )
 	#payment_option = models.CharField(max_length=200 )
 	def __str__(self):
-		return self.customer.user.username	
+		return self.street_address
 
-class Meta:
-    verbose_name_plural = 'Addresses'
-
-
-
+	class Meta:
+	    verbose_name_plural = 'Addresses'
 
 class Payment(models.Model):
 	stripe_charge_id = models.CharField(max_length=50)
@@ -128,8 +142,6 @@ class Payment(models.Model):
 	def __str__(self):
 		return self.customer.name
 
-
-
 class Coupon(models.Model):
 	code = models.CharField(max_length=15)
 	amount = models.FloatField()
@@ -137,6 +149,17 @@ class Coupon(models.Model):
 	def __str__(self):
 		return self.code 
 
+
+"""
+#TODO: add delivery charges to the item. yet to deciede on the amount 
+base on KG per item or KM/distance 
+"""
+class Delivery(models.Model):
+	agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True )
+	amount = models.FloatField()
+
+	def __str__(self):
+		return self.agent 
 
 
 
@@ -148,21 +171,40 @@ class Order(models.Model):
 		)
 	customer = models.ForeignKey(Customer, null=True, on_delete=models.SET_NULL)
 	ref_code = models.CharField(max_length=20)
-	product = models.ManyToManyField(OrderItem)
+	item = models.ManyToManyField(OrderItem)
 	date_created = models.DateTimeField(auto_now_add= True, null=True )
 	status = models.CharField(max_length=200, null=True, choices=STATUS, default='Pending')
 	is_ordered= models.BooleanField(default=False, null=True, blank=False)
-	billing_address = models.ForeignKey(BillingAddress, on_delete=models.SET_NULL, null=True, blank=True)
-	amount = models.FloatField( default=100)
+	shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
+	amount = models.FloatField(null=True, blank=True)
 	coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, null=True, blank=True)
 	refund_requested=models.BooleanField(default=False)
 	refund_granted= models.BooleanField(default=False)
+	delivery_cost = models.ForeignKey(Delivery, on_delete=models.SET_NULL, null=True, blank=True )
+	vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
 	#amount = models.ForeignKey( Payment, on_delete=models.SET_NULL, null=True, blank=True)
 	
 
 	"""docstring for Order"""
 	def __str__(self):
 		return self.customer.name
+
+
+	@property
+	def get_cart_total(self):
+		orderitems = self.orderitem_set.all()
+		total = sum([item.get_total for item in orderitems])
+		return total
+
+		get_final_price
+
+	# total quantity of itmes in cart 
+	@property
+	def get_cart_items(self):
+		orderitems = self.orderitem_set.all()
+		total = sum([item.quantity for item in orderitems])
+		return total
+
 
 
 # not working 
@@ -175,7 +217,6 @@ class Order(models.Model):
 			total -= self.coupon.amount
 		return total 
 
-
 class Refund(models.Model):
 	order = models.ForeignKey(Order, on_delete=models.CASCADE)
 	reason = models.TextField()
@@ -184,8 +225,6 @@ class Refund(models.Model):
 
 	def __str__(self):
 		return f"{self.pk}"
-
-
 
 
 

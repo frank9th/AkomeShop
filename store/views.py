@@ -24,33 +24,9 @@ def create_ref_code():
  # Uses the same API Key.
 # Create your views here.
 
-# home view 
-def salesHome(request):
-	#orders = Order.objects.all()
-	orders = request.user.customer.order_set.all()
-	customer = Customer.objects.all()
-	total_order = orders.count()
-	delivered = orders.filter(status='Delivered').count()
-	pending = orders.filter(status='Pending').count()
-	out_delivery = orders.filter(status='Out for Delivery').count()
 
-	context= {'customer': customer, 'orders': orders, 
-	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
-	'out_delivery':out_delivery }
-	return render(request, 'home.html', context)
-
-# for customer profile 
-def customer(request, pk):
-	customer = Customer.objects.get(id=pk)
-
-	orders= customer.order_set_all()
-	order_count = orders.count()
-
-	context = {'customer':customer, 'orders': orders, 'order_count':order_count}
-	return render(request, 'account/customer.html', context)
-
-# This is the cart page to enter customer detail page nd checkout 
-def cart(request):
+# This is the checkout page to enter customer detail page nd checkout 
+def checkout(request):
 	form = CheckOutForm(request.POST or None)
 	try:
 		customer = request.user.customer
@@ -73,7 +49,7 @@ def cart(request):
 			payment_option = form.cleaned_data.get('payment_option')
 
 			# passing the required fields into the model and assigning varable to the fields 
-			billing_address = BillingAddress(
+			shipping_address = Address(
 				customer = request.user.customer,
 				client_name = client_name,
 				street_address = street_address,
@@ -81,9 +57,9 @@ def cart(request):
 				country = country,
 				zip_code = zip_code
 				)
-			billing_address.save()
+			shipping_address.save()
 			#assigning the billing address to the order 
-			order.billing_address = billing_address
+			order.shipping_address = shipping_address
 			order.save()
 			# TODO: Add redirect to the selected payment option 
 			#return redirect('home')
@@ -122,7 +98,7 @@ def paymentPage(request, payment_option):
 	hand_coded_amount = 100  # this is because the total amout is not yet working 
 	amount = int(order.get_total() * 100)
 	token = request.POST.get('stripeToken')
-	if order.billing_address:
+	if order.address:
 		try:
 			charge = stripe.Charge.retrieve(
 			  "ch_1IEsVz2eZvKYlo2CXoYPSpIP",
@@ -182,18 +158,20 @@ def paymentPage(request, payment_option):
 		return redirect("/cart/")
 		
 
-
+def create_slug():
+	return ''.join(random.choices(string.ascii_lowercase, k=5))
 
 #Checkout This is the cart page with the order 
-def checkout(request):
-	form= CreataOrderForm()
+def cart(request):
+	#form= CreataOrderForm()
 	couponForm = CouponForm()
-	#form = OrderForm()
+	form = OrderForm()
 	customer = request.user
 	if request.method =='POST':
 		#print('Printing post:', request.POST)
 		form = OrderForm(request.POST, instance=customer) # throwing the post data into the form 
 		if form.is_valid(): # performing valid check 
+
 			form.save() # saving the data in the db 
 			return redirect('checkout')
 
@@ -202,59 +180,60 @@ def checkout(request):
 
 #Home page- Product list page  
 def homePage(request):
-	item = Product.objects.all()
+	item = MallProduct.objects.all()
 	context= {'item':item}
 	return render(request, 'store/home-page.html', context)
 
 
 #Product detail page 
 def productDetailView(request, slug):
-	product = Product.objects.get(slug=slug)
+	product = MallProduct.objects.get(slug=slug)
 	context = {'product':product}
 
 	#return render(request, 'store/store.html',  context)
 	return render(request, 'store/product-page.html',  context)
 
 @login_required 
-def add_to_cart(request, slug):
+def add_to_cart(request, slug ):
 	#grab the item by the slug 
 	customer = request.user.customer
-	item = get_object_or_404(Product, slug=slug)
+	item = get_object_or_404(Product, slug=slug )
 	# create that item in OrderItem 
 	order_item, created = OrderItem.objects.get_or_create(item=item, customer=customer, is_ordered=False)
 	order_qs = Order.objects.filter(customer=customer, is_ordered=False)
 	if order_qs.exists():
 		order = order_qs[0]
 		# check if item is in order 
-		if order.product.filter(item__slug=item.slug).exists():
+		if order.item.filter(item__id=item.id).exists():
+		#if order.item.filter(item__id=pk).exists():
 			order_item.quantity += 1
 			order_item.save()
 			messages.info(request, "This item quantity was updated")
 
 		else:
 			messages.info(request, "This item was added to your cart")
-			order.product.add(order_item)
+			order.item.add(order_item)
 	else:
 		date_created = timezone.now()
 		order = Order.objects.create(customer=customer, date_created=date_created)
-		order.product.add(order_item)
+		order.item.add(order_item)
 		messages.info(request, "This item was added to your cart")
 	return redirect("order-summary")
 
 
 
 @login_required
-def remove_form_cart(request, slug):
+def remove_form_cart(request, pk):
 	#grab the item by the slug 
 	customer = request.user.customer
-	item = get_object_or_404(Product, slug=slug)
+	item = get_object_or_404(Product, id=pk)
 	# create that item in OrderItem 
 	order_item, created = OrderItem.objects.get_or_create(item=item, customer=customer, is_ordered=False)
 	order_qs = Order.objects.filter(customer=customer, is_ordered=False)
 	if order_qs.exists():
 		order = order_qs[0]
 		# check if item is in order 
-		if order.product.filter(item__slug=item.slug).exists():
+		if order.item.filter(item__id=item.id).exists():
 			order_item = OrderItem.objects.filter(item=item, 
 				customer=customer, is_ordered=False)[0]
 			order_item.delete()
@@ -270,6 +249,8 @@ def remove_form_cart(request, slug):
 		messages.info(request, "You don't have an active order ")
 		return redirect("order-summary")
 
+
+#cart page- 
 @login_required
 def OrderSummary(request):
 	try:
@@ -286,7 +267,7 @@ def OrderSummary(request):
 		return redirect("/")
 
 
-
+# create order and add to cart 
 @login_required
 def OrderSummaryBE(request):
 	try:
@@ -299,22 +280,19 @@ def OrderSummaryBE(request):
 		messages.error(request, "You do not have an active order")
 		return redirect("/")
 		
-	
-
-
 
 @login_required
-def remove_single_item(request, slug):
+def remove_single_item(request, pk):
 	#grab the item by the slug 
 	customer = request.user.customer
-	item = get_object_or_404(Product, slug=slug)
+	item = get_object_or_404(Product, id=pk)
 	# create that item in OrderItem 
 	order_item, created = OrderItem.objects.get_or_create(item=item, customer=customer, is_ordered=False)
 	order_qs = Order.objects.filter(customer=customer, is_ordered=False)
 	if order_qs.exists():
 		order = order_qs[0]
 		# check if item is in order 
-		if order.product.filter(item__slug=item.slug).exists():
+		if order.item.filter(item_id=item.id).exists():
 			order_item = OrderItem.objects.filter(item=item, 
 				customer=customer, is_ordered=False)[0]
 
@@ -348,8 +326,22 @@ def createOrder(request):
 		#print('Printing post:', request.POST)
 		form = OrderForm(request.POST) # throwing the post data into the form 
 		if form.is_valid(): # performing valid check 
-			form.save() # saving the data in the db 
-			slug = form.cleaned_data.get('slug')
+			name = form.cleaned_data.get('name')
+			price = form.cleaned_data.get('price')
+			cathegory = form.cleaned_data.get('cathegory')
+			description = form.cleaned_data.get('description')
+			slug = name + create_slug() 
+
+			create_order = Product(
+				name= name,
+				price = price,
+				cathegory = cathegory,
+				description = description,
+				slug = slug, 
+				)
+			create_order.save()
+			#form.save() # saving the data in the db 
+			#slug = form.cleaned_data.get('slug')
 			add_to_cart(request, slug=slug)
 	context= {'form':form, 'item':item, 'order':order}
 	return render(request, 'store/order_form.html', context)
@@ -386,39 +378,11 @@ def delete_item(request, pk):
 	context= {'item':item}
 	return render(request, 'store/delete.html', context)
 
-# Add customer
-def addCustomer(request):
-	form = addCustomerForm()
-	if request.method == 'POST':
-		#print('Printing post:', request.POST)
-		form = addCustomerForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return redirect('/')
 
-
-	context= {'form':form}
-	return render(request, 'add_customer.html', context)
-
-# Edit Customer- not yet working
-def editCustomer(request, pk): 
-	customer = Customer.objects.get(id=pk) 
-	form = addCustomerForm(instance=customer) 
-	if request.method =='POST':
-		form = addCustomerForm(request.POST , instance=customer) 
-		if form.is_valid(): # performing valid check 
-			form.save() # saving the data in the db 
-			return redirect('home')
-
-
-	 
-	context= {'form': form}
-	return render(request, 'edit_customer.html', context)
 
 
 # adding copon code 
 def get_coupon(request):
-
 	try:
 		coupon = Coupon.objects.get()
 		return coupon 

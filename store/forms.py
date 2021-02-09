@@ -4,10 +4,36 @@ from .models import *
 from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
-class OrderForm(ModelForm):
+class OrderForm(forms.Form):
 	class Meta:
 		model = Product
 		fields = '__all__'
+
+CATHEGORY = (
+		('G', 'Goods'),
+		('S', 'Services')
+		)
+class OrderForm(forms.Form):
+	cathegory =  forms.ChoiceField(widget=forms.RadioSelect(), choices=CATHEGORY)
+	name = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter item/service name ',
+		'class':'form-control '
+		}))
+	price = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'placeholder': 'Enter amount ',
+		'class':'form-control '
+		}))
+	description = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'additional note/description  ',
+		'class':'form-control'
+		}))
+	
+	#slug = models.SlugField()
+
+
 
 
 class addCustomerForm(ModelForm):

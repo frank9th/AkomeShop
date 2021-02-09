@@ -4464,6 +4464,7 @@ input[type=button].btn-block,input[type=reset].btn-block,input[type=submit].btn-
 
 .card {
     position: relative;
+    padding: 15px;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-direction: column;
@@ -6489,7 +6490,7 @@ a.bg-light:focus,a.bg-light:hover,button.bg-light:focus,button.bg-light:hover {
 }
 
 .bg-dark {
-    background-color: #343a40!important
+    background-color: #5b611d !important;
 }
 
 a.bg-dark:focus,a.bg-dark:hover,button.bg-dark:focus,button.bg-dark:hover {
@@ -8112,7 +8113,7 @@ a.bg-dark:focus,a.bg-dark:hover,button.bg-dark:focus,button.bg-dark:hover {
 }
 
 .mb-5,.my-5 {
-    margin-bottom: 3rem!important
+    margin-bottom: 1rem!important
 }
 
 .ml-5,.mx-5 {
