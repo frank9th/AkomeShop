@@ -22,16 +22,25 @@ from django.contrib import messages
 def create_unique_id():
 	return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
-
-
 def get_agent_id(request, code):
 	try:
 		agent_code = Agent.objects.get(agent_id=code)
+		messages.success(request, "This Agent is doing Great")
 		return agent_code 
 	except ObjectDoesNotExist:
-		messages.info(request, "This Agent does not exist")
-		return redirect('/add_client')
+		agent_code = {}
+		messages.warning(request, "This Agent does not exist")
+		return redirect('/')
 
+def get_client_id(request, code):
+	try:
+		client_code = Client.objects.get(client_id=code)
+		messages.success(request, "code is correct")
+		return client_code
+	except ObjectDoesNotExist:
+		messages.warning(request, "Sorry, your code is incorrect")
+		return redirect('/')
+		#return JsonResponse('Enter a valid code', safe=False)
 
 # home view 
 def salesHome(request):
@@ -47,7 +56,6 @@ def salesHome(request):
 	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
 	'out_delivery':out_delivery }
 	return render(request, 'user_account/home_sales.html', context)
-
 
 @unauthenticated_user
 def loginPage(request):
@@ -113,7 +121,6 @@ def user_dashboard(request):
 	}
 	return render(request, 'user_account/user_dashboard.html', context)
 
-
 # for customer profile 
 def customer(request, pk):
 	customer = Customer.objects.get(id=pk)
@@ -123,22 +130,29 @@ def customer(request, pk):
 	context = {'customer':customer, 'orders': orders, 'order_count':order_count}
 	return render(request, 'account/customer.html', context)
 
-
 def password(request):
 	return render(request, 'user_account/password.html',{"title":password})
-
-
 # AdminDashbod View 
 @login_required(login_url ='login')
 @admin_only
 #@allowed_users('admin')
 def admin_dashboard(request):
 	customer = Customer.objects.all()
+	orders = Order.objects.all()
+	total_order = orders.count()
+	delivered = orders.filter(status='Delivered').count()
+	pending = orders.filter(status='Pending').count()
+	out_delivery = orders.filter(status='Out for Delivery').count()
 	context = {
-	'customer':customer
+	'customer':customer,
+	'orders':orders,
+	'total_order':total_order,
+	'delivered':delivered,
+	'pending':pending,
+	'out_delivery':out_delivery,
+
 	}
 	return render(request, 'admin_account/dashboard.html', context)
-
 
 def logoutUser(request):
 	logout(request)
@@ -176,7 +190,7 @@ def editCustomer(request, pk):
 
 
 	 
-	context= {'form': form}
+	context= {'form': form, 'orders':orders}
 	return render(request, 'edit_customer.html', context)
 
 """
@@ -184,45 +198,101 @@ TODO: to fix bug on this code:
 issues: form still submist even with a wrong id
 result: httprespos-codes printed on models id_field 
 """
+
+def updateOrder(request, pk): # passing the primary key into the request views.
+	agents = Agent.objects.all()
+	vendors = Vendor.objects.all()
+	orders = Order.objects.get(id=pk) # get the pk from the oder objects in the db from models
+	form = UpdateOrderForm(instance=orders) # pass the instance into the form so it populate the form 
+	# sending the data as post data and redirecting back 
+	if request.method =='POST':
+		#print('Printing post:', request.POST)
+		form = UpdateOrderForm(request.POST, instance=orders) # throwing the post data into the form 
+		if form.is_valid(): # performing valid check 
+			orders.status = 'Out for Delivery'
+			form.save() # saving the data in the db 
+			'''
+			#TODO: Send order detail to client,
+			# Vendor,
+			#supper admin 
+			# agent 
+
+			'''
+			return redirect('/admin-profile')
+	context= {
+		'form': form, 
+		'agents':agents,
+		'vendors':vendors,
+		'orders':orders,
+
+	}
+	return render(request, 'admin_account/edit_order.html', context)
+
+
+def confirmCode(request):
+	agent_code = request.POST.get('agent')	
+	
+	context={}
+	return render(request, 'user_account/add_client.html', context)
+
+'''
+def confirmCode(request):
+	#form = request.POST['agent']
+	
+	if request.method =='POST':	
+		agent = request.POST['agent']
+		agent_code = requests.get(agent.value)
+		if form.is_valid():
+			#agent_id = agent_code
+			#agent = get_agent_id(request, agent_id)	
+			print(agent_code)
+	context={}
+	return render(request, 'user_account/add_client.html', context)
+'''
+
 def addClient(request):
+	agent_code = request.POST.get('agent')
+	agent = get_agent_id(request, agent_code)	
+		
 	form = AddClientForm( request.POST or None)
 	if request.method == 'POST':
-
 		if form.is_valid():
 			try:
 				title= form.cleaned_data.get('title')
 				full_name=form.cleaned_data.get('full_name')
-				phone=form.cleaned_data.get('phone')
+				phone1=form.cleaned_data.get('phone1')
+				phone2=form.cleaned_data.get('phone2')
 				email= form.cleaned_data.get('email')
 				land_mark= form.cleaned_data.get('land_mark')
 				town = form.cleaned_data.get('town')
 				apartment_address=form.cleaned_data.get('apartment_address')
 				client_id = create_unique_id()
-				agent_id = form.cleaned_data.get('agent_id')
-
-				agent =get_agent_id(request, agent_id)
 
 				client_details= Client(
 					title= title,
 					full_name = full_name,
 					email = email,
-					phone = phone,
+					phone1 = phone1,
+					phone2 = phone2,
 					town = town,
 					address = apartment_address,
 					client_id = client_id,
 					agent_id = agent,
 					)
-				
+				client_details.agent_id = agent
 				client_details.save()
 				messages.success(request, title  +  full_name +  " registerd successully client's code is: " + client_id )
+				return redirect('/profile')
 				# TODO: Send Code as SMS TO CLIENT 
 			except ObjectDoesNotExist:
 				messages.info(request, "The Client already exist ")		
 			
-	context={'form':form}
+	context={'form':form, 'agent':agent}
 	return render(request, 'user_account/add_client.html', context)
 
 def addVendor(request):
+	agent_code = request.POST.get('agent')
+	agent = get_agent_id(request, agent_code)
 	form = AddVendorForm(request.POST or None )
 	if request.method == 'POST':
 		if form.is_valid():
@@ -257,13 +327,15 @@ def addVendor(request):
 				services = services, 
 				skill = skill, 
 				vendor_id = vendor_id,
+				agent_id = agent,
 				)
-			vendor_details.save()
 			messages.success(request, first_name  +  last_name +  " registerd successully vendor's code is:" + vendor_id )
+			vendor_details.save()
+			
 			# TODO: Send Code as SMS TO VENDOR 
 			return redirect('/profile')
 
-	context={'form':form}
+	context={'form':form, 'agent':agent}
 	return render(request, 'user_account/add_vendor.html', context)
 
 def addAgent(request):
@@ -306,3 +378,24 @@ def addAgent(request):
 
 	context={'form':form}
 	return render(request, 'user_account/add_agent.html', context)
+
+def confirm_delivery(request):
+	form = DeliveryForm(request.POST or None)
+	if form.is_valid():
+		ref_code = form.cleaned_data.get('ref_code')
+		# Edit the order 
+		try:
+			order = Order.objects.get(ref_code=ref_code)
+			order.status = 'Delivered' 
+			order.save()
+
+			return JsonResponse('Thanks you for recieving your order' , safe=False)
+			location.reload()
+			#messages.info(request, "Thank you ")
+			return redirect('/confirm-delivey')
+
+		except ObjectDoesNotExist:
+			messages.info(request, "Order does not exist")
+	context={'form':form}
+	return render(request, 'store/delivered_order.html', context)
+	

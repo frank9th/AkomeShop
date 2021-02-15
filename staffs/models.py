@@ -24,13 +24,14 @@ class Agent(models.Model):
 	
 
 	def __str__(self):
-		return self.agent_id
+		return self.full_name
 
 class Client(models.Model):
 	title = models.CharField(max_length=200, null=True, blank=True)
 	full_name = models.CharField(max_length=200, null=True)
 	email = models.CharField(max_length=200, null=True, blank=True)
-	phone = models.CharField(max_length=200, null=True )
+	phone1 = models.CharField(max_length=200, null=True )
+	phone2 = models.CharField(max_length=200, null=True, blank=True )
 	town = models.CharField(max_length=200, null=True)
 	address = models.CharField(max_length=200, null=True )
 	client_id = models.CharField(max_length=50, null=True, blank=True )
@@ -40,7 +41,7 @@ class Client(models.Model):
 
 
 	def __str__(self):
-		return self.full_name
+		return self.full_name 
 
 class Vendor(models.Model):
 
@@ -71,9 +72,10 @@ class Vendor(models.Model):
 	skill = models.BooleanField(default=False)
 	date_created = models.DateTimeField(auto_now_add= True, null=True )
 	vendor_id = models.CharField(max_length=10, null=True, blank=True)
+	agent_id = models.CharField(max_length=10, null=True, blank=True)
 
 	def __str__(self):
-		return self.first_name
+		return self.first_name 
 
 
 

@@ -1,0 +1,28 @@
+
+{% extends 'user_account/user_base.html' %}
+{% block content %}
+  <!--- SideBar Content---->   
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+                        <h1 class="mt-4">Sales manager's Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Dashboard</li>
+                        </ol>
+                        {% include "user_account/order_detail_snippet.html" %}
+
+                        <!--{% include 'admin_account/chart_snippet.html'%}-->
+                     
+                		{% include 'admin_account/table_snippet.html'%}
+                    
+                    </div>
+                </main>
+
+
+
+
+
+
+
+{% endblock %}
+

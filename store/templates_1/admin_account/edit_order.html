@@ -1,0 +1,26 @@
+{% extends 'user_account/user_base.html' %}
+
+{% block content %}
+           <!--- SideBar Content---->   
+            <div id="layoutSidenav_content">
+                 <div class="container-fluid">
+				  <main class="mt-5">
+				      <div class="row">
+				      	<br>
+				        <div class="col-md-8 mb-4">
+				        	{% include 'admin_account/agent_table_snippet.html'%}
+				        	{% include 'admin_account/vendor_table_snippet.html'%}
+				        </div>
+				     	{% include "admin_account/update_order_snippet.html" %}
+				      </div>
+				  
+				  </main>
+  				<!--Main layout-->
+                {% include "user_account/footer_snippet.html" %}
+             
+            </div>
+        </div>
+
+
+
+{% endblock %}

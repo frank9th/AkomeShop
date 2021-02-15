@@ -72,10 +72,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'akomStore.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,6 +88,9 @@ TEMPLATES = [
         },
     },
 ]
+
+
+
 
 WSGI_APPLICATION = 'akomStore.wsgi.application'
 
@@ -142,18 +146,33 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# Static files (CSS, JavaScript, Images)
+
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_in_env')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
 
-SITE_ID = 1
+'''
 
-LOGIN_REDIRECT_URL = "home"
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'static')
-
 ]
 MEDIA_URL = '/images/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, '/static/images')
 
-STRIPE_API_KEY = config('STRIPE_API_KEY')
+'''
+
+
+SITE_ID = 1
+
+LOGIN_REDIRECT_URL = "/home"
+
+#STRIPE_API_KEY = config('STRIPE_API_KEY')
+
+STRIPE_PUBLIC_KEY = config('STRIPE_TEST_PUBLIC_KEY')
+STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')

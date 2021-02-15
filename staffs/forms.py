@@ -26,7 +26,12 @@ class AddClientForm(forms.Form):
 		'placeholder': 'Enter email',
 		'class':'form-control py-0'
 		}))
-	phone = forms.CharField(widget=forms.TextInput(
+	phone1 = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter mobile number',
+		'class':'form-control'
+		}))
+	phone2 = forms.CharField(required=False, widget=forms.TextInput(
 		attrs={
 		'placeholder': 'Enter mobile number',
 		'class':'form-control'
@@ -44,11 +49,6 @@ class AddClientForm(forms.Form):
 	apartment_address = forms.CharField(widget=forms.TextInput(
 		attrs={
 		'placeholder': 'Enter Home Address',
-		'class':'form-control'
-		}))
-	agent_id = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Enter Agent ID',
 		'class':'form-control'
 		}))
 	
@@ -210,3 +210,20 @@ class AddAgentForm(forms.Form):
 	car = 
 
 '''
+class DeliveryForm(forms.Form):
+	ref_code = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter Client id',
+		'class':'form-control',
+		'aria-label':'Recipient\'s username', 
+		'aria-describedby':'basic-addon2'
+		}))
+
+class CodeForm(forms.Form):
+	code = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter Agent id',
+		'class':'form-control',
+		'aria-label':'Recipient\'s username', 
+		'aria-describedby':'basic-addon2'
+		}))
