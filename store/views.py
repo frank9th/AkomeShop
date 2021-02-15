@@ -294,7 +294,7 @@ class PaymentView(View):
                     userprofile.save()
 
             #amount = int(order.get_total() * 100)
-            amount = int(ground_total() * 100)
+            amount = int(order.ground_total() * 100)
 
             try:
 
