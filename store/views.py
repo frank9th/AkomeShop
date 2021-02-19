@@ -1,6 +1,7 @@
 import random
 import string
 import stripe
+from decouple import config 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,11 +12,23 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.views.generic import ListView, DetailView, View
 import requests 
+from .forms import *
+from .models import *
+from staffs.models import *
+import datetime
+from staffs.views import *
 
-from .forms import CheckoutForm, CouponForm, RefundForm, PaymentForm
-from .models import Item, OrderItem, Order, Address, Payment, Coupon, Refund, UserProfile
 
-stripe.api_key = 'sk_test_g7rfteu0vtQVQlOSLstSmiqb00YFsvI7g6'  
+t = datetime.datetime.now()
+d = datetime.datetime.now()
+
+#datetime.today().strftime('%Y-%m-%d')
+
+time = t.strftime("%X")
+date = d.strftime('%Y-%m-%d')
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY  
 
 
 def dashboard(request):
@@ -37,7 +50,7 @@ def create_ref_code():
 
 def products(request):
     context = {
-        'items': Item.objects.all()
+        'items': Product.objects.all()
     }
     return render(request, "products.html", context)
 
@@ -50,6 +63,91 @@ def is_valid_form(values):
     return valid
 
 
+def cart(request):
+    #form= CreataOrderForm()
+    couponForm = CouponForm()
+    form = OrderForm()
+    customer = request.user
+    if request.method =='POST':
+        #print('Printing post:', request.POST)
+        form = OrderForm(request.POST, instanc) # throwing the post data into the form 
+        if form.is_valid(): # performing valid check 
+
+            form.save() # saving the data in the db 
+            return redirect('checkout')
+
+    context= {'form':form, 'couponForm':couponForm}
+    return render(request, 'store/checkout.html', context)
+
+
+# checkout with clients code 
+def clientCheckout(request):
+    form = ClientCheckOutForm(request.POST or None)  
+    order = {} 
+    try:
+        order = Order.objects.get(user=request.user, ordered=False)
+        if form.is_valid():
+            # Geting the specified fields 
+            order_note = form.cleaned_data.get('additional_note')   
+            payment_option = form.cleaned_data.get('payment_option')
+
+            # TODO: Add redirect to the selected payment option 
+            #return redirect('home')
+            if payment_option == 'S':
+                return redirect('store:payment', payment_option='stripe')
+
+            elif payment_option == 'P':
+                return redirect('store:payment', payment_option='paypal')
+
+            elif payment_option == 'PD':
+                    order_ref_code = create_ref_code()
+                     # create the payment
+                    payment = Payment()
+                    payment.user = request.user
+                    #payment.amount = order.get_total()
+                    payment.amount = order.ground_total()
+                    payment.ref_code = order_ref_code
+                    payment.save()
+
+                    # assign the payment to the order
+                    order_items = order.items.all()
+                    order_items.update(ordered=True)
+                    for item in order_items:
+                        item.save()
+
+                    order.ordered = True
+                    order.payment = payment
+                    #order.client = client_infor
+                    order.ordered_date = date
+                    order.ordered_time = time
+                    order.note = order_note
+
+                    order.ref_code = order_ref_code
+                    order.save()
+
+                    messages.success(request, "Your order was successful!")
+                    return redirect("/")
+            else:
+                messages.warning(
+                    self.request, "Invalid payment option selected")
+                return redirect('store:checkout')
+
+    except ObjectDoesNotExist:
+        messages.error(request, "You do not have an active order")
+    #return render(request, 'home')
+
+    context= {'form':form, 
+    #'item':item, 
+    'couponform':CouponForm(), 
+    'order':order, 
+    'client_code':ClientCodeForm(),
+    #'client_dstails':client_dstails
+    }
+    #messages.warning(request, "Failed checkout")
+    return render(request, 'checkout-page.html', context)
+
+# checkout to enter client details
+
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
@@ -58,6 +156,7 @@ class CheckoutView(View):
             context = {
                 'form': form,
                 'couponform': CouponForm(),
+                'client_code':ClientCodeForm(),
                 'order': order,
                 'DISPLAY_COUPON_FORM': True
             }
@@ -240,6 +339,7 @@ class CheckoutView(View):
             return redirect("store:order-summary")
 
 
+
 class PaymentView(View):
     def get(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
@@ -331,9 +431,15 @@ class PaymentView(View):
                 order.ordered = True
                 order.payment = payment
                 order.ref_code = create_ref_code()
-                order.save()
 
+                order.ordered_date = date
+                order.ordered_time = time
+                order.note = order_note
+
+                order.save()
                 messages.success(self.request, "Your order was successful!")
+
+                #TODO: SEND ORDER TOTAL AND ref_code to client phone 
                 return redirect("/")
 
             except stripe.error.CardError as e:
@@ -382,7 +488,7 @@ class PaymentView(View):
 
 
 class HomeView(ListView):
-    model = Item
+    model = Product
     paginate_by = 10
     template_name = "home.html"
 
@@ -401,7 +507,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
 
 
 class ItemDetailView(DetailView):
-    model = Item
+    model = Product
     template_name = "product.html"
 
 
@@ -493,6 +599,23 @@ def remove_single_item_from_cart(request, slug):
         messages.info(request, "You do not have an active order")
         return redirect("store:product", slug=slug)
 
+# Delete Item 
+def delete_item(request, pk):
+    item = Order.objects.get(id=pk)
+    if request.method =='POST':
+        #print('Printing post:', request.POST)
+            item.delete() # saving the data in the db 
+            return redirect('/')
+
+
+    context= {'item':item}
+    return render(request, 'delete.html', context)
+
+
+
+
+
+
 
 def get_coupon(request, code):
     try:
@@ -512,7 +635,7 @@ class AddCouponView(View):
                 order = Order.objects.get(
                     user=self.request.user, ordered=False)
                 order.coupon = get_coupon(self.request, code)
-                order.save()
+                #order.save()
                 messages.success(self.request, "Successfully added coupon")
                 return redirect("store:checkout")
             except ObjectDoesNotExist:
@@ -553,3 +676,38 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "This order does not exist.")
                 return redirect("store:request-refund")
+
+
+# Client Code 
+def get_client_code(request, code):
+    try:
+        client_code = Client.objects.get(client_code=code)
+        return client_code
+    except ObjectDoesNotExist:
+        messages.warning(request, "Sorry, your code is incorrect")
+        return redirect("/")
+        #return JsonResponse('Enter a valid code', safe=False)
+
+
+
+def AddClientCode(request):
+    form = ClientCodeForm(request.POST or None)
+    if form.is_valid():
+        code = form.cleaned_data.get('code')
+        # Edit the order 
+        try:
+            client = Client.objects.get(client_code=code)
+            order = Order.objects.get(
+                    user=request.user, ordered=False)
+            order.client = client 
+            order.save()
+            messages.success(request, "Successfully added Client details")
+
+            #messages.info(request, "Thank you ")
+            return redirect('/confirm-checkout')
+
+        except ObjectDoesNotExist:
+            messages.warning(request, "Client's code is incorrect")
+            return redirect('/confirm-checkout')
+
+    

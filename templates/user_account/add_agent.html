@@ -1,0 +1,120 @@
+{% extends 'user_account/user_base.html' %}
+
+
+{% block content %}
+		 <!--- SideBar Content---->   
+            <div id="layoutSidenav_content">
+                 <div class="container-fluid">
+                    <main class="mt-5">
+                    	<br>
+                    	 {% if messages %}
+			                {% for message in messages %}
+			                  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+			                   {{message }} 
+			                    <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
+			                    </div>   
+			                  {% endfor %}
+			                {% endif %}
+			   
+			          <div class="row align-items-center">
+					     {% include 'user_account/confirm_code.html'%}
+					     <form class="row" method="POST">
+					     	{% csrf_token %}
+					    <div class="col">
+						      <h6>Location Info:</h6>
+		                 	<div class="custom-control">
+		                 	<label for="zone"> Zone </label>
+		                 	{{form.zone}} 
+		                 	</div>
+		                 	<div class="d-block my-3">
+	                		<h6> Agent Type:</h6>
+			               {% for value, name in form.fields.agent_type.choices %}
+			               <div class="custom-control custom-radio">
+			                  <input id="{{name}}" name="agent_type" value="{{value}}" type="radio" class="custom-control-input" 
+			                  checked required>
+			                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
+			                </div>
+			                 {% endfor %}
+			                
+					       </div>
+					    </div>
+					    <div class="col">
+					     <h6>Delivery Agent Only</h6>
+	                 	 <div class="custom-control custom-checkbox">
+			                {{form.bike}}
+			                <label for="skill" >Do you have a bike? </label>
+			              </div> 
+			               <div class="custom-control custom-checkbox">
+			                {{form.keke}}
+			                <label for="skill" >Do you drive keke? </label>
+			              </div> 
+			               <div class="custom-control custom-checkbox">
+			                {{form.car}}
+			                <label for="skill" >Do you own a car? </label>
+			              </div>  
+			              <button class="btn btn-primary btn-block" type="submit">Register Agent </button>       
+              			</div>
+					  
+					    </form>
+					  </div> 
+                       
+                    </div>
+                </main>
+                {% include "user_account/footer_snippet.html" %}
+            </div>
+        </div>
+
+{% endblock %}
+
+
+
+
+				<!---
+					Messed up stle --
+
+                    	<form method="POST">
+                    	{% csrf_token %}
+	                    	<div class="container">	
+	                    		<div class="row" >
+	                    			<div class="col">
+							      		<h3>Personal Info:</h3>
+			
+					                 	<div class="custom-control">
+					                 		{{form.zone}} 
+					                 	</div>                 	
+								    </div>
+							    	<div class="col">
+							    		<hr>
+							     		 	<div class="d-block my-3">
+					                		<h3> Agent Type:</h3>
+							               {% for value, name in form.fields.agent_type.choices %}
+							               <div class="custom-control custom-radio">
+							                  <input id="{{name}}" name="agent_type" value="{{value}}" type="radio" class="custom-control-input" 
+							                  checked required>
+							                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
+							                </div>
+							                 {% endfor %}
+							                
+							              </div>
+							              <hr>
+							              	<h5>Delivery Agent Only</h5>
+					                 	 <div class="custom-control custom-checkbox">
+							                {{form.bike}}
+							                <label for="skill" >Do you have a bike? </label>
+							              </div> 
+							               <div class="custom-control custom-checkbox">
+							                {{form.keke}}
+							                <label for="skill" >Do you drive keke? </label>
+							              </div> 
+							               <div class="custom-control custom-checkbox">
+							                {{form.car}}
+							                <label for="skill" >Do you own a car? </label>
+							              </div>  
+							              <button class="btn btn-primary btn-block" type="submit">Register Agent </button>       
+				              		</div>
+							    </div> 
+	                    		</div>
+	                   		</div>
+               			 </form>		
+                        </div>  
+                    --->

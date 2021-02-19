@@ -13,7 +13,7 @@ make_refund_accepted.short_description = 'Update orders to refund granted'
 class OrderAdmin(admin.ModelAdmin):
     list_display = ['user',
                     'ordered',
-                    'being_delivered',
+                    'status',
                     'received',
                     'refund_requested',
                     'refund_granted',
@@ -30,7 +30,7 @@ class OrderAdmin(admin.ModelAdmin):
         'coupon'
     ]
     list_filter = ['ordered',
-                   'being_delivered',
+                   'status',
                    'received',
                    'refund_requested',
                    'refund_granted']
@@ -56,6 +56,7 @@ class AddressAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Item)
+admin.site.register(Product)
 admin.site.register(OrderItem)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Payment)
@@ -63,17 +64,7 @@ admin.site.register(Coupon)
 admin.site.register(Refund)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(UserProfile)
-
-
-
-
-
-
-
-
-
-
-
+admin.site.register(Codebox)
 
 
 
@@ -88,22 +79,22 @@ from django.contrib import admin
 from .models import * 
 
 def make_refund_accepted(modeladmin, request, queryset):
-	queryset.update(refund_requested=False, refund_granted=True )
+    queryset.update(refund_requested=False, refund_granted=True )
 make_refund_accepted.short_description = 'Update orders to refund granted'
 
 def update_statuse(modeladmin, request, queryset):
-	queryset.update(status='Delivered')
+    queryset.update(status='Delivered')
 update_statuse.short_description = 'Update orders delivered'
 
 
 
 class OrderAdmin(admin.ModelAdmin):
-	list_display = ['customer', 'is_ordered', 'refund_requested', 'refund_granted', 'status', 'client_id', 'amount', 'coupon', 'date_created']
-	list_filter = [ 'is_ordered', 'refund_requested', 'refund_granted', 'status']
-	list_display_links=['customer','client_id', 'amount', 'coupon']
-	search_fields = ['customer__name', 'ref_code' ]
+    list_display = ['customer', 'is_ordered', 'refund_requested', 'refund_granted', 'status', 'client_id', 'amount', 'coupon', 'date_created']
+    list_filter = [ 'is_ordered', 'refund_requested', 'refund_granted', 'status']
+    list_display_links=['customer','client_id', 'amount', 'coupon']
+    search_fields = ['customer__name', 'ref_code' ]
 
-	actions = [make_refund_accepted, update_statuse]
+    actions = [make_refund_accepted, update_statuse]
 
 admin.site.register(Customer)
 admin.site.register(Tag)
@@ -117,3 +108,4 @@ admin.site.register(Coupon)
 admin.site.register(Refund)
 admin.site.register(Confirmed)
 '''
+

@@ -1,0 +1,45 @@
+
+
+
+		            <div class="card-body">
+		                <div class="table-responsive">
+		                    <table class="table table-bordered table-sm" id="dataTable" width="100%" cellspacing="0">
+		                        <thead>
+		                               <tr>
+		                                <th>Name </th>
+		                                <th>Vendor code</th>
+		                                <th> Location </th>
+		                                <th> Phone 1 </th>
+		                                <th> Phone 2</th>
+		                                <th>product/Service</th>
+		                            </tr>
+		                        </thead>
+		                
+		                        <tfoot>
+		                             <tr>
+		                                <th>Name </th>
+		                                <th>Vendor code</th>
+		                                <th> Location </th>
+		                                <th> Phone 1 </th>
+		                                <th> Phone 2</th>
+		                                <th>product/Service</th>
+		                            </tr>
+		                        </tfoot>
+		                        <tbody>
+				                    {% for vendor in vendors %}
+								    <tr>
+								      <td>{{vendor.info}}</td>
+								      <td>{{vendor.vendor_code}}</td>
+								      <td>{{vendor.info.apartment_address}}</td>
+								      <td>{{vendor.info.phone1}}</td>
+								      <td>{{vendor.info.phone2}}</td>
+								      <td>{{vendor.product_name}}</td>
+								    </tr> 
+								    
+							    	{% endfor %}
+		                        </tbody>
+		                      
+		                    </table>
+		                </div>
+		            </div>
+		 

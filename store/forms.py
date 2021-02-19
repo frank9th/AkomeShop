@@ -61,3 +61,48 @@ class PaymentForm(forms.Form):
     stripeToken = forms.CharField(required=False)
     save = forms.BooleanField(required=False)
     use_default = forms.BooleanField(required=False)
+
+
+
+
+CATHEGORY = (
+        ('G', 'Goods'),
+        ('S', 'Services')
+        )
+
+class OrderForm(forms.Form):
+    cathegory =  forms.ChoiceField(widget=forms.RadioSelect(), choices=CATHEGORY)
+    name = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'placeholder': 'Enter item/service name ',
+        'class':'form-control '
+        }))
+    price = forms.IntegerField(widget=forms.NumberInput(
+        attrs={
+        'placeholder': 'Enter amount ',
+        'class':'form-control '
+        }))
+    description = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'placeholder': 'additional note/description  ',
+        'class':'form-control'
+        }))
+    
+    #slug = models.SlugField()
+
+class ClientCodeForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'placeholder': 'Enter Clients Code ',
+        'class':'form-control',
+        }))
+
+class ClientCheckOutForm(forms.Form):
+    additional_note = forms.CharField(required=False, widget=forms.Textarea(
+        attrs={
+        'placeholder': 'Enter any additional infor or message',
+        'class':'form-control',
+        'rows':3
+        }))
+    
+    payment_option = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)

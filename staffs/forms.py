@@ -3,11 +3,43 @@ from django.contrib.auth.models import User
 from django import forms 
 from django.forms import ModelForm
 from .models import * 
-
+from store.models import *
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User
 		fields = ['username', 'email', 'password1', 'password2']
+
+
+CATHEGORY = (
+		('G', 'Goods'),
+		('S', 'Services')
+		)
+class OrderForm(forms.Form):
+	cathegory =  forms.ChoiceField(widget=forms.RadioSelect(), choices=CATHEGORY)
+	name = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter item/service name ',
+		'class':'form-control '
+		}))
+	price = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'placeholder': 'Enter amount ',
+		'class':'form-control '
+		}))
+	description = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'additional note/description  ',
+		'class':'form-control'
+		}))
+	
+	#slug = models.SlugField()
+
+
+class UpdateOrderForm(ModelForm):
+	class Meta:
+		model = Order
+		fields = '__all__'
+
 
 
 class AddClientForm(forms.Form):
@@ -24,6 +56,11 @@ class AddClientForm(forms.Form):
 	email = forms.CharField(required=False, widget=forms.TextInput(
 		attrs={
 		'placeholder': 'Enter email',
+		'class':'form-control py-0'
+		}))
+	agent_code = forms.CharField(required=False, widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Re Enter Code',
 		'class':'form-control py-0'
 		}))
 	phone1 = forms.CharField(widget=forms.TextInput(
@@ -51,67 +88,19 @@ class AddClientForm(forms.Form):
 		'placeholder': 'Enter Home Address',
 		'class':'form-control'
 		}))
+	sex = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Male/Female',
+		'class':'form-control'
+		}))
 	
-
-"""
-
-	full_name = 
-	email = 
-	phone = 
-	town =
-	address = 
-	client_id = 
-	occupation = 
-	sex =
-"""
 
 class AddVendorForm(forms.Form):
 	BUS_CHOICES=(
 		('G', 'Goods'),
 		('S', 'Services'),
 		('Sk', 'Skill'),
-
 		)
-	first_name = forms.CharField(widget=forms.TextInput( attrs={
-		'placeholder': 'Enter first name',
-		'class':'form-control py-0',
-			}))
-	last_name = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Enter last name',
-		'class':'form-control py-0',
-			}))
-	sex = forms.CharField(required=False, widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Male or Female ',
-		'class':'form-control',
-			}))#custom-select d-block w-100
-	email = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Enter Email ',
-		'class':'form-control',
-			}))
-	
-	apartment_address = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Apartment/businees Address',
-		'class':'form-control',
-			}))
-	street_address = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': '1234 Main St',
-		'class':'form-control'
-		}))
-	phone1 =  forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Telephone  ',
-		'class':'form-control',
-			}))
-	phone2 =  forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': 'mobile ',
-		'class':'form-control',
-			}))
 	business_name = forms.CharField(widget=forms.TextInput(
 		attrs={
 		'placeholder': 'Enter business name ',
@@ -121,6 +110,13 @@ class AddVendorForm(forms.Form):
 		attrs={
 		'placeholder': 'Enter Product/service name ',
 		'class':'form-control',
+			}))
+	agent_code = forms.CharField(required=False, widget=forms.TextInput(
+		attrs={
+		'placeholder': 'Enter Agent Code ',
+		'class':'form-control',
+		'name':'agentId',
+		'id':'agentId',
 			}))
 	goods = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
 		'class':'custom-checkbox', 
@@ -155,33 +151,9 @@ AGENT_TYPE =(
 		('FD', 'Field Agent'),
 		)
 class AddAgentForm(forms.Form):
-	full_name = forms.CharField(widget=forms.TextInput( attrs={
-		'placeholder': 'Enter full name',
-		'class':'form-control py-0',
-
-			}))
-	email = forms.CharField(widget=forms.TextInput( attrs={
-		'placeholder': 'Enter email',
-		'class':'form-control py-0',
-			}))
-	phone1 = forms.CharField( widget=forms.TextInput(
-		attrs={
-		'placeholder': 'Telephone  ',
-		'class':'form-control',
-			}))
-	phone2 = forms.CharField(required=False, widget=forms.TextInput(
-		attrs={
-		'placeholder': 'alternative number  ',
-		'class':'form-control',
-			}))
-	town = forms.CharField(widget=forms.TextInput(
+	zone = forms.CharField(widget=forms.TextInput(
 		attrs={
 		'placeholder': 'Town/city',
-		'class':'form-control'
-		}))
-	address = forms.CharField(widget=forms.TextInput(
-		attrs={
-		'placeholder': '1234 Main St',
 		'class':'form-control'
 		}))
 	bike = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={

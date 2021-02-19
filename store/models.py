@@ -4,12 +4,13 @@ from django.db import models
 from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
+from staffs.models import *
+
 
 CATEGORY_CHOICES = (
-    ('S', 'Shirt'),
-    ('SW', 'Sport wear'),
-    ('OW', 'Outwear')
-)
+    ('G', 'Goods'),
+    ('S', 'Services')
+    )
 
 LABEL_CHOICES = (
     ('P', 'primary'),
@@ -22,27 +23,67 @@ ADDRESS_CHOICES = (
     ('S', 'Shipping'),
 )
 
+class Codebox(models.Model):
+    name = models.CharField(max_length=200, blank=True, null=True )
+    code = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.code
+
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     one_click_purchasing = models.BooleanField(default=False)
+    user_code = models.ForeignKey(Client, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.user.username
+
+
+# STORE PRODUCTS 
+class Product(models.Model):
+    title = models.CharField(max_length=100)
+    price = models.FloatField()
+    discount_price = models.FloatField(blank=True, null=True)
+    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
+    label = models.CharField(choices=LABEL_CHOICES, max_length=1, default='P')
+    slug = models.SlugField()
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(blank=True, null=True)
+
+    def __str__(self):
+        return self.title 
+
+
+    def get_absolute_url(self):
+        return reverse("store:product", kwargs={
+            'slug': self.slug
+        })
+
+    def get_add_to_cart_url(self):
+        return reverse("store:add-to-cart", kwargs={
+            'slug': self.slug
+        })
+
+    def get_remove_from_cart_url(self):
+        return reverse("store:remove-from-cart", kwargs={
+            'slug': self.slug
+        })
 
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
-    label = models.CharField(choices=LABEL_CHOICES, max_length=1)
+    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
+    #label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
-    image = models.ImageField()
-
+    #image = models.ImageField(blank=True, null=True)
+    
     def __str__(self):
         return self.title
 
@@ -88,13 +129,22 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
+    STATUS= (
+        ('Pending', 'Pending'),
+        ('Out for Delivery', 'Out for delivery'),
+        ('Delivered', 'Delivered'),
+        )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
+    note = models.CharField(max_length=200, null=True, blank=True)
     start_date = models.DateTimeField(auto_now_add=True)
-    ordered_date = models.DateTimeField()
+    ordered_date = models.DateField(blank=True, null=True)
+    ordered_time = models.TimeField(blank=True, null=True)
     ordered = models.BooleanField(default=False)
+    status = models.CharField(max_length=200, null=True, choices=STATUS, default='Pending')
     shipping_address = models.ForeignKey(
         'Address', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
     billing_address = models.ForeignKey(
@@ -103,7 +153,9 @@ class Order(models.Model):
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
-    being_delivered = models.BooleanField(default=False)
+    #being_delivered = models.BooleanField(default=False)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
+    agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True )
     received = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
@@ -133,16 +185,16 @@ class Order(models.Model):
     def delivery_charge(self):
         total = self.get_total()
         if total <= 1000:
-            delivery_charge = 20
+            delivery_charge = 25
             total = total / 100 * delivery_charge
         elif total <= 2000:
-            delivery_charge = 15
+            delivery_charge = 20
             total = total / 100 * delivery_charge 
         elif total <= 5000:
-            delivery_charge = 10
+            delivery_charge = 15
             total = total / 100 * delivery_charge 
         elif total >= 5050:
-            delivery_charge = 8
+            delivery_charge = 10
             total = total / 100 * delivery_charge 
         return total 
         print(total)
@@ -174,6 +226,7 @@ class Payment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, blank=True, null=True)
     amount = models.FloatField()
+    ref_code = models.CharField(max_length=50)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -186,6 +239,7 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
 
 
 class Refund(models.Model):

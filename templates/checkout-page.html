@@ -1,0 +1,71 @@
+
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+  <!--Main layout-->
+  <main class="mt-5">
+    <div class="container wow fadeIn">
+      <!-- Heading -->
+      <h2 class="my-5 h2 text-center">Checkout form</h2>
+      <!--Grid row-->
+      <div class="row">
+        <!--Grid column-->
+        <div class="col-md-6 mb-4">
+          <!--Card-->
+          <div class="card">
+            <form class="card-body" method="POST" action="{% url 'store:add-client-details' %}">
+            {% csrf_token %}
+                <div class="input-group">
+                  {{client_code.code}}
+                  <!--
+                  <input type="text" class="form-control" placeholder="Enter Client's Code" name="client" >
+                  --->
+                  <div class="input-group-append">
+                    <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Code " >
+                  </div>
+                </div>
+              </form>
+          </div>
+          <!--/.Card-->
+          <div class="card">
+            <form class="card-body" method="POST", >
+              {% csrf_token %}
+           
+                <h3 style="text-align: center;"> Aditional info</h3>
+              <!--address-2-->
+              <div class="md-form mb-5">
+                 {{form.additional_note }}
+              </div>
+               <div class="md-form mb-5">
+                 {{form.client_code }}
+              </div>
+              <div class="d-block my-3">
+                <h3> Payment Option:</h3>
+                {% for value, name in form.fields.payment_option.choices %}
+               <div class="custom-control custom-radio">
+                  <input id="{{name}}" name="payment_option" value="{{value}}" type="radio" class="custom-control-input"
+                  checked required>
+                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
+                </div>
+                 {% endfor %}   
+              </div>
+              <hr class="mb-4">
+              <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+            </form>
+          </div>
+          <!--/.Card-->
+        </div>
+
+      <div class="col-md-4 mb-4">
+          {% include "order_snippet.html" %}
+        </div>
+
+      </div>
+      <!--Grid row-->
+
+    </div>
+  </main>
+  <!--Main layout-->
+
+{% endblock %}
