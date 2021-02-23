@@ -1,0 +1,157 @@
+{% extends 'dashboard/layouts/base.html' %}
+
+{% block title %} Page User {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+  {% include 'dashboard/includes/order-card-snippet.html'%}
+
+<div class="row">
+
+
+  {% include 'dashboard/ui-tables.html'%}
+
+  <!-- Edit Profile Form
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="title">Edit Profile</h5>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-5 pr-md-1">
+              <div class="form-group">
+                <label>Agent Code </label>
+                <input type="text" class="form-control" disabled="" value="{{ client.agent_code}}">
+              </div>
+            </div>
+            <div class="col-md-3 px-md-1">
+              <div class="form-group">
+                <label>Username</label>
+                <input type="text" class="form-control" value="{{ request.user.username }}">
+              </div>
+            </div>
+            <div class="col-md-4 pl-md-1">
+              <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" value="{{client.email}}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 pr-md-1">
+              <div class="form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control">
+              </div>
+            </div>
+            <div class="col-md-6 pl-md-1">
+              <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Apartment Address</label>
+                <input type="text" class="form-control" placeholder="Home Address" value="{{client.apartment_address }}">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 pr-md-1">
+              <div class="form-group">
+                <label>Town </label>
+                <input type="text" class="form-control" placeholder="City" value="{{client.town }}">
+              </div>
+            </div>
+            <div class="col-md-4 px-md-1">
+              <div class="form-group">
+                <label>Country</label>
+                <input type="text" class="form-control" placeholder="Country" value="Andrew">
+              </div>
+            </div>
+            <div class="col-md-4 pl-md-1">
+              <div class="form-group">
+                <label>Postal Code</label>
+                <input type="number" class="form-control" placeholder="ZIP Code">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="form-group">
+                <label>About Me</label>
+                <textarea rows="4" cols="80" class="form-control" placeholder="Here can be your description" value="Mike">Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo.</textarea>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="card-footer">
+        <button type="submit" class="btn btn-fill btn-primary">Save</button>
+      </div>
+    </div>
+  </div>
+    --->
+
+  <!--Profile Card--->
+  <div class="col-md-4">
+    <div class="card card-user">
+      <div class="card-body">
+        <p class="card-text">
+          <div class="author">
+            <div class="block block-one"></div>
+            <div class="block block-two"></div>
+            <div class="block block-three"></div>
+            <div class="block block-four"></div>
+            <a href="javascript:void(0)">
+              <img class="avatar" src="/static/dash/assets/img/emilyz.jpg" alt="...">
+              <h3> code: {{ client.client_code}}</h3>
+              <h5 class="title">
+               {{client.title}}.  {{client.full_name}}
+              </h5>
+            </a>
+            <p class="description">
+
+             {{client.email}}
+            </p>
+            
+
+          </div>
+        </p>
+        <div class="card-description">
+          <strong>Phone 1 :</strong> {{client.phone1 }} <hr>
+          Phone 2 : {{client.phone2 }}  <hr>
+          Town : {{client.town }} <hr>
+          Land mark: 
+          <hr>
+          Address : {{client.apartment_address }}
+          <hr>
+
+
+
+          Do not be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="button-container">
+        
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

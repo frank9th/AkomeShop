@@ -18,42 +18,42 @@
 			   
 			          <div class="row align-items-center">
 					     {% include 'user_account/confirm_code.html'%}
-					     <form class="row" method="POST">
+					    <form class="row" method="POST">
 					     	{% csrf_token %}
-					    <div class="col">
-						      <h6>Location Info:</h6>
-		                 	<div class="custom-control">
-		                 	<label for="zone"> Zone </label>
-		                 	{{form.zone}} 
-		                 	</div>
-		                 	<div class="d-block my-3">
-	                		<h6> Agent Type:</h6>
-			               {% for value, name in form.fields.agent_type.choices %}
-			               <div class="custom-control custom-radio">
-			                  <input id="{{name}}" name="agent_type" value="{{value}}" type="radio" class="custom-control-input" 
-			                  checked required>
-			                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
-			                </div>
-			                 {% endfor %}
-			                
-					       </div>
-					    </div>
-					    <div class="col">
-					     <h6>Delivery Agent Only</h6>
-	                 	 <div class="custom-control custom-checkbox">
-			                {{form.bike}}
-			                <label for="skill" >Do you have a bike? </label>
-			              </div> 
-			               <div class="custom-control custom-checkbox">
-			                {{form.keke}}
-			                <label for="skill" >Do you drive keke? </label>
-			              </div> 
-			               <div class="custom-control custom-checkbox">
-			                {{form.car}}
-			                <label for="skill" >Do you own a car? </label>
-			              </div>  
-			              <button class="btn btn-primary btn-block" type="submit">Register Agent </button>       
-              			</div>
+					     	<input name="clientId" style="display:none" type="text" id="clientId" value="{{client.id}}">
+						    <div class="col">
+							    <h6>Location Info:</h6>
+			                 	<div class="custom-control">
+			                 	<label for="zone"> Zone </label>
+			                 	{{form.zone}} 
+			                 	</div>
+			                 	<div class="d-block my-3">
+		                			<h6> Agent Type:</h6>
+				               		{% for value, name in form.fields.agent_type.choices %}
+					               <div class="custom-control custom-radio">
+					                  <input id="{{name}}" name="agent_type" value="{{value}}" type="radio" class="custom-control-input" 
+					                  checked required>
+					                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
+					               </div>
+				                 	{% endfor %}  
+						       	</div>
+						    </div>
+						    <div class="col">
+							    <h6>Delivery Agent Only</h6>
+			                 	<div class="custom-control custom-checkbox">
+					                {{form.bike}}
+					                <label for="skill" >Do you have a bike? </label>
+					            </div> 
+					            <div class="custom-control custom-checkbox">
+					                {{form.keke}}
+					                <label for="skill" >Do you drive keke? </label>
+					            </div> 
+					            <div class="custom-control custom-checkbox">
+					                {{form.car}}
+					            	<label for="skill" >Do you own a car? </label>
+					            </div>  
+					            <button class="btn btn-primary btn-block" type="submit">Register Agent </button>       
+	              			</div>
 					  
 					    </form>
 					  </div> 

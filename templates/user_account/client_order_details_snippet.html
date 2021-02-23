@@ -1,0 +1,32 @@
+				<div class="col-6">
+				    <div class="card">
+				      <div class="card-body">	      
+				        <a href= "{% url 'order-form' %}" class="btn btn-primary"> Create Order</a>
+				        <h4 class="card-title" style="text-align: center;"><strong>Total Orders: {{total_order}} </strong></h4>
+				        <table class="table table-hover">
+						  <thead>
+						    <tr>
+						      <th scope="col">Product/Service</th>
+						      <th scope="col">Date ordered</th>
+						      <th scope="col">Time ordered</th>
+						      <th scope="col">Status</th>
+						      <th scope="col">Amount</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						  {% for order in orders %}
+							 <tr>
+							   <td>{% for item in order.items.all %}
+	     						{{item}}   
+	     						 {% endfor %}</td>
+							      <td>{{order.ordered_date}}</td>
+							      <td>{{order.ordered_time}}</td>
+							      <td>{{order.status}}</td>
+							      <td> &#8358; {{order.payment.amount}}</td>
+							    </tr> 
+						    {% endfor %}		
+						  </tbody>
+						</table>
+				      </div>
+				    </div>
+				</div>

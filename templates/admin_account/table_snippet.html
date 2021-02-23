@@ -9,8 +9,9 @@
 		                        <thead>
 		                             <tr>
 		                                <th>Staff</th>
-		                                <th>Client ID</th>
+		                                <th>Client </th>
 		                                <th>Item </th>
+		                                <th>QTY </th>
 		                                <th>Statues</th>
 		                                <th>Date</th>
 		                                <th>Time</th>
@@ -23,8 +24,9 @@
 		                        <tfoot>
 		                            <tr>
 		                                <th>Staff</th>
-		                                <th>Client ID</th>
+		                                <th>Client</th>
 		                                <th>Item </th>
+		                                <th>QTY </th>
 		                                <th>Statues</th>
 		                                <th>Date</th>
 		                                <th>Time</th>
@@ -38,16 +40,19 @@
 				                    {% for order in orders %}
 								    <tr>
 								      <td>{{order.user}}</td>
-								      <td>{{order.client.client_code}}</td>
+								      <td> <a class="btn btn-warning"  href="{% url 'my-account' order.client %}">{{order.client.client_code}} </a></td>
 								      <td>{% for item in order.items.all %}
-								      {{item}}
+								      {{item.item}}
+								      {% endfor %}</td>
+								      <td>{% for item in order.items.all %}
+								      {{item.quantity}}
 								      {% endfor %}</td>
 								      <td>{{order.status}}</td>
 								      <td>{{order.ordered_date}}</td> 
 								       <td>{{order.ordered_time}}</td>
 								      <td><a class="btn btn-info"  href="#">{{order.agent}}</a></td>
-								      <td><a class="btn btn-info" href="#">{{order.vendor}}</a></td>
-								      <td>{{order.payment.amount}}</td>
+								      <td><a class="btn btn-info" href="{% url 'vendor' order.vendor%}">{{order.vendor}}</a></td>
+								      <td> &#8358; {{order.payment.amount}}</td>
 								      <td><a class="btn btn-warning"  href="{% url 'update_order' order.id %}">Action </a></td>
 								      <!--
 								      <td><a class="btn btn-primary" href="{% url 'update_order' order.id %}">Update </a></td>

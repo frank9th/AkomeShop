@@ -170,7 +170,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '/static/images')
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = "/home"
+LOGIN_REDIRECT_URL = "/profile"
 
 #STRIPE_API_KEY = config('STRIPE_API_KEY')
 

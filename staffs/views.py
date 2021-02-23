@@ -118,21 +118,39 @@ def createOrder(request):
 	return render(request, 'order_form.html', context)
 
 
-
-# home view 
-def salesHome(request):
+# client detail page 
+def my_account(request, code):
+	client = Client.objects.get(client_code=code)
 	#orders = Order.objects.all()
-	orders = request.user.customer.order_set.all()
-	customer = Customer.objects.all()
+	orders = client.order_set.all()
+	#customer = Customer.objects.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
 
-	context= {'customer': customer, 'orders': orders, 
+	context= {'client': client, 'orders': orders, 
 	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
 	'out_delivery':out_delivery }
-	return render(request, 'user_account/home_sales.html', context)
+	#return render(request, 'user_account/account.html', context)
+	return render(request, 'dashboard/page-user.html', context)
+
+
+
+
+
+
+def vendor_account(request, code):
+	vendor = Vendor.objects.get(vendor_code=code)
+	orders = vendor.order_set.all()
+	total_order = orders.count()
+
+	context= {
+	'vendor':vendor,
+	'orders':orders,
+	'total_order':total_order,
+	}
+	return render(request, 'dashboard/index.html', context)
 
 @unauthenticated_user
 def loginPage(request):
@@ -148,7 +166,7 @@ def loginPage(request):
 
 		if user is not None:
 			login(request, user)
-			return redirect('home')
+			return redirect('/')
 		else:
 			messages.info(request, 'Username or password is incorrect')
 
@@ -412,11 +430,16 @@ def addVendor(request):
 def addAgent(request):
 	code = request.POST.get('code')
 	client = get_client_code(request, code)
-
+	try:
+		clientId = Client.objects.get(id=request.POST.get('clientId'))
+		agentId = Agent.objects.get(id=request.POST.get('agentId'))
+	except Exception as e:
+		pass
 
 	form = AddAgentForm(request.POST or None)
 	if request.method == 'POST':
 		if form.is_valid():
+			zone = form.cleaned_data.get('zone')
 			bike = form.cleaned_data.get('bike')
 			keke = form.cleaned_data.get('keke')
 			car = form.cleaned_data.get('car')
@@ -424,8 +447,9 @@ def addAgent(request):
 			agent_code = create_unique_code()
 			#codebox = Codebox(code=agent_code, name=full_name)
 			#codebox.save()
-			agent_details = agent
 			agent_details = Agent(
+				info = clientId,
+				zone = zone,
 				bike = bike, 
 				keke = keke,
 				car = car,
@@ -461,5 +485,5 @@ def confirm_delivery(request):
 		except ObjectDoesNotExist:
 			messages.info(request, "Order does not exist")
 	context={'form':form}
-	return render(request, 'store/delivered_order.html', context)
+	return render(request, 'delivered_order.html', context)
 	
