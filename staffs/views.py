@@ -3,6 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth.models import Group
 from .decorators import unauthenticated_user, allowed_users, admin_only  
+from django.db.models import Avg, Count, Min, Sum
+from django.views.generic import TemplateView, ListView
 from .models import *
 import sys
 import requests
@@ -15,6 +17,11 @@ from store.models import *
 import random 
 import string 
 from django.contrib import messages
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+from store.signal_file import *
+
 
 
 
@@ -47,7 +54,6 @@ def get_agent_code(request, code):
 		return redirect('/')
 
 
-
 @login_required
 def add_to_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
@@ -76,7 +82,6 @@ def add_to_cart(request, slug):
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
         return redirect("store:order-summary")
-
 
 
 # Create Order 
@@ -135,22 +140,44 @@ def my_account(request, code):
 	#return render(request, 'user_account/account.html', context)
 	return render(request, 'dashboard/page-user.html', context)
 
-
-
-
-
+class VendorView(ListView):
+	template_name = "dashboard/vendor-dashboard.html"
+	model = Vpayment
+  
 
 def vendor_account(request, code):
+	#item = VendorItem.objects.get(vendor.vendor_code)
+	payment = ''
+	try:
+		payment = Vpayment.objects.get(seller=code)
+	except Exception as e:
+		pass
+		print(payment)
+	
 	vendor = Vendor.objects.get(vendor_code=code)
+	client = vendor.info
 	orders = vendor.order_set.all()
+	delivered = orders.filter(status='Delivered').count()
+	pending = orders.filter(status='Pending').count()
+	out_delivery = orders.filter(status='Out for Delivery').count()
+
 	total_order = orders.count()
 
 	context= {
+	#'item':item,
+	'payment':payment,
+	'client':client,
 	'vendor':vendor,
 	'orders':orders,
 	'total_order':total_order,
+	'orders': orders, 
+	'total_order': total_order, 
+	'delivered': delivered, 
+	'pending': pending, 
+	'out_delivery':out_delivery
 	}
-	return render(request, 'dashboard/index.html', context)
+		
+	return render(request, 'dashboard/vendor-dashboard.html', context)
 
 @unauthenticated_user
 def loginPage(request):
@@ -233,14 +260,14 @@ def password(request):
 @admin_only
 #@allowed_users('admin')
 def admin_dashboard(request):
-	client = Client.objects.all()
+	clients = Client.objects.all()
 	orders = Order.objects.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
 	context = {
-	'client':client,
+	'clients':clients,
 	'orders':orders,
 	'total_order':total_order,
 	'delivered':delivered,
@@ -249,6 +276,62 @@ def admin_dashboard(request):
 
 	}
 	return render(request, 'admin_account/dashboard.html', context)
+
+
+def get_sales_data(self):
+	vpay = Vpayment.objects.all()
+	 
+	for pay in vpay:
+		data = {
+		'amount':pay.amount,
+		'ref_code':pay.ref_code,
+		}
+	return JsonResponse(data, safe=False)
+
+
+
+
+
+class ChartData(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self, request, format=None):
+    	data = {'amount':pay.ref_code  for pay in Vpayment.objects.all() }
+    	return Response(data)
+
+
+
+
+def admin_cleark(request):
+	#Author.objects.annotate(total_pages=Sum('book__pages'))
+
+	vpay = Vpayment.objects.all()
+	total_order = vpay.count()
+	payment_made = vpay.filter(paid=True).count()
+	pending_pay = vpay.filter(paid=False).count()
+	client = request.user.userprofile.user_code
+	clients = Client.objects.all()
+	order = Order.objects.all()
+	orders = order.filter(status='Delivered')
+	delivered = order.filter(status='Delivered').count()
+	#pending = orders.filter(status='Pending').count()
+	#out_delivery = orders.filter(status='Out for Delivery').count()
+	context = {
+	'vpay':vpay,
+	'total_order':total_order,
+	'payment_made':payment_made,
+	'pending_pay':pending_pay, 
+	'client': client,
+	'clients':clients,
+	'orders':orders,
+	#'total_order':total_order,
+	'delivered':delivered,
+	#'pending':pending,
+	#'out_delivery':out_delivery,
+
+	}
+	return render(request, 'dashboard/cleark-dashboard.html', context)
+
 
 def logoutUser(request):
 	logout(request)
@@ -310,6 +393,7 @@ def updateOrder(request, pk): # passing the primary key into the request views.
 			#form.save() # saving the data in the db
 
 			'''
+			#TODO: Create Chanel for Vpayment 
 			#TODO: Send order detail to client,
 			# Vendor,
 			#supper admin 
@@ -466,24 +550,30 @@ def addAgent(request):
 	return render(request, 'user_account/add_agent.html', context)
 
 
-
 def confirm_delivery(request):
 	form = DeliveryForm(request.POST or None)
 	if form.is_valid():
 		ref_code = form.cleaned_data.get('ref_code')
 		# Edit the order 
 		try:
-			order = Order.objects.get(ref_code=ref_code)
-			order.status = 'Delivered' 
-			order.save()
-
-			return JsonResponse('Thanks. It was nice doing business with YOU' , safe=False)
-			location.reload()
-			#messages.info(request, "Thank you ")
-			return redirect('/confirm-delivey')
+			all_order = Order.objects.get(status='Out for Delivery')
+			order_code = all_order.ref_code[-5:]
+			if order_code == ref_code :
+				#order = Order.objects.get(ref_code=order_code)
+				all_order.status = 'Delivered' 
+				all_order.save()
+				return JsonResponse('Thanks. It was nice doing business with YOU' , safe=False)
+				location.reload()
+				#messages.info(request, "Thank you ")
+				return redirect('/confirm-delivey')
+			else:
+				messages.info(request, "Order Code is not correct")
+				return redirect('/confirm-delivey')
 
 		except ObjectDoesNotExist:
 			messages.info(request, "Order does not exist")
 	context={'form':form}
 	return render(request, 'delivered_order.html', context)
 	
+
+

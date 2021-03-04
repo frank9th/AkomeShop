@@ -6,21 +6,29 @@
         <div class="logo">
           <a target="_blank" 
              href="https://www.creative-tim.com/product/black-dashboard-django" class="simple-text logo-mini">
-            BD
+            GS | 
           </a>
+          {% if client.client_code %}
           <a target="_blank" 
-             href="https://www.creative-tim.com/product/black-dashboard-django" class="simple-text logo-normal">
-            Django Dashboard
+             href="{% url 'my-account' client.client_code %}" class="simple-text logo-normal">
+            code: {{ client.client_code}}
           </a>
+          {% else %}
+           <a target="_blank" 
+             href="#" class="simple-text logo-normal">
+            No client Code 
+          </a>
+
+          {% endif %}
         </div>
 
         <ul class="nav">
         {% if request.user.is_authenticated %}
           <li class="{% if 'index' in segment %} active {% endif %} ">
-            <a href="/">
+            <a href="{% url 'order-form' %}">
               
               <i class="tim-icons icon-chart-pie-36"></i>
-              <p>Dashboard</p>
+              <p>Create Order</p>
             </a>
           </li>
          
@@ -31,15 +39,15 @@
             </a>
           </li>
           <li class="{% if 'page-user' in segment %} active {% endif %}">
-            <a href="/page-user.html">
+            <a href="{% url 'my-account' client.client_code %}#profile-card">
               <i class="tim-icons icon-single-02"></i>
               <p>User Profile</p>
             </a>
           </li>
           <li class="{% if 'tables' in segment %} active {% endif %}">
-            <a href="/ui-tables.html">
+            <a href="#orde-history">
               <i class="tim-icons icon-puzzle-10"></i>
-              <p>Table List</p>
+              <p>Order History</p>
             </a>
           </li>
           <li class="{% if 'typography' in segment %} active {% endif %}">

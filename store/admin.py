@@ -20,7 +20,8 @@ class OrderAdmin(admin.ModelAdmin):
                     'shipping_address',
                     'billing_address',
                     'payment',
-                    'coupon'
+                    'coupon',
+                    'vpaid',
                     ]
     list_display_links = [
         'user',
@@ -33,6 +34,7 @@ class OrderAdmin(admin.ModelAdmin):
                    'status',
                    'received',
                    'refund_requested',
+                   'vpaid',
                    'refund_granted']
     search_fields = [
         'user__username',

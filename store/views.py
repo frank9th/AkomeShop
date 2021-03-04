@@ -18,7 +18,6 @@ from staffs.models import *
 import datetime
 from staffs.views import *
 
-
 t = datetime.datetime.now()
 d = datetime.datetime.now()
 
@@ -47,13 +46,11 @@ def dashboard(request):
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
-
 def products(request):
     context = {
         'items': Product.objects.all()
     }
     return render(request, "products.html", context)
-
 
 def is_valid_form(values):
     valid = True
@@ -61,7 +58,6 @@ def is_valid_form(values):
         if field == '':
             valid = False
     return valid
-
 
 def cart(request):
     #form= CreataOrderForm()
@@ -78,7 +74,6 @@ def cart(request):
 
     context= {'form':form, 'couponForm':couponForm}
     return render(request, 'store/checkout.html', context)
-
 
 # checkout with clients code 
 def clientCheckout(request):
@@ -108,13 +103,11 @@ def clientCheckout(request):
                     payment.amount = order.ground_total()
                     payment.ref_code = order_ref_code
                     payment.save()
-
                     # assign the payment to the order
                     order_items = order.items.all()
                     order_items.update(ordered=True)
                     for item in order_items:
                         item.save()
-
                     order.ordered = True
                     order.payment = payment
                     #order.client = client_infor
@@ -124,6 +117,14 @@ def clientCheckout(request):
 
                     order.ref_code = order_ref_code
                     order.save()
+
+                    # Creating the Vendor Payment 
+                    ven1_amount = order.get_total() / 100 * 10
+                    ven_amount = order.get_total() - ven1_amount 
+                    venpay = Vpayment()
+                    venpay.amount = ven_amount
+                    venpay.ref_code = order.ref_code 
+                    venpay.save()
 
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
@@ -338,8 +339,6 @@ class CheckoutView(View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("store:order-summary")
 
-
-
 class PaymentView(View):
     def get(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
@@ -505,11 +504,9 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("/")
 
-
 class ItemDetailView(DetailView):
     model = Product
     template_name = "product.html"
-
 
 @login_required
 def add_to_cart(request, slug):
@@ -540,7 +537,6 @@ def add_to_cart(request, slug):
         messages.info(request, "This item was added to your cart.")
         return redirect("store:order-summary")
 
-
 @login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
@@ -567,7 +563,6 @@ def remove_from_cart(request, slug):
     else:
         messages.info(request, "You do not have an active order")
         return redirect("store:product", slug=slug)
-
 
 @login_required
 def remove_single_item_from_cart(request, slug):
@@ -611,12 +606,6 @@ def delete_item(request, pk):
     context= {'item':item}
     return render(request, 'delete.html', context)
 
-
-
-
-
-
-
 def get_coupon(request, code):
     try:
         coupon = Coupon.objects.get(code=code)
@@ -624,7 +613,6 @@ def get_coupon(request, code):
     except ObjectDoesNotExist:
         messages.info(request, "This coupon does not exist")
         return redirect("store:checkout")
-
 
 class AddCouponView(View):
     def post(self, *args, **kwargs):
@@ -641,7 +629,6 @@ class AddCouponView(View):
             except ObjectDoesNotExist:
                 messages.info(self.request, "You do not have an active order")
                 return redirect("store:checkout")
-
 
 class RequestRefundView(View):
     def get(self, *args, **kwargs):
@@ -677,7 +664,6 @@ class RequestRefundView(View):
                 messages.info(self.request, "This order does not exist.")
                 return redirect("store:request-refund")
 
-
 # Client Code 
 def get_client_code(request, code):
     try:
@@ -687,8 +673,6 @@ def get_client_code(request, code):
         messages.warning(request, "Sorry, your code is incorrect")
         return redirect("/")
         #return JsonResponse('Enter a valid code', safe=False)
-
-
 
 def AddClientCode(request):
     form = ClientCodeForm(request.POST or None)

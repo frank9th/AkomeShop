@@ -7,4 +7,7 @@ from store.models import *
 admin.site.register(Client)
 admin.site.register(Vendor)
 admin.site.register(Agent)
-
+admin.site.register(VendorItem)
+admin.site.register(ItemTags)
+admin.site.register(Vpayment)
+admin.site.register(Contact)

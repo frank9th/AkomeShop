@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_countries',
+    
        #AllUth
     'allauth',
     'allauth.account',
@@ -52,13 +53,20 @@ INSTALLED_APPS = [
     # ... include the providers you want to enable:
     #'allauth.socialaccount.providers.facebook',
     #'allauth.socialaccount.providers.google',
-
     'fontawesome-free',
     'crispy_forms',
     'store',
     'staffs',
+    'shopapi',
+    'rest_framework',
    
 ]
+'''
+INSTALLED_APPS += (
+    'dajax',
+    'dajaxice',
+    )
+'''
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,8 +97,36 @@ TEMPLATES = [
     },
 ]
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages'
+)
 
 
+
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+    'django.template.loaders.eggs.Loader',
+)
+
+'''
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'dajaxice.finders.DajaxiceFinder',
+)
+
+
+DAJAXICE_MEDIA_PREFIX = 'dajaxice'
+
+'''
 
 WSGI_APPLICATION = 'akomStore.wsgi.application'
 
@@ -176,3 +212,7 @@ LOGIN_REDIRECT_URL = "/profile"
 
 STRIPE_PUBLIC_KEY = config('STRIPE_TEST_PUBLIC_KEY')
 STRIPE_SECRET_KEY = config('STRIPE_TEST_SECRET_KEY')
+
+
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')

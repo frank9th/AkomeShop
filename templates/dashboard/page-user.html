@@ -7,12 +7,20 @@
 
 {% block content %}
 
-  {% include 'dashboard/includes/order-card-snippet.html'%}
 
 <div class="row">
 
+  <!--Profile Card--->
 
-  {% include 'dashboard/ui-tables.html'%}
+ {% include 'dashboard/profile-card-snippet.html' %}
+  <div class="col-md-8">
+  {% include 'dashboard/includes/order-card-snippet.html'%}
+
+  {% include 'dashboard/order-table.html'%}
+
+  {% include 'dashboard/edit-profile-snippet.html' %}
+
+   </div>
 
   <!-- Edit Profile Form
   <div class="col-md-8">
@@ -100,55 +108,10 @@
       </div>
     </div>
   </div>
-    --->
-
-  <!--Profile Card--->
-  <div class="col-md-4">
-    <div class="card card-user">
-      <div class="card-body">
-        <p class="card-text">
-          <div class="author">
-            <div class="block block-one"></div>
-            <div class="block block-two"></div>
-            <div class="block block-three"></div>
-            <div class="block block-four"></div>
-            <a href="javascript:void(0)">
-              <img class="avatar" src="/static/dash/assets/img/emilyz.jpg" alt="...">
-              <h3> code: {{ client.client_code}}</h3>
-              <h5 class="title">
-               {{client.title}}.  {{client.full_name}}
-              </h5>
-            </a>
-            <p class="description">
-
-             {{client.email}}
-            </p>
-            
-
-          </div>
-        </p>
-        <div class="card-description">
-          <strong>Phone 1 :</strong> {{client.phone1 }} <hr>
-          Phone 2 : {{client.phone2 }}  <hr>
-          Town : {{client.town }} <hr>
-          Land mark: 
-          <hr>
-          Address : {{client.apartment_address }}
-          <hr>
-
-
-
-          Do not be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="button-container">
-        
-        </div>
-      </div>
-    </div>
-  </div>
+    ---> 
 </div>
+
+
 
 
 {% endblock content %}

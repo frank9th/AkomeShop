@@ -1,0 +1,102 @@
+
+    {% if vendor %}
+    <div class="card " id="orde-history">
+      <div class="card-header">
+        <h4 class="card-title"> Item Order History </h4>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table tablesorter " id="dataTable">
+            <thead class=" text-primary">
+              <tr>
+                <th>Item Ordered</th>
+                <th> Qty</th>
+                <th>Orderd Date</th>
+                <th>Orderd Time</th>
+                <th>Statues</th>
+                <th>Ref Code</th>
+                <th class="text-center">Total</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Item Ordered</th>
+                <th> Qty</th>
+                <th>Orderd Date</th>
+                <th>Orderd Time</th>
+                <th>Statues</th>
+                <th>Ref Code</th>
+                <th class="text-center">Total</th>
+              </tr>
+            </tfoot>
+            <tbody>
+                {% for order in orders %}
+              <tr>
+              <td> {% for item in order.items.all %}
+                 {{item.item}}   
+                {% endfor %}</td>
+                <td> {% for item in order.items.all %}
+                 {{item.quantity}}   
+                {% endfor %}</td>
+                <td>{{order.ordered_date}}</td>
+                <td>{{order.ordered_time}}</td>
+                <td>{{order.status}}</td>
+                <td>{{order.ref }}</td>
+                <td class="text-center"> &#8358; {{order.payment.amount}}</td>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% else %}
+     <div class="card " id="orde-history">
+      <div class="card-header">
+        <h4 class="card-title"> Order History </h4>
+      </div>
+
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table tablesorter " id="dataTable">
+            <thead class=" text-primary">
+              <tr>
+                <th>Item Ordered</th>
+                <th>Orderd Date</th>
+                <th>Orderd Time</th>
+                <th>Statues</th>
+                <th class="text-center">Total</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th>Item Ordered</th>
+                <th>Orderd Date</th>
+                <th>Orderd Time</th>
+                <th>Statues</th>
+                <th class="text-center">Total</th>
+              </tr>
+            </tfoot>
+            <tbody>
+                {% for order in orders %}
+              <tr>
+                 <td> {% for item in order.items.all %}
+                 {{item}}   
+                {% endfor %}</td>
+                <td>{{order.ordered_date}}</td>
+                <td>{{order.ordered_time}}</td>
+                <td>{{order.status}}</td>
+                <td class="text-center"> &#8358; {{order.payment.amount}}</td>
+                {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% endif %}
+ 
+
+
+
+ 

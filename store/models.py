@@ -157,6 +157,7 @@ class Order(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True )
     received = models.BooleanField(default=False)
+    vpaid = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
 
@@ -192,7 +193,7 @@ class Order(models.Model):
 
     def ground_total(self):
         return self.delivery_charge() +  self.get_total()
-        print(ground_total)
+        #print(ground_total)
 
 
 class Address(models.Model):

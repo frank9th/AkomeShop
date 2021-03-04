@@ -1,50 +1,77 @@
+
+<!--
+{% if user.is_authenticated and request.user.is_superuser or user.is_authenticated and request.user == client.user %}
+{% endif %}-->
+
+
+{% if total_payment %}
 <div class="row">
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-4"> 
         <div class="card card-chart">
           <div class="card-header">
-            <h5 class="card-category">Total Orders</h5>
-            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> 763,215</h3>
+            <h5 class="card-category">Total Delivered  Items </h5>
+            <h2 class="card-title" style="text-align:  center;">
+              <i class="tim-icons icon-check-2 text-primary"></i>{{delivered}}</h2>
           </div>
-          <div class="card-body">
-          
-          </div>
-        </div>
-
-       </div>
-       <div class="col-sm-6 col-lg-3"> 
-          <div class="card card-chart">
-          <div class="card-header">
-            <h5 class="card-category">Total Orders</h5>
-            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> 763,215</h3>
-          </div>
-          <div class="card-body">
-          
+          <div class="card-body">   
           </div>
         </div>
       </div>
-        <div class="col-sm-6 col-lg-3"> 
+        <div class="col-sm-6 col-lg-4"> 
           <div class="card card-chart">
           <div class="card-header">
-            <h5 class="card-category">Total Orders</h5>
-            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> 763,215</h3>
+            <h5 class="card-category">Total Payment Made </h5>
+            <h2 class="card-title" style="text-align:  center;"><i class="tim-icons icon-pin text-primary"></i> {{pending}}</h2>
           </div>
-          <div class="card-body">
-           
+            <div class="card-body"> 
+            </div>
           </div>
         </div>
 
-        </div>
-         <div class="col-sm-6 col-lg-3"> 
+        <div class="col-sm-6 col-lg-4"> 
           <div class="card card-chart">
           <div class="card-header">
-            <h5 class="card-category">Total Orders</h5>
-            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> 763,215</h3>
+            <h5 class="card-category"> Total pending payment  </h5>
+            <h3 class="card-title" style="text-align:  center;"><i class="tim-icons icon-delivery-fast text-primary"></i> {{out_delivery}}</h3>
           </div>
-          <div class="card-body">
-         
+          <div class="card-body">        
+          </div>
+          </div>
+        </div>  
+</div>
+{% else %}
+<div class="row">
+      <div class="col-sm-6 col-lg-4"> 
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Total Delivered</h5>
+            <h2 class="card-title" style="text-align:  center;">
+              <i class="tim-icons icon-check-2 text-primary"></i>{{delivered}}</h2>
+          </div>
+          <div class="card-body">   
+          </div>
+        </div>
+      </div>
+        <div class="col-sm-6 col-lg-4"> 
+          <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Pending Orders</h5>
+            <h2 class="card-title" style="text-align:  center;"><i class="tim-icons icon-pin text-primary"></i> {{pending}}</h2>
+          </div>
+            <div class="card-body"> 
+            </div>
           </div>
         </div>
 
-         </div>
-      
-    </div>
+        <div class="col-sm-6 col-lg-4"> 
+          <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Out for Delivery</h5>
+            <h3 class="card-title" style="text-align:  center;"><i class="tim-icons icon-delivery-fast text-primary"></i> {{out_delivery}}</h3>
+          </div>
+          <div class="card-body">        
+          </div>
+          </div>
+        </div>  
+</div>
+{% endif %}
