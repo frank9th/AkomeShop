@@ -199,3 +199,34 @@ class CodeForm(forms.Form):
 		'aria-label':'Recipient\'s username', 
 		'aria-describedby':'basic-addon2'
 		}))
+
+
+class ContactForm(forms.ModelForm):
+	class Meta:
+		model = Contact
+		fields = '__all__'
+		widgets = {
+			'sender' : forms.TextInput(
+				attrs={
+				'id': 'senderId', 
+		        'required': True, 
+		        'placeholder': 'Enter sender\'s name ',
+		        'class':'form-control',
+				}),
+			'phone' : forms.TextInput(
+				attrs={
+				'id': 'phoneId', 
+		       'placeholder': 'Enter mobile number',
+				'class':'form-control',
+				}),
+			'text': forms.Textarea(attrs={
+				'id': 'textId', 
+		        'rows': 4,
+		        'class':'form-control',
+		        'placeholder': 'Say something...',
+		    }),
+
+
+		}
+
+	 

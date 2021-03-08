@@ -1,5 +1,5 @@
 
-
+   {% if client.client_code %}
     <div class="sidebar">
       <div class="sidebar-wrapper">
         
@@ -39,10 +39,12 @@
             </a>
           </li>
           <li class="{% if 'page-user' in segment %} active {% endif %}">
+            {% if client.client_code %}
             <a href="{% url 'my-account' client.client_code %}#profile-card">
               <i class="tim-icons icon-single-02"></i>
               <p>User Profile</p>
             </a>
+            {% endif %}
           </li>
           <li class="{% if 'tables' in segment %} active {% endif %}">
             <a href="#orde-history">
@@ -72,3 +74,4 @@
         
       </div>
     </div>
+    {% endif %}

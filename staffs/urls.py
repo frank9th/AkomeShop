@@ -34,4 +34,8 @@ urlpatterns = [
     #path('edit-order/<int:pk>/', views.editOrder, name='edit-order'),
     path('update_order/<str:pk>/',views.updateOrder, name='update_order'), # passing in the primary key of the request objet into the url
     path('confirm-delivey', views.confirm_delivery, name='confirm-delivey'),
+    path('contact-us/', views.contact, name='contact'),
+    path('save/', views.save_data, name='save'),
+    path('delete/', views.delete_contact, name='delete'),
+    path('edit/', views.edit_contact, name='edit'),
 ]

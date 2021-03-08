@@ -21,7 +21,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from store.signal_file import *
-
+#from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -289,17 +289,12 @@ def get_sales_data(self):
 	return JsonResponse(data, safe=False)
 
 
-
-
-
 class ChartData(APIView):
     authentication_classes = []
     permission_classes = []
     def get(self, request, format=None):
     	data = {'amount':pay.ref_code  for pay in Vpayment.objects.all() }
     	return Response(data)
-
-
 
 
 def admin_cleark(request):
@@ -576,4 +571,54 @@ def confirm_delivery(request):
 	return render(request, 'delivered_order.html', context)
 	
 
+def contact(request):
+	form = ContactForm()
+	message = Contact.objects.all()
+	context = {
+	'form':form,
+	'object':message,
+	}
+	return render(request, 'contact.html', context)
 
+
+# saving contact details 
+def save_data(request):
+	if request.method == "POST":
+		form = ContactForm(request.POST)
+		if form.is_valid():
+			messageid = request.POST.get('messageid')
+			sender = request.POST['sender']
+			phone = request.POST['phone']
+			text = request.POST['text']
+			if (messageid == '' ):
+				contact = Contact(sender=sender, phone=phone, text=text)
+			else:
+				contact = Contact(id=messageid, sender=sender, phone=phone, text=text)
+
+			contact.save()
+			con = Contact.objects.values()
+			#print(con)
+			contact_data = list(con)
+
+			return JsonResponse({'status':'Save', 'contact_data':contact_data})
+
+		else:
+			return JsonResponse({'status':0})
+
+# Delete Contact Details 
+def delete_contact(request):
+	if request.method == "POST":
+		id = request.POST.get('sid')
+		pi = Contact.objects.get(pk=id)
+		pi.delete()
+		return JsonResponse({'status':1})
+	else:
+		return JsonResponse({'status':0})
+
+# Edite Contact Details 
+def edit_contact(request):
+	if request.method == "POST":
+		id = request.POST.get('sid')
+		contact = Contact.objects.get(pk=id)
+		contact_data = {"id":contact.id, "sender":contact.sender, "phone":contact.phone, "text":contact.text}
+		return JsonResponse(contact_data)

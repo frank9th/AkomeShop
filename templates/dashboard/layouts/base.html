@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="{% static 'dash/assets/img/favicon.png'    %}">
 
   <title>
-     Dashboard - {% block title %}{% endblock %} | Creative-Tim
+     Dashboard - {% block title %}{% endblock %} | Mekly
   </title>
 
   <!--     Fonts and icons     -->
@@ -25,7 +25,7 @@
   <!-- CSS Files -->
   <link href="{% static 'dash/assets/css/black-dashboard.css' %}" rel="stylesheet" />
   <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="{% static 'assets/demo/demo.css' %}" rel="stylesheet" />
+  <link href="{% static 'dash/assets/demo/demo.css' %}" rel="stylesheet" />
 
   <!-- Specific Page CSS goes HERE  -->
   {% block stylesheets %}{% endblock stylesheets %}
@@ -60,7 +60,9 @@
   {% include 'dashboard/includes/scripts-sidebar.html' %}
 
   <!-- Specific Page JS goes HERE  -->
-  {% block javascripts %}{% endblock javascripts %}
+  {% block javascripts %}
+
+  {% endblock javascripts %}
 
 </body>
 

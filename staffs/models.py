@@ -96,7 +96,7 @@ class Vpayment(models.Model):
 class Contact(models.Model):
 	sender = models.CharField(max_length=200 )
 	phone = models.IntegerField()
-	text = models.CharField(max_length=200)
+	text = models.TextField()
 
 	def __str__(self):
 		return self.sender 

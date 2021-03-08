@@ -1,0 +1,130 @@
+<script >
+	// create And insert contact fuction 
+	$("#btnsave").click(function(){
+		console.log("Send Button Clicked");
+		output = "";
+		let conid = $("#messageId").val();
+		let se = $("#senderId").val();
+		let ph = $("#phoneId").val();
+		let te = $("#textId").val();
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		if (se == ""){
+			console.log("Please enter a sender name")
+		} else if (ph == ""){
+			console.log("Please enter a valid phone number")
+		} else if (te == ""){
+			console.log("Please enter a message to send")
+		} else {
+			//console.log(se);
+			//console.log(ph);
+			//console.log(te);
+			mydata = { 
+				messageid:conid, 
+				sender: se, 
+				phone: ph, 
+				text: te, 
+				csrfmiddlewaretoken: csrf 
+			}
+			$.ajax({
+				url: "{% url 'save' %}",
+				method: "POST",
+				data: mydata,
+				success:function(data){
+					x = data.contact_data;
+					//console.log(data)
+					if (data.status == "Save"){
+						output = ""
+						console.log("Form Submitted successfully ")
+						$("#msg").text("Form Submitted successfully")
+						$("#msg").show();
+
+						//console.log(x);
+						//appendToContactTable(x);	
+						for (i= 0; i < x.length; i++ ){
+							output += "<tr><td>" + x[i].id + "</td><td>" + x[i].sender + "</td><td>" + x[i].phone + "</td><td>" + x[i].text + "</td><td><input type='button' name='edit' value='Edit' class='btn btn-warning btn-sm btn-edit' data-sid=" + x[i].id + "> <input type='button' name='delete' value='Delete' class='btn btn-danger btn-sm btn-del' data-sid=" + x[i].id + ">"	
+						}
+						$("#contactTable").html(output);
+						$("#messageId").val("");
+						$("form")[0].reset();
+					}
+					if (data.status == 0 ){
+						console.log("unable to save form ")
+						$("#msg").text("Unable to save data")
+						$("#msg").show();
+						$("#messageId").val("");
+						$("form")[0].reset();
+					}
+
+				},
+
+			});
+		};
+		event.preventDefault();
+	
+		// body...
+	});
+	// Delete Contact Function 
+	$("#contactTable").on("click", ".btn-del", function(){
+		console.log("Delete Button Clicked")
+		let id = $(this).attr("data-sid");
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		//console.log(id);
+		mydata = {sid:id, csrfmiddlewaretoken: csrf };
+		mythis= this;
+		$.ajax({
+			url: "{% url 'delete' %}",
+			method: "POST",
+			data: mydata, 
+			success: function(data){
+				console.log(data);
+				if (data.status == 1){
+					//console.log("Data Deleted successfully");
+					$("#msg").text("Data Deleted successfully")
+					$("#msg").show();
+					$(mythis).closest("tr").fadeOut();
+				};
+				if (data.status == 0){
+					//console.log("Unable to delete data");
+					$("#msg").text("Unable to delete data")
+					$("#msg").show();
+				};
+			},
+		});
+	}); // end Delete contact Fuction 
+
+	/**
+	NOTE: 
+	Do not forget to create a varable for csrf into the data dictionary 
+	each time we are doing a CRUDE operation with Ajax and django 
+
+	and also crate a varable of input and set to hidden in the template. 
+
+	**/
+
+	//Editing Contact Data 
+	$("#contactTable").on("click", ".btn-edit", function(){
+		console.log("Edit Button Clicked")
+		let id = $(this).attr("data-sid");
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		//console.log(id);
+		mydata = {sid:id, csrfmiddlewaretoken: csrf };	
+		$.ajax({
+			url: "{% url 'edit' %}",
+			method: "POST",
+			data: mydata, 
+			success: function(data){
+				//console.log(data);messageId
+				$("#messageId").val(data.id);
+				$("#senderId").val(data.sender);
+				$("#phoneId").val(data.phone);
+				$("#textId").val(data.text);
+
+		},
+
+		});
+	});
+
+	// End Editing Contact Data 
+
+</script>
+
