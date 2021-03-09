@@ -1,6 +1,6 @@
 
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
   <!--Main layout-->
@@ -14,16 +14,23 @@
         <div class="col-md-6 mb-4">
           <!--Card-->
           <div class="card">
+          
+            <div  id="msinfo" class="alert alert-info" style="display: none">
+             
+            </div>
+
+           
             <form class="card-body" method="POST" action="{% url 'store:add-client-details' %}">
+              <!-- <form>-->
             {% csrf_token %}
                 <div class="input-group">
                   {{client_code.code}}
                   <!--
-                  <input type="text" class="form-control" placeholder="Enter Client's Code" name="client" >
-                  --->
+                  <input type="text" class="form-control" placeholder="Enter Client's Code" name="client" >--->
+                 
                   <div class="input-group-append">
-                    <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Code " >
-                  </div>
+                    <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Code " id="codeNo" >
+                  </div> 
                 </div>
               </form>
           </div>
@@ -31,7 +38,6 @@
           <div class="card">
             <form class="card-body" method="POST", >
               {% csrf_token %}
-           
                 <h3 style="text-align: center;"> Aditional info</h3>
               <!--address-2-->
               <div class="md-form mb-5">
@@ -51,7 +57,7 @@
                  {% endfor %}   
               </div>
               <hr class="mb-4">
-              <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+              <button class="btn btn-primary btn-lg btn-block" type="submit" id="checkOut">Continue to checkout</button>
             </form>
           </div>
           <!--/.Card-->
@@ -67,5 +73,10 @@
     </div>
   </main>
   <!--Main layout-->
+
+  {% block javascripts %}
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
 
 {% endblock %}

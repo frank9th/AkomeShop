@@ -93,7 +93,34 @@ def createOrder(request):
 		if request.method =='POST':
 			#print('Printing post:', request.POST)
 			form = OrderForm(request.POST or None) # throwing the post data into the form 
-			if form.is_valid(): # performing valid check 
+			if form.is_valid(): # performing valid check 		
+				itemid = request.POST.get('itemid')
+				name = request.POST['name']
+				price = request.POST['price']
+				description = request.POST['description']
+				cathegory = request.POST['cathegory']
+				slug = name + create_slug() 
+
+				create_order = Item(
+						title= name,
+						price = price,
+						category = cathegory,
+						description = description,
+						slug = slug, 
+						)
+				create_order.save()
+				add_to_cart(request, slug=slug)
+		
+				con = Item.objects.values()
+				print(con)
+				item_data = list(con)
+
+				#return JsonResponse({'status':'Save', 'item_data':item_data})
+
+			#else:
+				#return JsonResponse({'status':0})
+
+				'''
 				name = form.cleaned_data.get('name')
 				price = form.cleaned_data.get('price')
 				cathegory = form.cleaned_data.get('cathegory')
@@ -111,6 +138,8 @@ def createOrder(request):
 				#form.save() # saving the data in the db 
 				#slug = form.cleaned_data.get('slug')
 				add_to_cart(request, slug=slug)
+				'''
+
 	except ObjectDoesNotExist:
 		
 		messages.warning(request, "You do not have an active order")
@@ -275,8 +304,13 @@ def admin_dashboard(request):
 	'out_delivery':out_delivery,
 
 	}
-	return render(request, 'admin_account/dashboard.html', context)
 
+	return render(request, 'admin_account/dashboard.html', context)
+		#con = Contact.objects.values()
+			#print(con)
+			
+
+	
 
 def get_sales_data(self):
 	vpay = Vpayment.objects.all()
@@ -597,7 +631,8 @@ def save_data(request):
 
 			contact.save()
 			con = Contact.objects.values()
-			#print(con)
+			order = Order.objects.values()
+			print(order)
 			contact_data = list(con)
 
 			return JsonResponse({'status':'Save', 'contact_data':contact_data})

@@ -118,6 +118,25 @@ def clientCheckout(request):
                     order.ref_code = order_ref_code
                     order.save()
 
+                    '''
+
+                    # CREATING A DICTIONARY TO GET THE ITEMS 
+
+                    order_list_items = {
+                    'order_ref': order_ref_code,
+                    'order_item': item,
+                    'payment': order.payment,
+                    'date': order.ordered_date,
+                    'time':order.ordered_time,
+                    'note':order.note, 
+                     }
+
+                    order_list = list(order_list_items)
+                    print(order_list)
+                    '''
+
+
+
                     # Creating the Vendor Payment 
                     ven1_amount = order.get_total() / 100 * 10
                     ven_amount = order.get_total() - ven1_amount 
@@ -125,6 +144,8 @@ def clientCheckout(request):
                     venpay.amount = ven_amount
                     venpay.ref_code = order.ref_code 
                     venpay.save()
+
+
 
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
@@ -335,6 +356,9 @@ class CheckoutView(View):
                     messages.warning(
                         self.request, "Invalid payment option selected")
                     return redirect('store:checkout')
+
+                  
+
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("store:order-summary")
@@ -677,10 +701,12 @@ def get_client_code(request, code):
 def AddClientCode(request):
     form = ClientCodeForm(request.POST or None)
     if form.is_valid():
-        code = form.cleaned_data.get('code')
-        # Edit the order 
+        #code = form.cleaned_data.get('code')
+        code = request.POST.get('code') 
         try:
-            client = Client.objects.get(client_code=code)
+            #client = get_client_code(request, code)
+            client = Client.objects.get(client_code=code)   
+           
             order = Order.objects.get(
                     user=request.user, ordered=False)
             order.client = client 

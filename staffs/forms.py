@@ -230,3 +230,12 @@ class ContactForm(forms.ModelForm):
 		}
 
 	 
+
+
+class ClientCodeForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'codeId',
+        'placeholder': 'Enter Clients Code ',
+        'class':'form-control',   
+        }))

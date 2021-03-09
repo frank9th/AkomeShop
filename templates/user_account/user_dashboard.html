@@ -1,46 +1,60 @@
-{% extends 'user_account/user_base.html' %}
 
+{% extends "dashboard/layouts/base.html" %}
+
+
+{% block title %} User Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+    <!-- DataTable--->
+  <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+
+{% endblock stylesheets %}
 
 {% block content %}
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+       {{message }} 
+        <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
+        </div>   
+      {% endfor %}
+    {% endif %}
+    
+    {% include 'dashboard/includes/order_detail_snippet.html' %}
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+         {% include 'dashboard/includes/order_table_snippet.html' %}
+        
+      </div>
+    </div>
 
-            <!--- SideBar Content---->   
-            <div id="layoutSidenav_content">
-                <main>
-                    <div class="">
-                      {% if messages %}
-                      {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                         {{message }} 
-                          <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
-                          </div>   
-                        {% endfor %}
-                      {% endif %}
-                      </div>
-                    <div class="container-fluid">
-                        <h1 class="mt-4">User Dashboard</h1>
-                        <ol class="breadcrumb mb-4">
-                           <li class="breadcrumb-item active"><a class="btn btn-warning" href="{% url 'order-form' %}">Create New Order </a></li>
-                           
-                            <li class="breadcrumb-item active"><a class="btn btn-light" data-mdb-ripple-color="dark" href="{% url 'add-client' %}"> Add New Client
+{% endblock content %}
 
-                            </a>
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+<script >
 
-                          </li>
-                            <li class="breadcrumb-item active"><a class="btn btn-light" data-mdb-ripple-color="dark" href="{% url 'add-vendor' %}">Add Vendor </a></li>
-                             <li class="breadcrumb-item active"><a class="btn btn-light" data-mdb-ripple-color="dark" href="{% url 'add-agent' %}">Add Agent </a></li>
+  var endpoint = '/api/data/'
 
-                              <li class="breadcrumb-item active"><a class="btn btn-dark" data-mdb-ripple-color="dark" href="#">Register Store product </a></li>        
-                          
-                        </ol>
-                        {% include "user_account/order_detail_snippet.html" %}
-                      
-                          {% include "user_account/order_table_snippet.html" %}
+  $.ajax({
+    method: "GET",
+    url: endpoint,
+    success: function(data) {
+      console.log(data)
+    }, 
+    error: function(error_data) {
+      console.log("error")
+      console.log(error_data)
+    },
 
-                    </div>
-                </main>
+  })
 
-                {% include "user_account/footer_snippet.html" %}
-             
-            </div>
+    $(document).ready(function() {
+      // Javascript method's body can be found in assets/js/demos.js
+     // demo.initDashboardPageCharts();
 
-{% endblock %}
+    });
+  </script>
+
+{% endblock javascripts %}

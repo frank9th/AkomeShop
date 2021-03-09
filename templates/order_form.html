@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
 
 {% block content %}
 
@@ -15,6 +15,7 @@
             <h3>Create Order</h3> 
             <form method="POST">
               {% csrf_token %}
+              <input type="hidden" name="itemid" id="ItemId"/>
               <div class="md-form ">
                 <label for="name"> Product/Service</label>
                   {{form.name}} 
@@ -36,7 +37,7 @@
                 </div>
                  {% endfor %}        
               </div>
-              <input class="btn btn-primary" type="submit" name="submit" value="Add to Cart">
+              <input class="btn btn-primary" type="submit" name="submit" value="Add to Cart" id="addCart"/>
             </form>
             <!--Card content-->         
           </div>
@@ -109,16 +110,16 @@
                   {% endif %}
                   </tbody>
                   </table>
-
-            </div>
-
+           </div>
         </div>
-         <!--Grid column-->
-
     </div>
-      <!--Grid row-->
-
- 
   </div>
+
+  {% block javascripts %}
+
+
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
 
 {% endblock %}

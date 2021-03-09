@@ -74,35 +74,36 @@ class OrderForm(forms.Form):
     cathegory =  forms.ChoiceField(widget=forms.RadioSelect(), choices=CATHEGORY)
     name = forms.CharField(widget=forms.TextInput(
         attrs={
+        'id':'lableId',
         'placeholder': 'Enter item/service name ',
         'class':'form-control '
         }))
     price = forms.IntegerField(widget=forms.NumberInput(
         attrs={
+        'id':'priceId',
         'placeholder': 'Enter amount ',
         'class':'form-control '
         }))
     description = forms.CharField(widget=forms.TextInput(
         attrs={
-        'placeholder': 'additional note/description  ',
+        'id':'descId',
+        'placeholder': 'additional note/description',
         'class':'form-control'
         }))
     
     #slug = models.SlugField()
 
-class ClientCodeForm(forms.Form):
-    code = forms.CharField(widget=forms.TextInput(
-        attrs={
-        'placeholder': 'Enter Clients Code ',
-        'class':'form-control',
-        }))
+
 
 class ClientCheckOutForm(forms.Form):
     additional_note = forms.CharField(required=False, widget=forms.Textarea(
         attrs={
+        'id':'noteId',
         'placeholder': 'Enter any additional infor or message',
         'class':'form-control',
         'rows':3
         }))
     
-    payment_option = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)
+    payment_option = forms.ChoiceField(widget=forms.RadioSelect(
+        ),
+     choices=PAYMENT_CHOICES)

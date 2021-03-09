@@ -1,5 +1,5 @@
 
-   {% if client.client_code %}
+   {% if request.user.is_authenticated %}
     <div class="sidebar">
       <div class="sidebar-wrapper">
         
@@ -24,14 +24,36 @@
 
         <ul class="nav">
         {% if request.user.is_authenticated %}
+         <li class="{% if 'menue' in segment %} active {% endif %} ">
+            <a href="#">   
+              <i class="tim-icons icon-notes"></i>
+              <p>Menue</p>
+            </a>
+          </li>
           <li class="{% if 'index' in segment %} active {% endif %} ">
-            <a href="{% url 'order-form' %}">
-              
+            <a href="{% url 'order-form' %}">   
               <i class="tim-icons icon-chart-pie-36"></i>
               <p>Create Order</p>
             </a>
           </li>
-         
+          <li class="{% if 'client' in segment %} active {% endif %} ">
+            <a href="{% url 'add-client' %}">   
+              <i class="tim-icons icon-single-02"></i>
+              <p>Register New Client</p>
+            </a>
+          </li>
+           <li class="{% if 'agent' in segment %} active {% endif %} ">
+            <a href="{% url 'add-agent' %}">   
+              <i class="tim-icons icon-satisfied"></i>
+              <p>Register New Agent</p>
+            </a>
+          </li>
+           <li class="{% if 'vendor' in segment %} active {% endif %} ">
+            <a href="{% url 'add-vendor' %}">   
+              <i class="tim-icons icon-badge"></i>
+              <p>Register Vendor</p>
+            </a>
+          </li>
           <li class="{% if 'notifications' in segment %} active {% endif %}">
             <a href="/ui-notifications.html">
               <i class="tim-icons icon-bell-55"></i>
@@ -52,10 +74,18 @@
               <p>Order History</p>
             </a>
           </li>
+          <!--
           <li class="{% if 'typography' in segment %} active {% endif %}">
             <a href="/ui-typography.html">
               <i class="tim-icons icon-align-center"></i>
               <p>Typography</p>
+            </a>
+          </li>
+          --->
+          <li class="{% if 'contact' in segment %} active {% endif %}">
+            <a href="{% url 'contact' %}">
+              <i class="tim-icons icon-align-center"></i>
+              <p>Contact</p>
             </a>
           </li>
          

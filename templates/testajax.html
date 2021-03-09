@@ -1,4 +1,108 @@
 <script >
+
+
+	// Client Code form 
+	$(document).ready(function(){
+		/**	
+			$.get("test.txt", function(data, status)){
+					$("#test").html(data);
+					alert(status);
+				}
+			$("#codeId").keyup(function(){});// key upclose 
+		**/
+
+		$("#checkOut").click(function(){
+			console.log("Checkout Btn Clicked ");
+			$.ajax({
+				
+			});
+			event.preventDefault();
+		});
+
+		$("#codeNo").click(function(){
+			console.log("Confirm code button clicked");		
+			let co = $("#codeId").val();
+			let csrf = $("input[name=csrfmiddlewaretoken]").val();
+			console.log(co);
+			mycode = {
+				code: co,
+				csrfmiddlewaretoken: csrf,
+			};
+			
+			$.ajax({
+				url : "{% url 'store:add-client-details' %}",
+				method: "POST",
+				data : mycode, 
+				success:function(data) {
+					x = data.client_data;
+					console.log(x)
+					$("form")[0].reset();
+				
+					$("#msinfo").text("Code submited")
+					$("#msinfo").show();
+				$("#clientCard").html();
+				// body...
+			}
+
+
+			});
+			event.preventDefault();
+		
+			//event.preventDefault();
+			//location.reload()
+		
+		});
+	});
+
+	
+
+	// Get order item input
+	$("#addCart").click(function(){
+		console.log("Add to Cart button Clicked");
+		recentOrder = "";
+		let itemId =$("#itemId").val();
+		let na = $("#lableId").val();
+		let pri = $("#priceId").val();
+		let desc = $("#descId").val();
+		let cath = $("{{name}}").value();
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		if (name == ""){
+			console.log("Please enter an item name ")
+		}
+		myitem = {
+			itemid : itemId,
+			name: na,
+			price: pr, 
+			description : desc,
+			cathegory : cath,
+			csrfmiddlewaretoken: csrf
+
+		}
+		$.ajax({
+				url: "{% url 'order-form' %}",
+				method: "POST",
+				data: myitem,
+				success:function(data){
+
+					$("form")[0].reset();
+					x = data.item_data;
+
+					console.log("Form Submitted successfully ")
+					console.log(x)
+
+					if (data.status == "Save"){
+						output = ""
+						console.log("Form Submitted successfully ")
+						//$("#msg").text("Form Submitted successfully")
+						//$("#msg").show();
+
+			}
+		},
+
+		});
+	});
+
+
 	// create And insert contact fuction 
 	$("#btnsave").click(function(){
 		console.log("Send Button Clicked");
@@ -38,7 +142,7 @@
 						$("#msg").text("Form Submitted successfully")
 						$("#msg").show();
 
-						//console.log(x);
+						console.log(x);
 						//appendToContactTable(x);	
 						for (i= 0; i < x.length; i++ ){
 							output += "<tr><td>" + x[i].id + "</td><td>" + x[i].sender + "</td><td>" + x[i].phone + "</td><td>" + x[i].text + "</td><td><input type='button' name='edit' value='Edit' class='btn btn-warning btn-sm btn-edit' data-sid=" + x[i].id + "> <input type='button' name='delete' value='Delete' class='btn btn-danger btn-sm btn-del' data-sid=" + x[i].id + ">"	
@@ -118,7 +222,6 @@
 				$("#senderId").val(data.sender);
 				$("#phoneId").val(data.phone);
 				$("#textId").val(data.text);
-
 		},
 
 		});

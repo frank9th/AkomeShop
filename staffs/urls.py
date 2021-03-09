@@ -4,9 +4,7 @@ from . import views
 from .views import (
     VendorView,
     ChartData, 
-
 )
-
 
 urlpatterns = [
     path('order-form/', views.createOrder, name='order-form'),
@@ -30,7 +28,6 @@ urlpatterns = [
     path('add-agent/', views.addAgent, name='add-agent'),
     path('api/data/', views.get_sales_data, name='api-data'),
     path('api/chart/data/', ChartData.as_view()),
-  
     #path('edit-order/<int:pk>/', views.editOrder, name='edit-order'),
     path('update_order/<str:pk>/',views.updateOrder, name='update_order'), # passing in the primary key of the request objet into the url
     path('confirm-delivey', views.confirm_delivery, name='confirm-delivey'),
