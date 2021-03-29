@@ -631,8 +631,8 @@ def save_data(request):
 
 			contact.save()
 			con = Contact.objects.values()
-			order = Order.objects.values()
-			print(order)
+			#order = Order.objects.values()
+			#print(order)
 			contact_data = list(con)
 
 			return JsonResponse({'status':'Save', 'contact_data':contact_data})
