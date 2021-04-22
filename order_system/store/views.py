@@ -79,6 +79,7 @@ def cart(request):
 def clientCheckout(request):
     form = ClientCheckOutForm(request.POST or None)  
     order = {} 
+    #form = OrderModelForm(request.POST or None)
     try:
         order = Order.objects.get(user=request.user, ordered=False)
         if form.is_valid():
@@ -135,7 +136,7 @@ def clientCheckout(request):
                     print(order_list)
                     '''
 
-
+                    '''
 
                     # Creating the Vendor Payment 
                     ven1_amount = order.get_total() / 100 * 10
@@ -144,8 +145,7 @@ def clientCheckout(request):
                     venpay.amount = ven_amount
                     venpay.ref_code = order.ref_code 
                     venpay.save()
-
-
+                    '''
 
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
@@ -691,7 +691,7 @@ class RequestRefundView(View):
 # Client Code 
 def get_client_code(request, code):
     try:
-        client_code = Client.objects.get(client_code=code)
+        client_code = UserProfile.objects.get(client_code=code)
         return client_code
     except ObjectDoesNotExist:
         messages.warning(request, "Sorry, your code is incorrect")
@@ -705,7 +705,7 @@ def AddClientCode(request):
         code = request.POST.get('code') 
         try:
             #client = get_client_code(request, code)
-            client = Client.objects.get(client_code=code)   
+            client = UserProfile.objects.get(client_code=code)   
            
             order = Order.objects.get(
                     user=request.user, ordered=False)

@@ -349,6 +349,7 @@ demo = {
       }
     };
 
+// pending payment chart 
     var ctx = document.getElementById("chartLinePurple").getContext("2d");
 
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -384,7 +385,7 @@ demo = {
       options: gradientChartOptionsConfigurationWithTooltipPurple
     });
 
-
+// item ordered chart 
     var ctxGreen = document.getElementById("chartLineGreen").getContext("2d");
 
     var gradientStroke = ctx.createLinearGradient(0, 230, 0, 50);
@@ -421,7 +422,7 @@ demo = {
 
     });
 
-
+// Big data chart 
 
     var chart_labels = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
     var chart_data = [100, 70, 90, 70, 85, 60, 75, 60, 90, 80, 110, 100];

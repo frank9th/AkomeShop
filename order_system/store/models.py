@@ -5,6 +5,48 @@ from django.db.models import Sum
 from django.shortcuts import reverse
 from django_countries.fields import CountryField
 from staffs.models import *
+import random 
+import string 
+
+
+def create_unique_code():
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+
+client_code = create_unique_code()
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
+    one_click_purchasing = models.BooleanField(default=False)
+    #user_code = models.ForeignKey(Client, on_delete=models.CASCADE, blank=True, null=True)
+    title = models.CharField(max_length=200, null=True, blank=True)
+    full_name = models.CharField(max_length=200, null=True)
+    email = models.CharField(max_length=200, null=True, blank=True)
+    phone1 = models.CharField(max_length=200, null=True )
+    phone2 = models.CharField(max_length=200, null=True, blank=True )
+    town = models.CharField(max_length=200, null=True)
+    apartment_address = models.CharField(max_length=200, null=True, )
+    land_mark = models.CharField(max_length=200, null=True )
+    client_code = models.CharField(max_length=10, null=True)
+    agent_code = models.CharField(max_length=10, null=True, blank=True)
+    sex = models.CharField(max_length=70, null=True )
+    date_created = models.DateTimeField(auto_now_add= True, null=True )
+    image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
+
+    def __str__(self):
+        return self.user.username
+
+
+
+
+
+
+
+
+
+
+
 
 
 CATEGORY_CHOICES = (
@@ -32,19 +74,10 @@ class Codebox(models.Model):
 
 
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
-    one_click_purchasing = models.BooleanField(default=False)
-    user_code = models.ForeignKey(Client, on_delete=models.CASCADE, blank=True, null=True)
-
-    def __str__(self):
-        return self.user.username
-
 
 # STORE PRODUCTS 
 class Product(models.Model):
+    seller = models.ForeignKey(Vendor, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
@@ -128,6 +161,7 @@ class OrderItem(models.Model):
         return self.get_total_item_price()
 
 
+
 class Order(models.Model):
     STATUS= (
         ('Pending', 'Pending'),
@@ -136,7 +170,7 @@ class Order(models.Model):
         )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    client = models.ForeignKey(Client, on_delete=models.SET_NULL, blank=True, null=True)
+    client = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, blank=True, null=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
     note = models.CharField(max_length=200, null=True, blank=True)
@@ -154,7 +188,7 @@ class Order(models.Model):
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     #being_delivered = models.BooleanField(default=False)
-    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
+    #vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True )
     received = models.BooleanField(default=False)
     vpaid = models.BooleanField(default=False)
@@ -244,9 +278,29 @@ class Refund(models.Model):
         return f"{self.pk}"
 
 
+
+
 def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
-        userprofile = UserProfile.objects.create(user=instance)
+        userprofile = UserProfile.objects.create(user=instance, client_code=client_code)
 
 
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
+
+
+
+class UserAccount(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    account_name = models.CharField(max_length=200, blank=True, null=True)
+    bank_name = models.CharField(max_length=200, blank=True, null=True)
+    account_number = models.IntegerField(blank=True, null=True)
+
+
+    def __str__(self):
+        return self.user.username
+
+def useraccount_receiver(sender, instance, created, *args, **kwargs):
+    if created:
+        useraccount = UserAccount.objects.create(user=instance)
+
+post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)

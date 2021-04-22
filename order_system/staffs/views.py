@@ -171,14 +171,15 @@ def my_account(request, code):
 
 class VendorView(ListView):
 	template_name = "dashboard/vendor-dashboard.html"
-	model = Vpayment
+	model = Vendor
+	#model = Vpayment
   
 
 def vendor_account(request, code):
 	#item = VendorItem.objects.get(vendor.vendor_code)
 	payment = ''
 	try:
-		payment = Vpayment.objects.get(seller=code)
+		payment = Vendor.objects.get(seller=code)
 	except Exception as e:
 		pass
 		print(payment)
@@ -209,17 +210,13 @@ def vendor_account(request, code):
 	return render(request, 'dashboard/vendor-dashboard.html', context)
 
 @unauthenticated_user
-def loginPage(request):
-	
+def loginPage(request):	
 	if request.method == 'POST':
 		# assigning varables to the username and password field 
 		username = request.POST.get('username')
 		password = request.POST.get('password')
-
 		#authenticating the fields through django authentication package 
-
 		user = authenticate(request, username=username, password=password)
-
 		if user is not None:
 			login(request, user)
 			return redirect('/')
@@ -241,12 +238,16 @@ def register(request):
 
 			group = Group.objects.get(name='staff')
 			user.groups.add(group)
-			Customer.objects.create(
-				user=user,
-				name=user.username,
+
+			client_code = create_unique_code()
+
+			# this is to create the client object on registeration 
+			Client.objects.create(
+				#user=user,
+				full_name=user.username,
 				email=user.email,
 				)
-			
+
 			messages.success(request, 'Account was created for' + username)
 			return redirect('login')
 
@@ -334,7 +335,7 @@ class ChartData(APIView):
 def admin_cleark(request):
 	#Author.objects.annotate(total_pages=Sum('book__pages'))
 
-	vpay = Vpayment.objects.all()
+	vpay = Vendor.objects.all()
 	total_order = vpay.count()
 	payment_made = vpay.filter(paid=True).count()
 	pending_pay = vpay.filter(paid=False).count()

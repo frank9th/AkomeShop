@@ -11,6 +11,7 @@
         <div class="card card-chart">   
           <div class="card-body">
             <div class="chart-area">
+              <!--- This is for the first graph --->
               <canvas id="chartBig1" ></canvas>
             </div>
           </div>
@@ -28,6 +29,7 @@
           </div>
           <div class="card-body">
             <div class="chart-area">
+               <!--- This is for the second  graph for pending payment --->
               <canvas id="chartLinePurple"></canvas>
             </div>
           </div>
@@ -41,6 +43,7 @@
           </div>
           <div class="card-body">
             <div class="chart-area">
+              <!--- This is for the Third  graph for payment recieved--->
               <canvas id="CountryChart"></canvas>
             </div>
           </div>
@@ -54,6 +57,7 @@
           </div>
           <div class="card-body">
             <div class="chart-area">
+              <!--- This is for the Fourt graph for payment recieved--->
               <canvas id="chartLineGreen"></canvas>
             </div>
           </div>
@@ -86,13 +90,11 @@
       console.log("error")
       console.log(error_data)
     },
-
   })
-
     $(document).ready(function() {
-      // Javascript method's body can be found in assets/js/demos.js
-      demo.initDashboardPageCharts();
+      //Javascript method's body can be found in assets/js/demos.js
 
+      demo.initDashboardPageCharts();
     });
   </script>
 

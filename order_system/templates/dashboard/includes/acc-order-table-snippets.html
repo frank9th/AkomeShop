@@ -37,7 +37,7 @@
               <td>{{order.ordered_date}}</td> 
                <td>{{order.ordered_time}}</td>
               <td>{{order.agent}}</td>
-              <td><a class="btn btn-info" href="{% url 'vendor' order.vendor%}">{{order.vendor}}</a></td>
+              <td><a class="btn btn-info" href="#">{{order.vendor}}</a></td>
               <td> &#8358; {{order.payment.amount}}</td>
               <td><a class="btn btn-warning"  href="{% url 'update_order' order.id %}">Action </a></td>
               <!--
