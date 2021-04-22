@@ -1,6 +1,9 @@
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from staffs.models import *
 from store.models import * 
+
 '''
 class VpaySerializer(serializers.ModelSerializer):
 	class Meta:
@@ -9,15 +12,25 @@ class VpaySerializer(serializers.ModelSerializer):
 		#fields = '__all__'
 '''
 
-class ClientSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Client
-		fields = ('__all__')
+
 
 class VendorSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Vendor 
+		fields = '__all__'
+
+
+
+class UserSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = User 
 		fields = ('__all__')
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = UserProfile  
+		fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
 	class Meta:

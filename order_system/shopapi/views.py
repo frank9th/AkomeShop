@@ -1,3 +1,6 @@
+
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User 
 from django.shortcuts import render
 from rest_framework import status
 import json
@@ -6,6 +9,7 @@ from rest_framework import viewsets
 from store.models import *
 from staffs.models import *
 from .serializers import *
+from django.contrib.auth.models import User
 from rest_framework.decorators import action
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -20,8 +24,10 @@ class VpayView(viewsets.ModelViewSet):
 @api_view(['GET'])
 def apiOverview(request):
 	api_urls = {
+	'List users' : '/api/users/account/',
 	'Detail View' :'/task-detail/<pk>/',
 	'Add Client': '/api/add-client/',
+	'Create User': '/api/create/account/',
 	'Update Client': '/api/client-update/<pk>/user',
 	'Delete Client': 'api/client-delete/<pk>/user/',
 	'Clients':'/api/client/data/users/',
@@ -34,13 +40,17 @@ def apiOverview(request):
 
 
 
+class UserAccount(viewsets.ModelViewSet): 
+	queryset = UserProfile.objects.all()
+	serializer_class = UserProfileSerializer
 
-
-class ClientView(viewsets.ModelViewSet): 
-	queryset = Client.objects.all()
-	serializer_class = ClientSerializer
-
-
+'''
+@api_view(['GET'])
+def UserList(request): 
+	user = UserProfile.objects.all()
+	serializer = UserProfileSerializer(user, many=True)
+	return Response(serializer.data)
+'''
 
 
 # this Api is to get a single client details by passing in the primary key 
@@ -51,10 +61,12 @@ def ClientDetail(request, pk):
 	return Response(serializer.data)
 
 
+
+
 # Create Client Api 
-@api_view(['POST'])
+@api_view(['GET','POST'])
 def AddClient(request):
-	serializer = ClientSerializer(data=request.data)
+	serializer = UserProfileSerializer(data=request.data)
 	if serializer.is_valid():
 		serializer.save()
 	#return Response(serializer.data)
@@ -86,6 +98,9 @@ class VendorView(viewsets.ModelViewSet):
 	serializer_class = VendorSerializer
 
 
-class OrderView(viewsets.ModelViewSet): 
-	queryset = Order.objects.all()
-	serializer_class = OrderSerializer
+
+@api_view(['GET'])
+def OrderView(request): 
+	order = Order.objects.all()
+	serializer = OrderSerializer(order, many=True)
+	return Response(serializer.data)

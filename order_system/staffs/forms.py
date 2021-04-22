@@ -4,6 +4,8 @@ from django import forms
 from django.forms import ModelForm
 from .models import * 
 from store.models import *
+
+
 class CreateUserForm(UserCreationForm):
 	class Meta:
 		model = User

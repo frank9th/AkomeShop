@@ -66,7 +66,6 @@ admin.site.register(Coupon)
 admin.site.register(Refund)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(UserProfile)
-admin.site.register(Codebox)
 admin.site.register(UserAccount)
 
 

@@ -45,7 +45,7 @@
         </tr>
         <tr>
             <td colspan="5">
-            <a class='btn btn-primary float-right' href="{% url 'order-form'%}">Continue shopping</a>
+            <a class='btn btn-primary float-right' href="{% url 'store:home'%}">Continue shopping</a>
             </td>
         </tr>
         {% endfor %}
@@ -63,7 +63,7 @@
         <tr>
             <td colspan="5">
             <a class='btn btn-warning float-right ml-2' href="{% url 'store:confirm-checkout' %}">Proceed to checkout</a>
-            <a class='btn btn-primary float-right' href="{% url 'order-form'%}">Continue shopping</a>
+            <a class='btn btn-primary float-right' href="{% url 'store:home'%}">Continue shopping</a>
             </td>
         </tr>
         {% endif %}

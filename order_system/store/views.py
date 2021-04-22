@@ -119,33 +119,7 @@ def clientCheckout(request):
                     order.ref_code = order_ref_code
                     order.save()
 
-                    '''
-
-                    # CREATING A DICTIONARY TO GET THE ITEMS 
-
-                    order_list_items = {
-                    'order_ref': order_ref_code,
-                    'order_item': item,
-                    'payment': order.payment,
-                    'date': order.ordered_date,
-                    'time':order.ordered_time,
-                    'note':order.note, 
-                     }
-
-                    order_list = list(order_list_items)
-                    print(order_list)
-                    '''
-
-                    '''
-
-                    # Creating the Vendor Payment 
-                    ven1_amount = order.get_total() / 100 * 10
-                    ven_amount = order.get_total() - ven1_amount 
-                    venpay = Vpayment()
-                    venpay.amount = ven_amount
-                    venpay.ref_code = order.ref_code 
-                    venpay.save()
-                    '''
+               
 
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
@@ -528,13 +502,14 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("/")
 
+
 class ItemDetailView(DetailView):
     model = Product
     template_name = "product.html"
 
 @login_required
 def add_to_cart(request, slug):
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Product, slug=slug)
     order_item, created = OrderItem.objects.get_or_create(
         item=item,
         user=request.user,
@@ -563,7 +538,7 @@ def add_to_cart(request, slug):
 
 @login_required
 def remove_from_cart(request, slug):
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Product, slug=slug)
     order_qs = Order.objects.filter(
         user=request.user,
         ordered=False
@@ -590,7 +565,7 @@ def remove_from_cart(request, slug):
 
 @login_required
 def remove_single_item_from_cart(request, slug):
-    item = get_object_or_404(Item, slug=slug)
+    item = get_object_or_404(Product, slug=slug)
     order_qs = Order.objects.filter(
         user=request.user,
         ordered=False

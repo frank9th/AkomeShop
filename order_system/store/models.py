@@ -19,7 +19,6 @@ class UserProfile(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     one_click_purchasing = models.BooleanField(default=False)
-    #user_code = models.ForeignKey(Client, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=200, null=True, blank=True)
     full_name = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True, blank=True)
@@ -38,17 +37,6 @@ class UserProfile(models.Model):
         return self.user.username
 
 
-
-
-
-
-
-
-
-
-
-
-
 CATEGORY_CHOICES = (
     ('G', 'Goods'),
     ('S', 'Services')
@@ -65,15 +53,6 @@ ADDRESS_CHOICES = (
     ('S', 'Shipping'),
 )
 
-class Codebox(models.Model):
-    name = models.CharField(max_length=200, blank=True, null=True )
-    code = models.CharField(max_length=15)
-
-    def __str__(self):
-        return self.code
-
-
-
 
 # STORE PRODUCTS 
 class Product(models.Model):
@@ -85,7 +64,7 @@ class Product(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length=1, default='P')
     slug = models.SlugField()
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='product', blank=True, null=True)
 
     def __str__(self):
         return self.title 
@@ -106,7 +85,7 @@ class Product(models.Model):
             'slug': self.slug
         })
 
-
+# this model is not yet in use. this may be required later 
 class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
@@ -140,7 +119,7 @@ class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
-    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    item = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
 
     def __str__(self):
@@ -279,13 +258,23 @@ class Refund(models.Model):
 
 
 
-
 def userprofile_receiver(sender, instance, created, *args, **kwargs):
     if created:
         userprofile = UserProfile.objects.create(user=instance, client_code=client_code)
 
 
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
+
+
+# We are trying to reverse the sign up Logic here. auto creating a user account once a user is created
+def profile_receiver(sender, instance, created, *args, **kwargs):
+    if created:
+        user_profile = settings.AUTH_USER_MODEL.create(username=full_name,
+        password1=full_name, password2=full_name)
+
+
+post_save.connect(profile_receiver, sender=UserProfile)
+
 
 
 
@@ -304,3 +293,5 @@ def useraccount_receiver(sender, instance, created, *args, **kwargs):
         useraccount = UserAccount.objects.create(user=instance)
 
 post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
+
+
