@@ -24,7 +24,8 @@ class VpayView(viewsets.ModelViewSet):
 @api_view(['GET'])
 def apiOverview(request):
 	api_urls = {
-	'List users' : '/api/users/account/',
+	'List users' : 'api/profile/',
+	'Single users' : 'api/profile/pk',
 	'Detail View' :'/task-detail/<pk>/',
 	'Add Client': '/api/add-client/',
 	'Create User': '/api/create/account/',
@@ -38,19 +39,45 @@ def apiOverview(request):
 	return Response(api_urls)
 
 
-
-
-class UserAccount(viewsets.ModelViewSet): 
-	queryset = UserProfile.objects.all()
-	serializer_class = UserProfileSerializer
-
-'''
+# Get all users Api view 
 @api_view(['GET'])
-def UserList(request): 
-	user = UserProfile.objects.all()
-	serializer = UserProfileSerializer(user, many=True)
+def AllUserProfile(request): 
+	user_profile = UserProfile.objects.all()
+	serializer = AllUserSerializer(user_profile, many=True)
 	return Response(serializer.data)
-'''
+
+
+
+
+
+
+
+# Get all Single users Api view 
+@api_view(['GET'])
+def SingleUserProfile(request, code): 
+	single_user = UserProfile.objects.get(client_code=code)
+	serializer = AllUserSerializer(single_user, many=False)
+	return Response(serializer.data)
+
+
+# Update/Edit  Client Api 
+@api_view(['GET','POST'])
+def UpdateProfile(request): 
+	code = request.POST.get('client_code')
+	client = UserProfile.objects.get(client_code=code)
+	serializer = AllUserSerializer(instance=client, data=request.data)
+	if serializer.is_valid():
+		serializer.save()
+
+	return Response(serializer.data)
+
+
+class AllUserView(viewsets.ModelViewSet): 
+	queryset = UserProfile.objects.all()
+	serializer_class = AllUserSerializer
+
+
+
 
 
 # this Api is to get a single client details by passing in the primary key 

@@ -21,16 +21,11 @@ class VendorSerializer(serializers.ModelSerializer):
 
 
 
-class UserSerializer(serializers.ModelSerializer):
+class AllUserSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = User 
+		model = UserProfile
 		fields = ('__all__')
 
-
-class UserProfileSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = UserProfile  
-		fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
 	class Meta:

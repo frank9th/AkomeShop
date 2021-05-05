@@ -8,28 +8,26 @@
             <table class="table table-bordered table-sm" id="dataTable" width="100%" cellspacing="0">
                 <thead>
                      <tr>
-                        <th>Staff</th>
+                        <th>User</th>
                         <th>Client </th>
                         <th>Item </th>
                         <th>Statues</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Agent</th>
-                        <th>Vendor</th>
                         <th>Total</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tfoot>
                     <tr>
-                        <th>Staff</th>
+                        <th>User</th>
                         <th>Client</th>
                         <th>Item </th>
                         <th>Statues</th>
                         <th>Date</th>
                         <th>Time</th>
                         <th>Agent</th>
-                        <th>Vendor</th>
                         <th>Total</th>
                         <th>Action </th>
                     </tr>
@@ -46,7 +44,6 @@
 				      <td>{{order.ordered_date}}</td> 
 				       <td>{{order.ordered_time}}</td>
 				      <td><a class="btn btn-info"  href="#">{{order.agent}}</a></td>
-				      <td><a class="btn btn-info" href="{% url 'vendor' order.vendor%}">{{order.vendor}}</a></td>
 				      <td> &#8358; {{order.payment.amount}}</td>
 				      <td><a class="btn btn-warning"  href="{% url 'update_order' order.id %}">Action </a></td>
 				      <!--

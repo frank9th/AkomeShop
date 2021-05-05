@@ -20,7 +20,8 @@ class UserProfile(models.Model):
     stripe_customer_id = models.CharField(max_length=50, blank=True, null=True)
     one_click_purchasing = models.BooleanField(default=False)
     title = models.CharField(max_length=200, null=True, blank=True)
-    full_name = models.CharField(max_length=200, null=True)
+    first_name = models.CharField(max_length=200, null=True)
+    last_name = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200, null=True, blank=True)
     phone1 = models.CharField(max_length=200, null=True )
     phone2 = models.CharField(max_length=200, null=True, blank=True )
@@ -28,9 +29,13 @@ class UserProfile(models.Model):
     apartment_address = models.CharField(max_length=200, null=True, )
     land_mark = models.CharField(max_length=200, null=True )
     client_code = models.CharField(max_length=10, null=True)
-    agent_code = models.CharField(max_length=10, null=True, blank=True)
+    agent_code = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True)
     sex = models.CharField(max_length=70, null=True )
     date_created = models.DateTimeField(auto_now_add= True, null=True )
+    is_seller = models.BooleanField(default=False)
+    bus_account = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
+    is_agent = models.BooleanField(default=False)
+    wallet_balance = models.FloatField(default=0.00)
     image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
 
     def __str__(self):
@@ -58,6 +63,7 @@ ADDRESS_CHOICES = (
 class Product(models.Model):
     seller = models.ForeignKey(Vendor, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100)
+    cost_price = models.FloatField()
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
@@ -166,8 +172,6 @@ class Order(models.Model):
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
         'Coupon', on_delete=models.SET_NULL, blank=True, null=True)
-    #being_delivered = models.BooleanField(default=False)
-    #vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True )
     agent = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True )
     received = models.BooleanField(default=False)
     vpaid = models.BooleanField(default=False)
@@ -265,7 +269,7 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
 
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
 
-
+'''
 # We are trying to reverse the sign up Logic here. auto creating a user account once a user is created
 def profile_receiver(sender, instance, created, *args, **kwargs):
     if created:
@@ -275,7 +279,7 @@ def profile_receiver(sender, instance, created, *args, **kwargs):
 
 post_save.connect(profile_receiver, sender=UserProfile)
 
-
+'''
 
 
 class UserAccount(models.Model):

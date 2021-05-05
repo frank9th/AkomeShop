@@ -231,7 +231,112 @@ class ContactForm(forms.ModelForm):
 
 		}
 
-	 
+class AccountForm(forms.ModelForm):
+	class Meta:
+		model =UserProfile
+		fields = ['title', 'first_name', 'last_name','email','phone1', 'phone2', 
+    	'town', 'apartment_address', 'land_mark', 
+    	'agent_code', 'sex']
+		widgets = { 
+    		'title': forms.TextInput(
+				attrs={
+				'id': 'titleId', 
+		        'required': True, 
+		        'placeholder': 'Mr./Mrs./Mis./Dr. ect..',
+		        'class':'form-control',
+				}), 
+    		'first_name':forms.TextInput(
+				attrs={
+				'id': 'fstId', 
+		        'required': True, 
+		        'placeholder': 'Enter First Name',
+		        'class':'form-control',
+				}), 
+			'last_name': forms.TextInput(
+				attrs={
+				'id': 'lstId', 
+		        'required': True, 
+		        'placeholder': 'Enter last name',
+		        'class':'form-control',
+				}),  
+    		'email': forms.TextInput(
+				attrs={
+				'id': 'emailId', 
+		        'required': False, 
+		        'placeholder': 'Enter email',
+		        'class':'form-control',
+				}), 
+    		'phone1':forms.TextInput(
+				attrs={
+				'id': 'ph1Id', 
+		        'required': True, 
+		        'placeholder': 'Enter phone number',
+		        'class':'form-control',
+				}),  
+    		'phone2': forms.TextInput(
+				attrs={
+				'id': 'ph2Id', 
+		        'required': False, 
+		        'placeholder': 'Enter mobile number',
+		        'class':'form-control',
+				}), 
+    		'town':forms.TextInput(
+				attrs={
+				'id': 'townId', 
+		        'required': True, 
+		        'placeholder': 'Town/City',
+		        'class':'form-control',
+				}),  
+    		'apartment_address': forms.TextInput(
+				attrs={
+				'id': 'aptId', 
+		        'required': True, 
+		        'placeholder': 'House Address',
+		        'class':'form-control',
+				}), 
+    		'land_mark':forms.TextInput(
+				attrs={
+				'id': 'landId', 
+		        'required': True, 
+		        'placeholder': 'Nearest bus stop',
+		        'class':'form-control',
+				}),  
+    		'agent_code': forms.TextInput(
+				attrs={
+				'id': 'agnId', 
+		        'required': False, 
+		        'placeholder': 'Agent code(optional)',
+		        'class':'form-control',
+				}), 
+    		'sex':forms.TextInput(
+				attrs={
+				'id': 'sexId', 
+		        'required': False, 
+		        'placeholder': 'Male/Female',
+		        'class':'form-control',
+				}),  
+    	
+			}
+
+"""
+Working fields required by serializer update api
+"""
+{
+    "title": " Mrs.",
+    "first_name": " Roe(update)",
+    "last_name": " Leo",
+    "email": " le@gmail.com",
+    "phone1": " 09023879",
+    "phone2": " ",
+    "town": " Jeddo",
+    "apartment_address": " merket Rd",
+    "land_mark": " Pri Schl",
+    "client_code": "TWUJZ",
+    "sex": " female",
+    "user": 13,
+    "agent_code": 1,
+    "bus_account": "null",
+}
 
 
 class ClientCodeForm(forms.Form):

@@ -6,6 +6,7 @@ from .decorators import unauthenticated_user, allowed_users, admin_only
 from django.db.models import Avg, Count, Min, Sum
 from django.views.generic import TemplateView, ListView
 from .models import *
+from .views_snippets import * 
 import sys
 import requests
 from django.http import JsonResponse 
@@ -33,25 +34,6 @@ def create_slug():
 def create_unique_code():
 	return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
-def get_client_code(request, code):	
-	try:
-		client_code = Client.objects.get(client_code=code)
-		messages.success(request, "The User is doing Great")
-		return client_code 
-	except ObjectDoesNotExist:
-		#agent_code = {}
-		messages.warning(request, "Enter a valid user code ")
-		return redirect('/')
-
-def get_agent_code(request, code):	
-	try:
-		agent_code = Agent.objects.get(agent_code=code)
-		messages.success(request, "The Agent is actually well feed")
-		return agent_code 
-	except ObjectDoesNotExist:
-		#agent_code = {}
-		messages.warning(request, "Enter a valid agent code ")
-		return redirect('/')
 
 
 @login_required
@@ -154,20 +136,75 @@ def createOrder(request):
 
 # client detail page 
 def my_account(request, code):
-	client = Client.objects.get(client_code=code)
-	#orders = Order.objects.all()
+	client = UserProfile.objects.get(client_code=code)
 	orders = client.order_set.all()
-	#customer = Customer.objects.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
-
 	context= {'client': client, 'orders': orders, 
 	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
 	'out_delivery':out_delivery }
-	#return render(request, 'user_account/account.html', context)
 	return render(request, 'dashboard/page-user.html', context)
+
+
+
+''' remeber to delete this code sample 
+customer = Customer.objects.get(id=pk) 
+	form = addCustomerForm(instance=customer) 
+	if request.method =='POST':
+		form = addCustomerForm(request.POST , instance=customer) 
+		if form.is_valid(): # performing valid check 
+			form.save() # saving the data in the db 
+			return redirect('home')
+'''
+
+def edit_account(request, code):
+	client = UserProfile.objects.get(client_code=code)
+	form = AccountForm(instance=client)
+	if request.method == 'POST':
+		form = AccountForm(request.POST , instance=client) 
+		if form.is_valid():
+			form.save()
+
+	context ={
+	'form':form,
+	'client':client
+	}
+	return render (request, 'dashboard/edit-account.html', context)
+
+# Edite Contact Details 
+def update_client(request):
+	try:
+		if request.method == "POST":
+			id = request.POST.get('userId')
+			client = Contact.objects.get(pk=id)
+			client_data = { 
+				"id":client.id,
+			    "title": client.title,
+			    "first_name": client.first_name,
+			    "last_name": client.last_name,
+			    "email": client.email,
+			    "phone1": client.phone1,
+			    "phone2": client.phone2,
+			    "town": client.town,
+			    "apartment_address": client.apartment_address,
+			    "land_mark": client.land_mark,
+			    "client_code": client.client_code,
+			    "sex": client.sex,
+			    #"user": user,
+			    "agent_code": client.agent_code,
+			    "bus_account": client.bus_account,
+			}
+			#client_data.save()
+			return JsonResponse(client_data)
+		
+	except Exception as e:
+		raise e
+
+
+
+
 
 class VendorView(ListView):
 	template_name = "dashboard/vendor-dashboard.html"
@@ -177,7 +214,7 @@ class VendorView(ListView):
 
 def vendor_account(request, code):
 	#item = VendorItem.objects.get(vendor.vendor_code)
-	payment = ''
+	#payment = ''
 	try:
 		payment = Vendor.objects.get(seller=code)
 	except Exception as e:
@@ -185,7 +222,7 @@ def vendor_account(request, code):
 		print(payment)
 	
 	vendor = Vendor.objects.get(vendor_code=code)
-	client = vendor.info
+	#client = vendor.info
 	orders = vendor.order_set.all()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
@@ -195,8 +232,8 @@ def vendor_account(request, code):
 
 	context= {
 	#'item':item,
-	'payment':payment,
-	'client':client,
+	#'payment':payment,
+	#'client':client,
 	'vendor':vendor,
 	'orders':orders,
 	'total_order':total_order,
@@ -226,7 +263,8 @@ def loginPage(request):
 	context = {'messages':messages}
 	return render(request, 'login.html', context)
 
-@unauthenticated_user
+#@unauthenticated_user
+@admin_only
 def register(request):	
 	form = CreateUserForm()
 	if request.method == 'POST':
@@ -236,20 +274,28 @@ def register(request):
 			username = form.cleaned_data.get('username')
 			email = form.cleaned_data.get('email')
 
+			group = Group.objects.get(name='client')
+			user.groups.add(group)
+
+			#client_code = create_unique_code()
+			messages.success(request, 'Account was created for ' + username )
+			#return redirect('my-account/'+client_code)
+			return redirect('login')
+
+	elif request.user.is_authenticated:
+		if request.method == 'POST':
+			user = form.save()
+			username = form.cleaned_data.get('username')
+			email = form.cleaned_data.get('email')
+
 			group = Group.objects.get(name='staff')
 			user.groups.add(group)
 
-			client_code = create_unique_code()
+			#client_code = create_unique_code()
+			messages.success(request, 'Account was created for ' + username + 'with ' + client_code)
+			return redirect('my-account/'+client_code)
 
-			# this is to create the client object on registeration 
-			Client.objects.create(
-				#user=user,
-				full_name=user.username,
-				email=user.email,
-				)
-
-			messages.success(request, 'Account was created for' + username)
-			return redirect('login')
+			
 
 	context = {'form':form}
 	return render(request, 'register.html', context)
@@ -274,30 +320,23 @@ def user_dashboard(request):
 	}
 	return render(request, 'user_account/user_dashboard.html', context)
 
-# for customer profile 
-def customer(request, pk):
-	customer = Customer.objects.get(id=pk)
-	orders= customer.order()
-	order_count = orders.count()
-
-	context = {'customer':customer, 'orders': orders, 'order_count':order_count}
-	return render(request, 'account/customer.html', context)
 
 def password(request):
 	return render(request, 'user_account/password.html',{"title":password})
+
+# This is for the Sales Admin Dashboard 
 # AdminDashbod View 
 @login_required(login_url ='login')
 @admin_only
 #@allowed_users('admin')
 def admin_dashboard(request):
-	clients = Client.objects.all()
+	#clients = Client.objects.all()
 	orders = Order.objects.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
 	context = {
-	'clients':clients,
 	'orders':orders,
 	'total_order':total_order,
 	'delivered':delivered,
@@ -307,57 +346,19 @@ def admin_dashboard(request):
 	}
 
 	return render(request, 'admin_account/dashboard.html', context)
-		#con = Contact.objects.values()
-			#print(con)
-			
 
 	
 
-def get_sales_data(self):
-	vpay = Vpayment.objects.all()
-	 
-	for pay in vpay:
-		data = {
-		'amount':pay.amount,
-		'ref_code':pay.ref_code,
-		}
-	return JsonResponse(data, safe=False)
-
-
-class ChartData(APIView):
-    authentication_classes = []
-    permission_classes = []
-    def get(self, request, format=None):
-    	data = {'amount':pay.ref_code  for pay in Vpayment.objects.all() }
-    	return Response(data)
-
-
+# cleark or CFO dashboard 
 def admin_cleark(request):
-	#Author.objects.annotate(total_pages=Sum('book__pages'))
-
-	vpay = Vendor.objects.all()
-	total_order = vpay.count()
-	payment_made = vpay.filter(paid=True).count()
-	pending_pay = vpay.filter(paid=False).count()
-	client = request.user.userprofile.user_code
-	clients = Client.objects.all()
+	client = request.user.userprofile.client_code
 	order = Order.objects.all()
 	orders = order.filter(status='Delivered')
 	delivered = order.filter(status='Delivered').count()
-	#pending = orders.filter(status='Pending').count()
-	#out_delivery = orders.filter(status='Out for Delivery').count()
 	context = {
-	'vpay':vpay,
-	'total_order':total_order,
-	'payment_made':payment_made,
-	'pending_pay':pending_pay, 
 	'client': client,
-	'clients':clients,
 	'orders':orders,
-	#'total_order':total_order,
 	'delivered':delivered,
-	#'pending':pending,
-	#'out_delivery':out_delivery,
 
 	}
 	return render(request, 'dashboard/cleark-dashboard.html', context)
@@ -377,7 +378,6 @@ def table(request):
 def addCustomer(request):
 	form = addCustomerForm()
 	if request.method == 'POST':
-		#print('Printing post:', request.POST)
 		form = addCustomerForm(request.POST)
 		if form.is_valid():
 			form.save()
@@ -396,8 +396,6 @@ def editCustomer(request, pk):
 		if form.is_valid(): # performing valid check 
 			form.save() # saving the data in the db 
 			return redirect('home')
-
-
 	 
 	context= {'form': form, 'orders':orders}
 	return render(request, 'edit_customer.html', context)
@@ -410,7 +408,6 @@ result: httprespos-codes printed on models id_field
 
 def updateOrder(request, pk): # passing the primary key into the request views.
 	agents = Agent.objects.all()
-	vendors = Vendor.objects.all()
 	orders = Order.objects.get(id=pk) # get the pk from the oder objects in the db from models
 	form = UpdateOrderForm(instance=orders) # pass the instance into the form so it populate the form 
 	# sending the data as post data and redirecting back 
@@ -421,20 +418,11 @@ def updateOrder(request, pk): # passing the primary key into the request views.
 			orders.status = 'Out for Delivery'
 			orders.save()
 			#form.save() # saving the data in the db
-
-			'''
-			#TODO: Create Chanel for Vpayment 
-			#TODO: Send order detail to client,
-			# Vendor,
-			#supper admin 
-			# agent 
-
-			'''
 			return redirect('/admin-profile')
 	context= {
 		'form': form, 
 		'agents':agents,
-		'vendors':vendors,
+		#'vendors':vendors,
 		'orders':orders,
 
 	}
@@ -446,138 +434,6 @@ def confirmCode(request):
 	
 	context={}
 	return render(request, 'user_account/add_client.html', context)
-
-
-def addClient(request):
-	code = request.POST.get('code')
-	client = get_client_code(request, code)
-	form = AddClientForm( request.POST or None)
-	if request.method == 'POST':
-		if form.is_valid():
-			try:
-
-				title= form.cleaned_data.get('title')
-				full_name=form.cleaned_data.get('full_name')
-				phone1=form.cleaned_data.get('phone1')
-				phone2=form.cleaned_data.get('phone2')
-				email= form.cleaned_data.get('email')
-				agent_code= form.cleaned_data.get('agent_code')
-				land_mark= form.cleaned_data.get('land_mark')
-				town = form.cleaned_data.get('town')
-				sex = form.cleaned_data.get('sex')
-				apartment_address=form.cleaned_data.get('apartment_address')
-				client_code = create_unique_code()
-			
-				client_details= Client(
-					title= title,
-					full_name = full_name,
-					email = email,
-					phone1 = phone1,
-					phone2 = phone2,
-					town = town,
-					apartment_address = apartment_address,
-					client_code = client_code,
-					agent_code = agent_code
-					)	
-
-				client_details.save()
-				messages.success(request, title  +  full_name +  " registerd successully client's code is: " + client_code )
-				return redirect('/profile')
-				# TODO: Send Code as SMS TO CLIENT 
-			except ObjectDoesNotExist:
-				messages.info(request, "The Client already exist ")				
-	context={
-	'form':form, 
-	'client':client,
-	#'agent_form':CodeForm(),
-	}
-	return render(request, 'user_account/add_client.html', context)
-
-def addVendor(request):
-	code = request.POST.get('code')
-	client = get_client_code(request, code)
-	#agent = get_agent_code(request, code)
-
-	try:
-		clientId = Client.objects.get(id=request.POST.get('clientId'))
-		agentId = Agent.objects.get(id=request.POST.get('agentId'))
-	except Exception as e:
-		pass
-
-	form = AddVendorForm(request.POST or None )
-	if request.method == 'POST':
-		if form.is_valid():
-			business_name = form.cleaned_data.get('business_name')
-			product_name = form.cleaned_data.get('product_name')
-			goods = form.cleaned_data.get('goods')
-			services = form.cleaned_data.get('services')
-			skill = form.cleaned_data.get('skill')
-			agent_code = form.cleaned_data.get('agent_code')
-			try:
-				agent = Agent.objects.get(id=request.POST.get(agent_code))
-			except Exception as e:
-				pass
-
-			vendor_code = create_unique_code()
-			vendor_details = Vendor(
-				info = clientId,
-				business_name = business_name, 
-				product_name = product_name, 
-				goods = goods, 
-				services = services, 
-				skill = skill, 
-				vendor_code = vendor_code,
-				#agent_code= agent,
-				)
-			vendor_details.save()
-			messages.success(request, " registerd successully vendor's code is:" + vendor_code )
-			
-			# TODO: Send Code as SMS TO VENDOR 
-			return redirect('/profile')
-
-	context={'form':form, 
-	'client':client,
-	#'agent': agent
-	}
-	return render(request, 'user_account/add_vendor.html', context)
-
-def addAgent(request):
-	code = request.POST.get('code')
-	client = get_client_code(request, code)
-	try:
-		clientId = Client.objects.get(id=request.POST.get('clientId'))
-		agentId = Agent.objects.get(id=request.POST.get('agentId'))
-	except Exception as e:
-		pass
-
-	form = AddAgentForm(request.POST or None)
-	if request.method == 'POST':
-		if form.is_valid():
-			zone = form.cleaned_data.get('zone')
-			bike = form.cleaned_data.get('bike')
-			keke = form.cleaned_data.get('keke')
-			car = form.cleaned_data.get('car')
-			agent_type = form.cleaned_data.get('agent_type')
-			agent_code = create_unique_code()
-			#codebox = Codebox(code=agent_code, name=full_name)
-			#codebox.save()
-			agent_details = Agent(
-				info = clientId,
-				zone = zone,
-				bike = bike, 
-				keke = keke,
-				car = car,
-				agent_type= agent_type,
-				agent_code=agent_code
-				)
-			#agent_details.agent_code = codebox
-			agent_details.save()
-			messages.success( request, " Agent added succesfully. Agent code:" + agent_code )
-			# TODO: SEND CODE 
-			return redirect('/profile')
-
-	context={'form':form, 'client':client}
-	return render(request, 'user_account/add_agent.html', context)
 
 
 def confirm_delivery(request):
@@ -604,7 +460,16 @@ def confirm_delivery(request):
 			messages.info(request, "Order does not exist")
 	context={'form':form}
 	return render(request, 'delivered_order.html', context)
-	
+
+
+
+#def save_account()
+
+
+
+
+
+
 
 def contact(request):
 	form = ContactForm()
@@ -635,7 +500,6 @@ def save_data(request):
 			#order = Order.objects.values()
 			#print(order)
 			contact_data = list(con)
-
 			return JsonResponse({'status':'Save', 'contact_data':contact_data})
 
 		else:

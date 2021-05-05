@@ -9,27 +9,37 @@
             <div class="block block-four"></div>
             <a href="javascript:void(0)">
               <img class="avatar" src="/static/dash/assets/img/emilyz.jpg" alt="...">
-              <h3> code: {{ client.client_code}}</h3>
-              <h5 class="title">
-               {{client.title}}.  {{client.full_name}}
-              </h5>
+              <h3> Balance: N {{ client.wallet_balance}}</h3>
+               
+                <h5 class="title">
+                {% if client.title %}
+               {{client.title}}.  {{client.first_name}} {{client.last_name}}
+                {% else %}
+                <h3> User: {{client.user}}</h3>
+              {% endif %}
+               </h5>
             </a>
+            {% if client.email %}
             <p class="description">
-
              {{client.email}}
             </p>
-            
+              {% endif %}
 
           </div>
         </p>
+       
         <div class="card-description">
+          {% if client.phone1 %}
           <strong>Phone 1 :</strong> {{client.phone1 }} <hr>
           Phone 2 : {{client.phone2 }}  <hr>
+        {% endif %}
+        {% if client.town %}
           Town : {{client.town }} <hr>
           Land mark: 
           <hr>
           Address : {{client.apartment_address }}
           <hr>
+          {% endif %}
 
 
 
