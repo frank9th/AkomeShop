@@ -20,7 +20,449 @@
 		});
 
 
+		//wallet functions 
+		// Top Up card and form toggle 
+		$("#top-up").click(function(){
+			console.log("Top Up button clicked ")
+			$("#tpCard").hide();
+			$("#tpForm-card").show();
 
+		});
+		// Top Up card and form data transfer function 
+		$("#Top-proceed").click(function(){
+				console.log("Top Up Proceed button clicked ")
+				let acctuser = $("#accUserId").val();
+				let payment = $("input[name=payment_type]:checked").val();
+				let amount = $("#tpAmtId").val();
+				let csrf = $("input[name=csrfmiddlewaretoken]").val();
+
+				if ( amount == ''){
+				console.log("amount can't be empty ")
+				alert("amount can't be empty ")
+				}
+
+				console.log(payment)
+					tamount ={
+						actUser: acctuser,
+						pay:payment,
+						amount:amount,
+						csrfmiddlewaretoken: csrf,
+
+					}
+				$.ajax({
+					url : "{% url 'topup' %}",
+					method : "POST",
+					data : tamount, 
+					success:function(data) {
+							if (data.status == "Save"){
+							x = data.pending_fund
+							y = data.payment_type
+								new_bal = ""
+								$("#tpCard").show();
+								$("#tpForm-card").hide();
+
+								//alert("topop successful")
+								$("#tsmsg").text("99% completed, Just a minute. we need to confirm your cash. ")
+								$("#tsmsg").show()
+							//alert("topop successful")
+								/*
+								TODO: SEND THIS TO CFO DASHBOARD TO CONFIRM PAY 
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								$("#tbal").html(new_bal);
+
+								*/
+							
+							}	
+							if (data.status == 0){
+							x = data.pending_fund
+							y = data.payment_type
+								new_bal = ""
+								$("#tpCard").show();
+								$("#tpForm-card").hide();
+								//alert("topop successful")
+								$("#tdmsg").text("Whoops! sorry Card payment is not available at the moment ")
+								$("#tdmsg").show()
+							//alert("topop successful")
+								/*
+								TODO: SEND THIS TO CFO DASHBOARD TO CONFIRM PAY 
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								$("#tbal").html(new_bal);
+
+								*/	
+							}
+							if (data.status == 1 ){
+							x = data.pending_fund
+							y = data.payment_type
+								new_bal = ""
+								$("#tpCard").show();
+								$("#tpForm-card").hide();
+								//alert("topop successful")
+								$("#tpmsg").text("Greate, kindly pay into Mekly Integrated Servive Ltd - <br> <strong> 113339999</strong> and enter ref_code to complete transaction ")
+								$("#tpmsg").show()
+							//alert("topop successful")
+								/*
+								TODO: SEND THIS TO CFO DASHBOARD TO CONFIRM PAY 
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								$("#tbal").html(new_bal);
+
+								*/				
+							}		
+					
+					}
+				});
+				
+
+			event.preventDefault();
+			});
+
+	// Withdrwal function 
+	$("#wit-draw").click(function(){
+			console.log("Whitdrawal button clicked ")
+			$("#draw").hide();
+			$("#dform").show();
+			let name = $("#accnntId").val();
+			let acc_name = $("#actId").val(name);
+			
+		});
+
+		$("#btnwit").click(function(){
+			console.log("Confim wihdrawalbutton clicked ")
+			let acctuser = $("#accUserId").val();
+			let name = $("#accnntId").val();
+			let acc_name = $("#actId").val(name);
+			let amount = $("#amtId").val();
+			let note = $("#noteId").val();
+			let csrf = $("input[name=csrfmiddlewaretoken]").val();
+			if ( amount == ''){
+				console.log("amount can't be empty ")
+				alert("amount can't be empty ")
+			}
+				wdata = {
+					actUser: acctuser,
+					name: name,
+					amount:amount,
+					note:note,
+					csrfmiddlewaretoken: csrf,
+
+				}
+				$.ajax({
+					url : "{% url 'request-cash' %}",
+					method : "POST",
+					data : wdata, 
+					success:function(data) {
+						if (data.status == "Save"){
+							x = data.wallet_balance
+								new_bal = ""
+								$("#draw").show();
+								$("#dform").hide();
+							//alert("topop successful")
+								$("#wsmsg").text(" You just requested for a cash out of " +  amount + " to account" )
+								$("#wsmsg").show();
+								$("#wpmsg").hide();
+
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								$("#tbal").html(new_bal);
+							
+							}
+
+						if (data.status == 1 ){
+							$("#draw").show();
+							$("#dform").hide();
+							$("#wpmsg").text("Woops! the money in your account is not sufficient for this cashout ")
+							$("#wpmsg").show();
+							$("#wsmsg").hide();
+							}
+						if (data.status == 2 ){
+							$("#draw").show();
+							$("#dform").hide();
+							$("#wdmsg").text("Hey! We just can let you emplty your account ")
+							$("#wdmsg").show();
+							$("#wsmsg").hide();
+							$("#wpmsg").hide();
+							}
+						if (data.status == 0 ){
+							alert("Process terminated. sorry somthing whent wrong. try again later. ")	
+							}	
+											
+					}
+				});
+		event.preventDefault();
+		});
+
+	// Send money function 
+	$("#send-btn").click(function(){
+			console.log("Send button clicked ")
+			$("#send_card_draw").hide();
+			$("#accnform").show();
+			let name = $("#accnntId").val();
+			//let acc_name = $("#actId").val(name);
+			
+		});
+
+	$("#acc_confirm").click(function(){
+		console.log("Confirm account number button clicked ")
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		let sender = $("#senderId").val();
+		let type = $("input[name=account_type]:checked").val();
+		let reciev_account = $("#reciev_accId").val();
+
+		if (reciev_account== ''){
+			alert("please enter your account number ")
+		}
+				
+		confirm_data = {
+				account_type:type,
+				sender:sender,
+				reciever_account:reciev_account,
+				csrfmiddlewaretoken: csrf,
+
+			}
+		console.log(confirm_data)
+
+			$.ajax({
+						url : "{% url 'confirm-mek-account' %}",
+						method : "POST",
+						data : confirm_data, 
+						success:function(data) {
+							if (data.status == "True"){
+								rec_name = data.response
+								rec_bnk = data.bank
+								rec_acc = data.number
+								rec_acc_type = data.acc_type
+
+									new_bal = ""
+									$("#sendform").show();
+									$("#accnform").hide();
+								
+									//alert("topop successful")
+									$("#cfsmsg").text("Sending to " + rec_name )
+									$("#cfsmsg").show();
+									$("#rec_accnaId").val(rec_name);
+									$("#rec_bnkId").val(rec_bnk);
+									$("#rec_act_no_Id").val(rec_acc);
+									$("#rec_act_type_Id").val(rec_acc_type);
+
+									console.log(rec_acc_type)
+									//$("#sepmsg").hide();
+								
+								}
+							if (data.status == 0 ){
+								$("#sendform").show();
+								$("#accnform").hide();
+								$("#cfwmsg").text(" Enter bank details" )
+								$("#cfwmsg").show();
+								}
+							if (data.status == 50 ){
+								alert('please select an account type ')
+								}
+							if (data.status == 100 ){
+								alert('Invalid Account number ')
+								}
+									
+						}
+					});
+
+	event.preventDefault();
+
+	});
+
+
+	$("#send_confirm").click(function(){
+		console.log("Confirm send money button clicked");
+			let type = $("#rec_act_type_Id").val();
+			let sender = $("#senderId").val();
+			let amount = $("#rec_amtId").val();
+			let rec_name = $("#rec_accnaId").val();
+			let bnk = $("#rec_bnkId").val();
+			let acc_nu = $("#rec_act_no_Id").val();
+			let csrf = $("input[name=csrfmiddlewaretoken]").val();
+
+			if ( amount == '' ){
+				console.log("amount can't be empty ")
+				alert("amount can't be empty ")
+			}
+
+			if ( type == ''){
+				console.log("please specify account ")
+				alert("please specify the account u are sending to")
+			}
+			if ( rec_name == ''){
+				console.log("reciever can't be empty ")
+				alert("Enter beneficiarie's name")
+			}
+			if ( bnk == ''){
+				console.log("bank name can't be empty ")
+				alert("Enter beneficiarie's bank name")
+			}
+			if ( acc_nu == ''){
+				console.log("account number can't be empty ")
+				alert("Enter beneficiarie's account number")
+			}
+
+			send_data = {
+				account_type:type,
+				sender:sender,
+				amount:amount,
+				bank:bnk,
+				account:rec_name,
+				account_num:acc_nu,
+				csrfmiddlewaretoken: csrf,
+
+			}
+			$.ajax({
+					url : "{% url 'send-money' %}",
+					method : "POST",
+					data : send_data, 
+					success:function(data) {
+						if (data.status == 200 ){
+							x = data.wallet_balance
+								new_bal = ""
+								$("#send_card_draw").show();
+								$("#sendform").hide();
+							//alert("Send money successful")
+								$("#sesmsg").text(" Transfered successful " )
+								$("#sesmsg").show();
+								//$("#sepmsg").hide();
+
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								$("#tbal").html(new_bal);
+							
+							}
+
+						if (data.status == 100 ){
+							$("#send_card_draw").show();
+							$("#sendform").hide();
+							$("#sepmsg").text("Woops! the money in your account is not sufficient for this transaction ")
+							$("#sepmsg").show();
+							$("#sesmsg").hide();
+							}
+
+						if (data.status == 300 ){
+							$("#send_card_draw").show();
+							$("#sendform").hide();
+							$("#sedmsg").text("Woops! your account can't go below what it has right now  ")
+							$("#sedmsg").show();
+							$("#sesmsg").hide();
+							}
+
+						if (data.status == 350 ){
+							$("#send_card_draw").show();
+							$("#sendform").hide();
+							$("#sedmsg").text("Woops! we just can't let you empty you account   ")
+							$("#sedmsg").show();
+							$("#sesmsg").hide();
+							}
+
+						if (data.status == 0 ){
+							alert("Process terminated. sorry somthing whent wrong. try again later. ")	
+							}	
+											
+					}
+				});
+
+
+	event.preventDefault();
+	});
+
+		// Save money/make investment function 
+		$("#sav").click(function(){
+			console.log("Save money button clicked ")
+			$("#savCard").hide();
+			$("#savForm-card").show();
+		});
+
+		$("#sav-proceed").click(function(){
+			console.log("Save Proceed button clicked ")
+				let savAmt = $("#savAmtId").val();
+				let csrf = $("input[name=csrfmiddlewaretoken]").val();
+				let acctuser = $("#accUserId").val();
+				console.log(savAmt)
+
+				if ( savAmt == ''){
+				console.log("Enter the amount you want to save  ")
+				alert("Enter the amount you want to save ")
+			}
+
+				samount ={
+					actUser: acctuser,
+					amount:savAmt,
+					csrfmiddlewaretoken: csrf,
+
+				}
+
+				$.ajax({
+					url : "{% url 'invest' %}",
+					method : "POST",
+					data : samount, 
+					success:function(data) {
+
+						if (data.status == "Save"){
+							x = data.wallet_balance
+							y = data.sav_balance
+								new_bal = ""
+								sv_bal = ""
+								$("#savCard").show();
+								$("#savForm-card").hide();
+								//alert("topop successful")
+								$("#smsg").text("Congrats! you have successfully saved " +  savAmt )
+								$("#smsg").show()
+
+								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
+								sv_bal += "<i class='tim-icons icon-lock-circle text-primary'></i> " + ' &#8358; '  + y
+
+								$("#tbal").html(new_bal);
+								$("#sbal").html(sv_bal);
+							
+							}
+
+						if (data.status == 1 ){
+							$("#savCard").show();
+							$("#savForm-card").hide();
+							$("#spmsg").text("Woops! we appreciate your saving actitude. please add some more funds to your wallet and try again.  ")
+							$("#spmsg").show();
+							$("#smsg").hide();
+							}
+						if (data.status == 2 ){
+							$("#savCard").show();
+							$("#savForm-card").hide();
+							$("#sdmsg").text("Hey! We just can't let you save all your funds. its always good to have an extral cash ")
+							$("#sdmsg").show();
+							$("#smsg").hide();
+							$("#spmsg").hide();
+							}
+						if (data.status == 0 ){
+							alert("Process terminated. sorry somthing whent wrong. try again later. ")	
+							}
+										
+					}
+				});
+
+		event.preventDefault();
+		});
+
+		// Confirming Top-up/Withdraw function 
+
+		$("#tpnotice-btn").click(function(){
+			console.log("confirm topup button clicked ")
+
+			$("#tpnotice").hide();
+			$("#con_top_form").show();
+		})
+
+
+
+
+
+		//Update Bank Account Form 
+		$("#updateAcc").click(function(){
+			//document.getElementById("demo").innerHTML = text;
+			console.log("Update Account Button Clicked ");
+		
+
+		});
+
+
+		//confirm code function 
 		$("#codeNo").click(function(){
 			console.log("Confirm code button clicked");		
 			let co = $("#codeId").val();
@@ -223,6 +665,8 @@
 		let ph = $("#phoneId").val();
 		let te = $("#textId").val();
 		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		console.log(conid);
+
 		if (se == ""){
 			console.log("Please enter a sender name")
 		} else if (ph == ""){
@@ -278,6 +722,8 @@
 	
 		// body...
 	});
+
+
 	// Delete Contact Function 
 	$("#contactTable").on("click", ".btn-del", function(){
 		console.log("Delete Button Clicked")
@@ -340,5 +786,38 @@
 
 	// End Editing Contact Data 
 
+
+
+
 </script>
 
+
+<!--- Case demo
+
+<p>Click the button to display a dialog box which will ask for your favorite drink.</p>
+
+<button onclick="myFunction()">Try it</button>
+
+<p id="demo"></p>
+
+<script>
+function myFunction() {
+  var text;
+  var favDrink = prompt("What's your favorite cocktail drink?", "Daiquiri");
+  switch(favDrink) {
+    case "Martini":
+      text = "Excellent choice. Martini is good for your soul.";
+      break;
+    case "Daiquiri":
+      text = "Daiquiri is my favorite too!";
+      break;
+    case "Cosmopolitan":
+      text = "Really? Are you sure the Cosmopolitan is your favorite?";
+      break;
+    default:
+      text = "I have never heard of that one..";
+  }
+  document.getElementById("demo").innerHTML = text;
+}
+</script>
+---->

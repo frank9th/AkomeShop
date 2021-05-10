@@ -30,18 +30,7 @@ date = d.strftime('%Y-%m-%d')
 stripe.api_key = settings.STRIPE_SECRET_KEY  
 
 
-def dashboard(request):
-    user1 = request.user
-    users = UserProfile.objects.all()
-    orders = Order.objects.all()
-    item_order = Order.objects.filter(ref_code='s32r3sl6qd3r6qdz3w8p')
-    context={
-    'orders':orders,
-    'item_order':item_order,
-    'users':users,
 
-    }
-    return render(request, 'dashboard.html', context)
 
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
@@ -118,9 +107,7 @@ def clientCheckout(request):
 
                     order.ref_code = order_ref_code
                     order.save()
-
-               
-
+    
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
             else:

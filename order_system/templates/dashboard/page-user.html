@@ -19,10 +19,13 @@
   {% include 'dashboard/includes/order-card-snippet.html'%}
   {% if order.order_date %}
     {% include 'dashboard/order-table.html'%}
+
+    </div>
+
   {% else %}
   <div class="card">
-    <input type="button" class="btn btn-danger"> <a href="{% url 'edit-account' client.client_code %}"  name="edit" data-sid="{{client.user.id}}" >Compete Registeration <a/></input>
-    
+     <h3 class="container" style="text-align: center; color: gray;"> You have not placed any orders yet </h3>
+    <a href="{% url 'edit-account' client.client_code %}" ><h4 class="btn btn-danger" >Update Profile</h4></a>
 
   </div>
     

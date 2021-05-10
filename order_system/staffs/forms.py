@@ -318,6 +318,195 @@ class AccountForm(forms.ModelForm):
     	
 			}
 
+
+class WalletForm(forms.ModelForm):
+	class Meta:
+		model = UserAccount
+		fields = ['account_name', 'bank_name', 'account_number']
+		widgets = {
+			'account_name' : forms.TextInput(
+				attrs={
+				'id': 'accnntId', 
+		        'required': True, 
+		        'placeholder': 'Enter Account Name  ',
+		        'class':'form-control',
+				}),
+			'bank_name' : forms.TextInput(
+				attrs={
+				'id': 'bnkId', 
+		       'placeholder': 'Enter bank name ',
+				'class':'form-control',
+				}),
+			'account_number': forms.TextInput(attrs={
+				'id': 'accnoId', 
+		        'class':'form-control',
+		        'placeholder': 'Enter Account number',
+		    }),
+
+
+		}
+
+
+
+class TopUpForm(forms.Form):
+	PAYMENT_CHOICES = (
+    ('C', 'Cash'),
+    ('CD', 'Card'),
+    ('U', 'Ussd'),
+	)
+
+	amount = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'tpAmtId', 
+       'placeholder': 'Enter amount ',
+		'class':'form-control',
+		}))
+	payment_type = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)
+
+
+'''
+TODO: add cash out options
+1. to bank or 
+2. cash 
+
+'''
+
+
+
+class TransForm(forms.ModelForm):
+	class Meta:
+		model = Transaction
+		fields = ['account', 'amount', 'note']
+		widgets = {
+			'account' : forms.TextInput(
+				attrs={
+				'id': 'actId', 
+		        'required': True, 
+		        'placeholder': 'Enter Account Name  ',
+		        'class':'form-control',
+		        'disabled':'',
+				}),
+			'amount' : forms.TextInput(
+				attrs={
+				'id': 'amtId', 
+		       'placeholder': 'Enter amount ',
+				'class':'form-control',
+				}),
+			'note': forms.Textarea(attrs={
+				'id': 'noteId', 
+		        'rows': 4,
+		        'class':'form-control',
+		        'placeholder': 'give reason for your witdrawal',
+		    }),
+
+
+		}
+
+
+class SavForm(forms.ModelForm):
+	class Meta:
+		model = Transaction
+		fields = ['amount']
+		widgets = {
+			'amount' : forms.TextInput(
+				attrs={
+				'id': 'savAmtId', 
+		       'placeholder': 'Enter amount ',
+				'class':'form-control',
+				}),
+		}
+
+class ConTopUpForm(forms.Form):
+	confirmed_by = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'cfbyId', 
+       'placeholder': 'Name ',
+		'class':'form-control',
+		}))
+	trans_ref = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'trns_refId', 
+       'placeholder': 'Enter transackion ref code  ',
+		'class':'form-control',
+		}))
+	
+class SendMoneyForm(forms.Form):
+	amount = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'id': 'rec_amtId', 
+       'placeholder': 'Enter Reciever\'s amount ',
+		'class':'form-control',
+		}))
+	reciever_bank = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'rec_bnkId', 
+       'placeholder': 'Enter Reciever\'s bank name',
+		'class':'form-control',
+		}))
+	account_name = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'rec_accnaId', 
+       'placeholder': 'Confirm Reciever\'s account name',
+		'class':'form-control',
+		}))
+	
+
+class ConfirmAccountForm(forms.Form):
+	ACC_TYPE = (
+    ('Mek', 'Mek Wallet'),
+    ('Other', 'Other Bank')
+    )
+	account_type =forms.ChoiceField(
+   		widget=forms.RadioSelect(),
+   		choices=ACC_TYPE)
+	account_number = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'id': 'reciev_accId', 
+       'placeholder': 'Enter Reciever\'s account name',
+		'class':'form-control',
+		}))
+
+'''
+
+class SendMoneyForm(forms.Form):
+	ACC_TYPE = (
+    ('Mek', 'Mek Wallet'),
+    ('Other', 'Other Bank')
+    )
+	account_type =forms.ChoiceField(
+   		widget=forms.RadioSelect(),
+   		choices=ACC_TYPE)
+	amount = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'id': 'rec_amtId', 
+       'placeholder': 'Enter Reciever\'s amount ',
+		'class':'form-control',
+		}))
+	receiver_name = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'rec_naId', 
+       'placeholder': 'Enter Reciever\'s Name ',
+		'class':'form-control',
+		}))
+	bank_name = forms.CharField(widget=forms.TextInput(
+		attrs={
+		'id': 'rec_bnkId', 
+       'placeholder': 'Enter Reciever\'s bank name',
+		'class':'form-control',
+		}))
+	account_number = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'id': 'rec_actkId', 
+       'placeholder': 'Enter Reciever\'s account name',
+		'class':'form-control',
+		}))
+
+
+'''
+
+
+
+
 """
 Working fields required by serializer update api
 """

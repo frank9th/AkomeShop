@@ -24,6 +24,15 @@ from rest_framework import authentication, permissions
 from store.signal_file import *
 #from django.views.decorators.csrf import csrf_exempt
 
+t = datetime.datetime.now()
+d = datetime.datetime.now()
+
+#datetime.today().strftime('%Y-%m-%d')
+
+time = t.strftime("%X")
+date = d.strftime('%Y-%m-%d')
+
+
 
 
 # Create your views here.
@@ -34,6 +43,11 @@ def create_slug():
 def create_unique_code():
 	return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
 
+def create_trans_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
+
+def create_funding_code():
+	return ''.join(random.choices(string.digits, k=5))
 
 
 @login_required
@@ -148,17 +162,6 @@ def my_account(request, code):
 	return render(request, 'dashboard/page-user.html', context)
 
 
-
-''' remeber to delete this code sample 
-customer = Customer.objects.get(id=pk) 
-	form = addCustomerForm(instance=customer) 
-	if request.method =='POST':
-		form = addCustomerForm(request.POST , instance=customer) 
-		if form.is_valid(): # performing valid check 
-			form.save() # saving the data in the db 
-			return redirect('home')
-'''
-
 def edit_account(request, code):
 	client = UserProfile.objects.get(client_code=code)
 	form = AccountForm(instance=client)
@@ -173,6 +176,298 @@ def edit_account(request, code):
 	}
 	return render (request, 'dashboard/edit-account.html', context)
 
+
+# wallet page and function 
+def wallet(request, code):
+	client = UserProfile.objects.get(client_code=code)
+	bank = UserAccount.objects.get(user=client.user)
+	form = WalletForm(instance=bank)
+	if request.method == 'POST':
+		form = WalletForm(request.POST , instance=bank) 
+		if form.is_valid():
+			form.save()
+			messages.success(request, "Your Account Details was added successfully!")
+		else:
+			messages.warning(request, "Your Account details as been updated")
+
+	context = {
+	'bank':bank,
+	'client':client,
+	'form':form,
+	'tform':TopUpForm(),
+	'wform': TransForm(),
+	'sform': SavForm(),
+	'sendform':SendMoneyForm(),
+	'accnform':ConfirmAccountForm(),
+	}
+	return render (request, 'dashboard/wallet.html', context)
+
+
+
+# top up funds function 
+def topUp(request):
+	if request.method == "POST":
+		acctUserid = request.POST.get('actUser')
+		payment = request.POST.get('pay')
+		amount = request.POST.get('amount')
+		userAcc = UserAccount.objects.get(id=acctUserid)
+
+		'''
+		# TODO: if the top up is cash;
+		create a refrenfe code and store the request in a request model
+		once the code is confirmed, the funds should be sent to the users 
+		account and deleted from the ref table. 
+
+		'''
+		if payment == 'C':
+			fund = TopupFund(
+				pay_type=payment,
+				amount = amount,
+				date=date ,
+				time=time, 
+				ref_code = create_funding_code(),
+				)
+			fund.reciever = userAcc
+			fund.save()
+			return JsonResponse({'status':'Save', 'pending_fund':amount, 'pay_type':payment})
+
+			print("successfully funded account. new balance will reflect in approximately 20min.")
+
+		if payment == 'CD':
+			
+			print("pls wait while the system redirect you to complet the transaction ")
+			return JsonResponse({'status':0, 'pending_fund':amount, 'pay_type':payment})
+		if payment == 'U':
+
+			print("Pay into the below account to complect topUp")
+			return JsonResponse({'status':1, 'pending_fund':amount, 'pay_type':payment})
+		
+
+		return JsonResponse( { 'status':'ok'})
+
+''' request cash out functions '''
+def request_cash(request):
+	if request.method == "POST":
+			acctUserid = request.POST.get('actUser')
+			name = request.POST.get('name')
+			account = request.POST.get('account_name')
+			amount = request.POST.get('amount')
+			note = request.POST.get('note')
+			userAcc = UserAccount.objects.get(account_name=name)
+			userBal = userAcc.wallet_balance
+			# converting the form field amount to float 
+			cash = float(amount)
+
+			if (userBal > cash):
+				new_balance = userBal - cash
+				userAcc.wallet_balance = new_balance
+				userAcc.save()
+				trans = Transaction(
+					transaction_type= 'W',
+					date= date ,
+					time= time,
+					amount = cash,
+					note = note, 
+					ref_code = create_trans_code(),
+					)
+				trans.account = userAcc
+				trans.save()
+				return JsonResponse({'status':'Save', 'wallet_balance':new_balance})
+
+			elif (userBal < cash ):
+				return JsonResponse({'status':1, 'wallet_balance':userBal})
+
+			elif (userBal <= cash ):
+				return JsonResponse({'status':2, 'wallet_balance':userBal})
+
+			else:
+				return JsonResponse({'status':0, })
+
+# send money to other account function 
+def confirm_mek_account(request):
+	if request.method == "POST":
+		account_type = request.POST.get('account_type')
+		sender = request.POST.get('sender')
+		account_number = request.POST.get('reciever_account')
+		senderAcc = UserAccount.objects.get(id=sender)	
+
+
+		# checking if its mek account to get the account number 
+		if account_type == 'Mek':
+			try:
+				rec_account = UserProfile.objects.get(client_code=account_number)
+				rec_data = UserAccount.objects.get(user=rec_account.user)
+				response = rec_account.first_name + ' ' + rec_account.last_name
+				bnk = "Mek Wallet"
+				return JsonResponse({'status':'True',
+				 'response':response,
+				 'bank':bnk, 'number':account_number, 
+				 'acc_type': account_type})
+				
+				#print(response)
+				print(rec_data.wallet_balance)
+
+
+				print(account_type)
+					
+
+			except Exception as e:
+				return JsonResponse({'status':100 })
+			
+		if account_type == 'Other':
+			print("sending to other bank ")
+			return JsonResponse({'status':0 })
+
+
+	return JsonResponse( { 'status': 50})
+
+
+
+def send_money(request):
+	if request.method == "POST":
+		account_type = request.POST.get('account_type')
+		sender = request.POST.get('sender')
+		amount = request.POST.get('amount')
+		bank = request.POST.get('bank')
+		account_number = request.POST.get('account_num')
+		senderAcc = UserAccount.objects.get(id=sender)	
+		senderBal = senderAcc.wallet_balance
+
+		# checking if its mek account to get the account number 
+		if account_type == 'Mek':
+			rec_account = UserProfile.objects.get(client_code=account_number)
+			rec_data = UserAccount.objects.get(user=rec_account.user)
+			#print(rec_account)
+			#print(rec_data)
+			send_note = "Transfered to " + str(rec_data)  
+			rec_note = "Recieved Funds from  " + str(senderAcc)
+
+			recBal = rec_data.wallet_balance
+			cash = float(amount)
+			low_cash = float(300)
+
+
+			# Checking Senders Account and deductin the amount 
+		
+			if (senderBal <= low_cash ):
+				return JsonResponse({'status':300, 'wallet_balance':senderBal})
+
+
+			elif (senderBal > cash ):
+				new_balance = senderBal - cash
+				senderAcc.wallet_balance = new_balance
+				senderAcc.save()
+
+				# Creating sender's transaction 
+				sender_trans = Transaction(
+					transaction_type= 'SE',
+					date= date ,
+					time= time,
+					note = send_note,
+					amount = cash,
+					status= 'Debited',
+					ref_code = create_trans_code(),
+					)
+				sender_trans.account = senderAcc
+				sender_trans.save()
+
+				# Creating recievers's transaction 
+				rec_new_bal = recBal + cash 
+				rec_data.wallet_balance = rec_new_bal
+				rec_data.save()
+
+				reciever_trans = Transaction(
+					transaction_type= 'T',
+					date= date ,
+					time= time,
+					note= rec_note,
+					amount = cash,
+					status= 'Credited',
+					ref_code = create_trans_code(),
+					)
+				reciever_trans.account = rec_data
+				reciever_trans.save()
+
+				return JsonResponse({'status':200, 'wallet_balance':new_balance, 'reciever_wallet_balance':rec_new_bal})
+
+			elif (senderBal < cash ):
+				return JsonResponse({'status':100, 'wallet_balance':senderBal})
+
+			elif (senderBal <= cash ):
+				return JsonResponse({'status':350, 'wallet_balance':senderBal})
+
+			else:
+				return JsonResponse({'status':0, })
+
+	
+		if account_type == 'Other':
+			print("sending to other bank ")
+
+
+	return JsonResponse( { 'status':'ok'})
+
+
+
+#Invest money from wallet function 
+def invest(request):
+	if request.method == "POST":
+		acctUserid = request.POST.get('actUser')
+		amount = request.POST.get('amount')
+		userAcc = UserAccount.objects.get(id=acctUserid)
+		userBal = userAcc.wallet_balance
+		user_save_Bal = userAcc.sav_balance
+			# converting the form field amount to float 
+		cash = float(amount)
+
+		if (userBal > cash):
+			new_balance = userBal - cash
+			new_sav_balance = user_save_Bal + cash
+			userAcc.wallet_balance = new_balance
+			userAcc.sav_balance = new_sav_balance
+			userAcc.save()
+			
+			trans = Transaction(
+				transaction_type= 'Save',
+				status= 'Debited',
+				date= date ,
+				time= time,
+				amount = cash,
+				ref_code = create_trans_code(),
+				)
+			trans.account = userAcc
+			trans.save()
+			
+			
+			return JsonResponse({'status':'Save', 'wallet_balance':new_balance, 'sav_balance':new_sav_balance})
+
+		elif (userBal < cash ):
+			return JsonResponse({'status':1, 'wallet_balance':userBal})
+
+		elif (userBal <= cash ):
+			return JsonResponse({'status':2, 'wallet_balance':userBal})
+
+	else:
+		return JsonResponse({'status':0, })
+
+def trans_history(request, code):
+	client = UserProfile.objects.get(client_code=code)
+	bank = UserAccount.objects.get(user=client.user)
+	trans = bank.transaction_set.all()
+	topup = bank.topupfund_set.all()
+	context={
+	'topup':topup,
+	'client':client,
+	'bank':bank,
+	'trans':trans,
+	}
+	return render(request, 'dashboard/trans-history.html', context)
+	#return render(request, 'dashboard/ui-notifications.html', context)
+
+
+
+
+
+# not yet in use. wanted to send data to this views via Ajax
 # Edite Contact Details 
 def update_client(request):
 	try:
@@ -201,9 +496,6 @@ def update_client(request):
 		
 	except Exception as e:
 		raise e
-
-
-
 
 
 class VendorView(ListView):
@@ -303,7 +595,7 @@ def register(request):
 #User Dasbard View 
 @login_required(login_url ='login')
 #@admin_only
-def user_dashboard(request):
+def order_history(request):
 	orders = request.user.order_set.all()
 	item_ordered = orders.filter(ordered=True)
 	total_order = item_ordered.count()
@@ -318,7 +610,7 @@ def user_dashboard(request):
 	'pending': pending,
 	'out_delivery': out_delivery
 	}
-	return render(request, 'user_account/user_dashboard.html', context)
+	return render(request, 'user_account/order_history.html', context)
 
 
 def password(request):
@@ -351,11 +643,13 @@ def admin_dashboard(request):
 
 # cleark or CFO dashboard 
 def admin_cleark(request):
+	form = ConTopUpForm()
 	client = request.user.userprofile.client_code
 	order = Order.objects.all()
 	orders = order.filter(status='Delivered')
 	delivered = order.filter(status='Delivered').count()
 	context = {
+	'form':form,
 	'client': client,
 	'orders':orders,
 	'delivered':delivered,
@@ -373,32 +667,6 @@ def chart(request):
 
 def table(request):
 	return render(request, 'user_account/tables.html',{"title":table})
-
-# Add customer
-def addCustomer(request):
-	form = addCustomerForm()
-	if request.method == 'POST':
-		form = addCustomerForm(request.POST)
-		if form.is_valid():
-			form.save()
-			return redirect('/')
-
-
-	context= {'form':form}
-	return render(request, 'add_customer.html', context)
-
-# Edit Customer- not yet working
-def editCustomer(request, pk): 
-	customer = Customer.objects.get(id=pk) 
-	form = addCustomerForm(instance=customer) 
-	if request.method =='POST':
-		form = addCustomerForm(request.POST , instance=customer) 
-		if form.is_valid(): # performing valid check 
-			form.save() # saving the data in the db 
-			return redirect('home')
-	 
-	context= {'form': form, 'orders':orders}
-	return render(request, 'edit_customer.html', context)
 
 """
 TODO: to fix bug on this code:
@@ -430,11 +698,9 @@ def updateOrder(request, pk): # passing the primary key into the request views.
 
 
 def confirmCode(request):
-	agent_code = request.POST.get('agent')	
-	
+	agent_code = request.POST.get('agent')		
 	context={}
 	return render(request, 'user_account/add_client.html', context)
-
 
 def confirm_delivery(request):
 	form = DeliveryForm(request.POST or None)
@@ -460,16 +726,6 @@ def confirm_delivery(request):
 			messages.info(request, "Order does not exist")
 	context={'form':form}
 	return render(request, 'delivered_order.html', context)
-
-
-
-#def save_account()
-
-
-
-
-
-
 
 def contact(request):
 	form = ContactForm()

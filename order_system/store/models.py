@@ -35,7 +35,6 @@ class UserProfile(models.Model):
     is_seller = models.BooleanField(default=False)
     bus_account = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     is_agent = models.BooleanField(default=False)
-    wallet_balance = models.FloatField(default=0.00)
     image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
 
     def __str__(self):
@@ -287,7 +286,9 @@ class UserAccount(models.Model):
     account_name = models.CharField(max_length=200, blank=True, null=True)
     bank_name = models.CharField(max_length=200, blank=True, null=True)
     account_number = models.IntegerField(blank=True, null=True)
-
+    wallet_balance = models.FloatField(default=0.00)
+    flex_balance = models.FloatField(default=0.00)
+    sav_balance = models.FloatField(default=0.00)
 
     def __str__(self):
         return self.user.username
@@ -297,5 +298,71 @@ def useraccount_receiver(sender, instance, created, *args, **kwargs):
         useraccount = UserAccount.objects.create(user=instance)
 
 post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
+
+
+class Transaction(models.Model):
+    TRANS_STATUS = (
+    ('D', 'Debited'),
+    ('C', 'Credited'),
+    ('P', 'Pending')
+    )
+
+    TRANS_TYPE = (
+    ('T', 'Top Up'),
+    ('W', 'Withdrawal'),
+    ('SV', 'Save'),
+    ('SE', 'Send')
+    )
+
+    transaction_type = models.CharField(choices=TRANS_TYPE, max_length=20)
+    account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    date = models.DateField()
+    time= models.TimeField()
+    status = models.CharField( choices=TRANS_STATUS, max_length=10, default='Pending')
+    #debited = models.BooleanField(default=False)
+    #credited = models.BooleanField(default=False)
+    note = models.CharField(max_length=200, null=True, blank=True)
+    ref_code = models.CharField(max_length=20, blank=True, null=True)
+
+    def __str__(self):
+        return self.status
+
+class TopupFund(models.Model):
+    reciever = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+    pay_type = models.CharField(max_length=20) 
+    amount = models.FloatField()
+    date = models.DateField()
+    time= models.TimeField()
+    ref_code = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.reciever.account_name
+
+class TopupConfirm(models.Model):
+    user = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+    #sender_account = models.CharField(max_length=200, null=True, blank=True)
+    trans_ref = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.trans_ref
+
+
+
+class SendHistory(models.Model):
+    ACC_TYPE = (
+    ('Mek', 'Mek Wallet'),
+    ('Other', 'Other Bank'),
+    )
+    sender = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+    account_type = models.CharField(choices=ACC_TYPE, max_length=10)
+    amount = models.FloatField()
+    account_name = models.CharField(max_length=200)
+    account_number = models.CharField(max_length=200)
+    bank_name = models.CharField(max_length=200)
+    trans_ref = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.account_type
 
 

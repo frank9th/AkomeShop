@@ -1,0 +1,28 @@
+.overlay {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    text-align:center;
+    z-index: 200;
+    background-color: rgba(0,0,0,0.5);
+}   
+.overlay .overlay-box {
+    width: 450px;
+    margin: 100px auto;
+    text-align: center;
+    padding: 10px;
+}
+.overlay .overlay-close {
+    float:right;
+    margin: 10px 15px 0px 0px;
+}
+#msg-box p.message {
+    margin: 20px 10px;
+    text-align: center;
+}
+#msg-box .btn {
+    width: 100%;
+}

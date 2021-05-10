@@ -1,0 +1,22 @@
+
+{% extends 'dashboard/layouts/base.html' %}
+{% load static %}
+
+{% block title %} Page User {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+	<h1> Wallet </h1>
+	
+	{% include 'dashboard/includes/wallet-card-snippet.html' %}
+	{% include 'dashboard/includes/bank_details_snippet.html' %}
+
+ {% block javascripts %}
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
+		
+
+{% endblock %}
