@@ -35,8 +35,7 @@
       	<div class="card-body">
       	<table class="table responsive">
 			<thead>
-				<th>Type </th>	
-				<th> date </th>
+			
 				<th> time </th>
 				<th> amount </th>
 				<th> ref </th>
@@ -45,10 +44,9 @@
 			<tbody id="topupTable">
 				{% for object in topup %}
 				<tr>
-					<td> {{object.pay_type}}</td>	
-					<td> {{object.date}}</td>
+					
 					<td> {{object.time}}</td>
-					<td> - &#8358; {{object.amount}}</td>
+					<td> &#8358; {{object.amount}}</td>
 					<td> {{object.ref_code}}</td>
 					<td> <input type="button" name="action" data-sid="{{object.id}}" value="Action" class="btn btn-warning btn-sm btn-edit">
 					

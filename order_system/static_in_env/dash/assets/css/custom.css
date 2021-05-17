@@ -1,0 +1,27 @@
+  .auto-save {
+    position: absolute;
+    right: 1.5rem;
+    top: 2.2rem;
+    display: flex;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #929191;
+}
+.auto-save-text{
+  position: absolute;
+  right: 1.5rem;
+  font-size: 10px;
+  font-color: #929191;
+
+}
+
+.shop-footer{
+    position: absolute;
+    width: 1440px;
+    height: 434px;
+    left: 0px;
+    top: 2049px;
+    background-color: red;
+
+
+}

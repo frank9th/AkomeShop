@@ -20444,4 +20444,28 @@ Copyright (c) 2015 Daniel Eden
   padding-right: 0;
 }
 
+
+.auto-save {
+    position: absolute;
+    right: 1.5rem;
+    top: 2.2rem;
+    display: flex;
+    color: var(--title-color);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.bx {
+    font-family: 'boxicons'!important;
+    font-weight: normal;
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    display: inline-block;
+    text-transform: none;
+    speak: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /*# sourceMappingURL=dashboard-free.css.map */

@@ -97,6 +97,19 @@ def clientCheckout(request):
                     order_items = order.items.all()
                     order_items.update(ordered=True)
                     for item in order_items:
+
+                        sel_amount = item.quantity * item.item.price
+
+                        #geting the seller of the item 
+                        seller = item.item.seller
+
+                        # adding each item price to the seller's flex balance 
+                        new_flex_bal = seller.flex_balance + sel_amount
+
+                        seller.flex_balance = new_flex_bal
+
+                        seller.save()
+                        #print(item.item.seller.wallet_balance)
                         item.save()
                     order.ordered = True
                     order.payment = payment
@@ -474,7 +487,8 @@ class PaymentView(View):
 class HomeView(ListView):
     model = Product
     paginate_by = 10
-    template_name = "home.html"
+    #template_name = "home.html"
+    template_name = "welcome.html"
 
 
 class OrderSummaryView(LoginRequiredMixin, View):

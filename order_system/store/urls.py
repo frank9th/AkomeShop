@@ -18,7 +18,6 @@ app_name = 'store'
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),
-   
     path('cart/',views.cart, name='cart'),
     path('confirm-checkout/',views.clientCheckout, name='confirm-checkout'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),

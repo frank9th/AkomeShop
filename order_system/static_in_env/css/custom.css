@@ -1,0 +1,176 @@
+
+/*===== VARIABLES CSS =====*/
+:root {
+  --header-height: 3rem;
+
+  /*---- yello---*/
+  --first-image: url("assets/img/man_yellow.png");
+
+  /*========== Colors ==========*/
+
+
+  --first-color: #DA2535;
+  --title-color: #161212;
+  --text-color: #5B5757;
+  --text-color-light: #8F8A8A;
+
+
+  --body-color: #FEFBFB;
+  --body-second-color: #FEFBFB;
+  --container-color: #FFF;
+ 
+ 
+
+  /*========== Font and typography ==========*/
+  --body-font: 'Poppins', sans-serif;
+  --biggest-font-size: 2rem;
+  --h2-font-size: 1.25rem;
+  --h3-font-size: 1.125rem;
+  --normal-font-size: .938rem;
+  --small-font-size: .813rem;
+
+  /*========== Font weight ==========*/
+  --font-semi-bold: 600;
+  --font-bold: 700;
+
+  /*========== Margenes ==========*/
+  --mb-1: .5rem;
+  --mb-2: 1rem;
+  --mb-3: 1.5rem;
+  --mb-4: 2rem;
+  --mb-5: 2.5rem;
+  --mb-6: 3rem;
+  /*========== z index ==========*/
+
+  --z-tooltip: 10;
+  --z-fixed: 100;
+}
+
+
+
+
+.banner{
+    background-color: orange;
+    height:50px;
+}
+
+
+
+
+
+
+.auto-save {
+    position: absolute;
+    right: 1.5rem;
+    top: 2.2rem;
+    display: flex;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #929191;
+}
+.auto-save-text{
+	position: absolute;
+	right: 1.5rem;
+	font-size: 10px;
+	font-color: #929191;
+
+}
+
+.shop-footer{
+    position: absolute;
+    width: 100%;
+    height: 234px;
+    left: 0px;
+
+    background-color:linear-gradient(106.24deg, #EEE0CA -0.66%, #F9F3EA 96.85%);
+
+}
+
+
+
+.opening__time{
+  padding-top: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: var(--mb-2);
+}
+
+
+
+
+.footer_container{
+height: 350px;
+left: 0px;
+margin-top: 200px;
+padding-left: 100px;
+padding-top: 50px;
+
+background: linear-gradient(106.24deg, #EEE0CA -0.66%, #F9F3EA 96.85%);
+
+}
+
+.f_title{
+    left: 216px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 20px;
+    margin-top: 20px;
+
+    color: #4C4C4C;
+
+}
+.f_mail{
+    margin-top: 20px;
+
+font-family: Montserrat;
+font-style: normal;
+font-weight: normal;
+font-size: 17px;
+line-height: 21px;
+}
+
+.f_link{
+
+color: #666666;
+
+}
+.f_link:hover{
+    color: #6C1719;
+    font-weight: bold;
+
+}
+.f_social{
+    left: 1228.92px;
+}
+.copy_write{
+
+height: 32px;
+left: 610px;
+margin-top: 45px;
+
+font-family: Montserrat;
+font-style: normal;
+font-weight: normal;
+font-size: 13px;
+line-height: 16px;
+text-align: center;
+
+color: #666666;
+
+}
+
+@media screen and (max-width: 768px){
+    .footer_container{
+    height: 600px;
+    padding-top: 50px;
+    padding-left: 30px;
+
+    }
+    .opening__time{
+        font-size: 14px;
+    }
+
+}
+

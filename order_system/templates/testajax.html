@@ -10,6 +10,73 @@
 				}
 			$("#codeId").keyup(function(){});// key upclose 
 		**/
+		var now = Date()
+
+	
+
+		$("#auto-save-off").click(function(){
+			console.log("Auto save button clicked ");
+			console.log(now)
+			
+		
+		});
+
+		var clicks = 0; // counter 
+		var a = document.getElementById('auto-save'); // element
+		var t = document.getElementById('save-off'); // element
+	
+		a.onclick = function(b) { 
+			a.classList.add("text-primary");
+
+			clicks = ++clicks
+
+			var c = localStorage.getItem("saveOn")
+			console.log(c)
+
+			if (localStorage.getItem("saveOn")) {
+				$("#save-on").show();
+				$("#save-off").hide();
+
+			}
+				
+
+
+			if (clicks == 1 ){
+				window.alert("Activating auto save ")
+				console.log("activating auto save ")
+				console.log(clicks)
+				$("#save-on").show();
+				$("#save-off").hide();
+			
+			
+				localStorage.setItem('saveOn', 'clicks');
+				console.log(localStorage.getItem("saveOn"))
+			};
+			if (clicks > 1 ){	
+				a.classList.remove("text-primary");
+				$("#save-on").hide();
+				$("#save-off").show();
+				alert("do you want to disable auto save? ")
+				console.log("do you want to disable auto save? "); 
+
+			};
+			if (clicks > 2 ){	
+				a.classList.add("text-primary");
+				$("#save-on").show();
+				$("#save-off").hide();
+				window.alert("What do you want to do? ")
+				console.log("what do you want ? "); 
+
+			};
+			
+
+		// onclick not onClick
+		  // increment it
+		}
+
+
+
+
 
 		$("#checkOut").click(function(){
 			console.log("Checkout Btn Clicked ");
@@ -62,8 +129,10 @@
 								$("#tpForm-card").hide();
 
 								//alert("topop successful")
-								$("#tsmsg").text("99% completed, Just a minute. we need to confirm your cash. ")
+								$("#tsmsg").text("99% completed, Just a minute. we need to confirm your cash. Ref_code: " + data.trans_code )
 								$("#tsmsg").show()
+
+
 							//alert("topop successful")
 								/*
 								TODO: SEND THIS TO CFO DASHBOARD TO CONFIRM PAY 
@@ -97,7 +166,7 @@
 								$("#tpCard").show();
 								$("#tpForm-card").hide();
 								//alert("topop successful")
-								$("#tpmsg").text("Greate, kindly pay into Mekly Integrated Servive Ltd - <br> <strong> 113339999</strong> and enter ref_code to complete transaction ")
+								$("#tpmsg").text("Greate, kindly pay into; Acc. No: 113339999. Bank: UBA to complete transaction  Ref_code: " + data.trans_code  )
 								$("#tpmsg").show()
 							//alert("topop successful")
 								/*
@@ -156,7 +225,7 @@
 								$("#draw").show();
 								$("#dform").hide();
 							//alert("topop successful")
-								$("#wsmsg").text(" You just requested for a cash out of " +  amount + " to account" )
+								$("#wsmsg").text(" You just requested for a cash out of " +  amount + " Ref_code:" + data.trans_code)
 								$("#wsmsg").show();
 								$("#wpmsg").hide();
 
@@ -217,19 +286,19 @@
 				csrfmiddlewaretoken: csrf,
 
 			}
-		console.log(confirm_data)
 
 			$.ajax({
 						url : "{% url 'confirm-mek-account' %}",
 						method : "POST",
 						data : confirm_data, 
 						success:function(data) {
-							if (data.status == "True"){
-								rec_name = data.response
-								rec_bnk = data.bank
-								rec_acc = data.number
-								rec_acc_type = data.acc_type
+							rec_name = data.response
+							rec_bnk = data.bank
+							rec_acc = data.number
+							rec_acc_type = data.acc_type
+							//console.log(rec_acc_type)
 
+							if (data.status == "True"){		
 									new_bal = ""
 									$("#sendform").show();
 									$("#accnform").hide();
@@ -242,7 +311,7 @@
 									$("#rec_act_no_Id").val(rec_acc);
 									$("#rec_act_type_Id").val(rec_acc_type);
 
-									console.log(rec_acc_type)
+									//console.log(rec_acc_type)
 									//$("#sepmsg").hide();
 								
 								}
@@ -253,7 +322,16 @@
 								$("#cfwmsg").show();
 								}
 							if (data.status == 50 ){
-								alert('please select an account type ')
+								$("#sendform").show();
+									$("#accnform").hide();
+								
+									//alert("topop successful")
+								$("#cfsmsg").text("Sending to " + rec_acc + " account " )
+								$("#cfsmsg").show();
+								$("#rec_act_no_Id").val(rec_acc);
+								$("#rec_act_type_Id").val(rec_acc_type);
+								//console.log(rec_acc_type)
+								//alert('please select an account type ')
 								}
 							if (data.status == 100 ){
 								alert('Invalid Account number ')
@@ -265,7 +343,6 @@
 	event.preventDefault();
 
 	});
-
 
 	$("#send_confirm").click(function(){
 		console.log("Confirm send money button clicked");
@@ -320,7 +397,7 @@
 								$("#send_card_draw").show();
 								$("#sendform").hide();
 							//alert("Send money successful")
-								$("#sesmsg").text(" Transfered successful " )
+								$("#sesmsg").text(" Transfered successful, Ref_code:" + data.trans_code )
 								$("#sesmsg").show();
 								//$("#sepmsg").hide();
 
@@ -375,6 +452,8 @@
 			console.log("Save Proceed button clicked ")
 				let savAmt = $("#savAmtId").val();
 				let csrf = $("input[name=csrfmiddlewaretoken]").val();
+				let pyd = $("#pay_dayId").val();
+				console.log(pyd);
 				let acctuser = $("#accUserId").val();
 				console.log(savAmt)
 
@@ -383,7 +462,16 @@
 				alert("Enter the amount you want to save ")
 			}
 
+				else if ( pyd == ''){
+				console.log("Enter Savings duration   ")
+				alert("Enter Savings duration ")
+			}
+				else if ( pyd < 3){
+				console.log("The minimum duration is 3 months  ")
+				alert("whoops! The minimum duration is 3 months ")
+			}
 				samount ={
+					pay_day: pyd,
 					actUser: acctuser,
 					amount:savAmt,
 					csrfmiddlewaretoken: csrf,
@@ -415,6 +503,14 @@
 							
 							}
 
+						if (data.status == 100 ){
+							$("#savCard").show();
+							$("#savForm-card").hide();
+							$("#sdmsg").text("We are so sorry. the minimum saveings duration is 3 months. in other to qualify to earn 10% on our raffle draw ")
+							$("#sdmsg").show();
+							$("#smsg").hide();
+							}
+
 						if (data.status == 1 ){
 							$("#savCard").show();
 							$("#savForm-card").hide();
@@ -439,15 +535,6 @@
 
 		event.preventDefault();
 		});
-
-		// Confirming Top-up/Withdraw function 
-
-		$("#tpnotice-btn").click(function(){
-			console.log("confirm topup button clicked ")
-
-			$("#tpnotice").hide();
-			$("#con_top_form").show();
-		})
 
 
 
@@ -499,6 +586,84 @@
 	});
 
 	
+	// Confirming Transaction funtion 
+
+	$("#transTable").on("click", ".btn-action", function(){
+		console.log("confirmed Button Clicked")
+		//console.log("confirmed Button Clicked")
+		let id = $(this).attr("data-sid");
+		let code = $("#trns_refId").val(id);
+		
+		let user = $("#userId").val();
+		let csrf = $("input[name=csrfmiddlewaretoken]").val();
+		
+		trans_data = {code:id, csrfmiddlewaretoken: csrf, user_id:user }
+
+		console.log(trans_data);
+		console.log(id);
+		
+	
+		//mythis= this;
+			$.ajax({
+					url : "{% url 'confirm-topup' %}",
+					method : "POST",
+					data : trans_data, 
+					success:function(data) {
+						if (data.status== 200){
+							x = data.trans_data
+							output= " "
+							console.log(x)
+							for (i= 0; i < x.length; i++ ){
+								output += "<tr><td>" + x[i].status + "</td><td>" + x[i].transaction_type + "</td><td>" + x[i].amount + "</td><td>" + x[i].note + "</td><td>" + x[i].time + "</td><td>" + x[i].ref_code + "</td><td><input type='button' name='action' value='Action' class='btn btn-warning btn-sm btn-action' data-sid=" + x[i].ref_code + ">"	
+							}
+							$("#tran_smsg").text("Transaction Completed")
+							$("#tran_smsg").show();
+							$("#transTable").html(output);
+							//$(mythis).closest("tr").fadeOut();
+
+
+
+						}
+
+
+					
+										
+					}
+				});
+
+
+
+/*
+
+
+
+		$.ajax({
+			url: "{% url 'confirm-topup' %}",
+			method: "POST",
+			data: trans_data, 
+			success: function(data){
+				console.log(data);
+				if (data.status == 1){
+					//console.log("Data Deleted successfully");
+					//$("#msg").text("Transaction Completed")
+					//$("#msg").show();
+					//$(mythis).closest("tr").fadeOut();
+				};
+				if (data.status == 0){
+					//console.log("Unable to delete data");
+					//$("#msg").text("Unable to confirm transaction")
+					//$("#msg").show();
+				};
+			},
+		});
+		
+	*/
+		
+	}); // end Delete contact Fuction 
+
+
+
+
 
 	// Get order item input
 	$("#addCart").click(function(){

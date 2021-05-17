@@ -371,8 +371,6 @@ TODO: add cash out options
 
 '''
 
-
-
 class TransForm(forms.ModelForm):
 	class Meta:
 		model = Transaction
@@ -402,7 +400,7 @@ class TransForm(forms.ModelForm):
 
 		}
 
-
+'''
 class SavForm(forms.ModelForm):
 	class Meta:
 		model = Transaction
@@ -414,19 +412,32 @@ class SavForm(forms.ModelForm):
 		       'placeholder': 'Enter amount ',
 				'class':'form-control',
 				}),
-		}
 
-class ConTopUpForm(forms.Form):
-	confirmed_by = forms.CharField(widget=forms.TextInput(
+			}
+
+'''
+class SavForm(forms.Form):
+	amount = forms.IntegerField(widget=forms.NumberInput(
 		attrs={
-		'id': 'cfbyId', 
-       'placeholder': 'Name ',
+		'id': 'savAmtId', 
+      	'placeholder': 'Enter amount to save ',
 		'class':'form-control',
 		}))
+	duration = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+		'id': 'pay_dayId', 
+       'placeholder': 'Enter months e.g(3 or 4 ...)',
+		'class':'form-control',
+		}))
+
+
+
+
+class ConTopUpForm(forms.Form):
 	trans_ref = forms.CharField(widget=forms.TextInput(
 		attrs={
 		'id': 'trns_refId', 
-       'placeholder': 'Enter transackion ref code  ',
+       'placeholder': 'Enter transaction ref code  ',
 		'class':'form-control',
 		}))
 	
@@ -449,7 +460,6 @@ class SendMoneyForm(forms.Form):
        'placeholder': 'Confirm Reciever\'s account name',
 		'class':'form-control',
 		}))
-	
 
 class ConfirmAccountForm(forms.Form):
 	ACC_TYPE = (

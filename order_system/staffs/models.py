@@ -13,7 +13,7 @@ class Agent(models.Model):
 	car = models.BooleanField(default=False)
 
 	def __str__(self):
-		return f"{self.agent_code } |  {self.zone}"
+		return f"{self.agent_code }"
 
 
 class Vendor(models.Model):

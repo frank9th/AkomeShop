@@ -20,6 +20,7 @@ urlpatterns = [
     path('edit-account/<code>/', views.edit_account, name='edit-account'),
     path('wallet/<code>/', views.wallet, name='wallet'),
     path('topup/', views.topUp, name='topup'),
+    path('confirm-topup/', views.topup_confirm, name='confirm-topup'),
     path('request-cash/', views.request_cash, name='request-cash'),
     path('confirm-mek-account/', views.confirm_mek_account, name='confirm-mek-account'),
     path('send-money/', views.send_money, name='send-money'),

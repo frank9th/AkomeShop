@@ -12,6 +12,7 @@ import requests
 from django.http import JsonResponse 
 import json 
 import datetime
+from dateutil.relativedelta import relativedelta
 from .forms import *
 from store.views import *
 from store.models import *
@@ -41,13 +42,14 @@ def create_slug():
 	return ''.join(random.choices(string.ascii_lowercase, k=5))
 
 def create_unique_code():
-	return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+	return ''.join(random.choices(string.digits, k=10))
 
 def create_trans_code():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
-
+    return ''.join(random.choices(string.digits, k=6))
+'''
 def create_funding_code():
-	return ''.join(random.choices(string.digits, k=5))
+	return ''.join(random.choices(string.digits, k=9))
+'''
 
 
 @login_required
@@ -205,12 +207,64 @@ def wallet(request, code):
 
 
 # top up funds function 
+# Top up funds confirmation funtion 
+def topup_confirm(request):
+	if request.method == "POST":
+		tr_code = request.POST.get('code')
+		staff = request.POST.get('user_id')
+		trans = Transaction.objects.get(ref_code=tr_code)
+		wallet = UserAccount.objects.get(user=trans.account.user)
+		staff_profile = UserProfile.objects.get(user=staff)
+
+		# Identifiying and keeping record of who count and approved a transaction 
+		approver = TopupConfirm(
+			amount=trans.amount,
+			trans_ref=tr_code,
+			)
+		approver.approved_by = staff_profile 
+		new_wal =  wallet.wallet_balance + trans.amount
+
+		# updating the other 
+
+		trans.status = 'Credited'
+		wallet.wallet_balance = new_wal
+
+		approver.save()
+		wallet.save()
+
+		trans.save()	
+
+		'''
+		TODO: HANDLING THE RESPONSE 
+
+
+		'''
+
+		tr = Transaction.objects.all()
+		trans= tr.filter(status='Pending').order_by('-time')
+		con = Transaction.objects.values().filter(status='Pending').order_by('-time')
+
+		trans_data = list(con)
+	
+
+		return JsonResponse({'status':200, 'message':'Topup confirm', 'new_wallet':new_wal, 'trans_data':trans_data})
+	else:
+	
+		return JsonResponse({'status':300, 'message':'Order does not exists'})
+
+	return JsonResponse({'status':00, })
+	
+
+# top up funds request function 
 def topUp(request):
 	if request.method == "POST":
 		acctUserid = request.POST.get('actUser')
 		payment = request.POST.get('pay')
 		amount = request.POST.get('amount')
 		userAcc = UserAccount.objects.get(id=acctUserid)
+		bal = userAcc.wallet_balance
+
+		trans_ref = create_trans_code()
 
 		'''
 		# TODO: if the top up is cash;
@@ -219,28 +273,44 @@ def topUp(request):
 		account and deleted from the ref table. 
 
 		'''
+		
 		if payment == 'C':
-			fund = TopupFund(
-				pay_type=payment,
-				amount = amount,
-				date=date ,
-				time=time, 
-				ref_code = create_funding_code(),
-				)
-			fund.reciever = userAcc
-			fund.save()
-			return JsonResponse({'status':'Save', 'pending_fund':amount, 'pay_type':payment})
+			t_note = "Cash topup request, waiting to confirm cash"
+			top_wallet = Transaction(
+					transaction_type= 'T',
+					date= date ,
+					time= time,
+					note = t_note,
+					amount = amount,
+					ref_code = trans_ref,
+					)
+			top_wallet.account = userAcc
+
+			top_wallet.save()
+			return JsonResponse({'status':'Save', 'pending_fund':amount, 'pay_type':payment, 'trans_code':trans_ref, 'wallet':bal})
 
 			print("successfully funded account. new balance will reflect in approximately 20min.")
 
-		if payment == 'CD':
-			
+		if payment == 'CD':		
 			print("pls wait while the system redirect you to complet the transaction ")
 			return JsonResponse({'status':0, 'pending_fund':amount, 'pay_type':payment})
 		if payment == 'U':
+			t_note = "Ussd code topup request, waiting to confirm alert "
+			top_wallet = Transaction(
+					transaction_type= 'T',
+					date= date ,
+					time= time,
+					note = t_note,
+					amount = amount,
+					ref_code = trans_ref,
+					)
+			top_wallet.account = userAcc
+
+			top_wallet.save()
+			
 
 			print("Pay into the below account to complect topUp")
-			return JsonResponse({'status':1, 'pending_fund':amount, 'pay_type':payment})
+			return JsonResponse({'status':1, 'pending_fund':amount, 'pay_type':payment, 'trans_code':trans_ref})
 		
 
 		return JsonResponse( { 'status':'ok'})
@@ -257,22 +327,23 @@ def request_cash(request):
 			userBal = userAcc.wallet_balance
 			# converting the form field amount to float 
 			cash = float(amount)
+			trans_ref = create_trans_code()
 
 			if (userBal > cash):
 				new_balance = userBal - cash
 				userAcc.wallet_balance = new_balance
 				userAcc.save()
 				trans = Transaction(
-					transaction_type= 'W',
+					transaction_type= 'Withdrawal',
 					date= date ,
 					time= time,
 					amount = cash,
 					note = note, 
-					ref_code = create_trans_code(),
+					ref_code = trans_ref
 					)
 				trans.account = userAcc
 				trans.save()
-				return JsonResponse({'status':'Save', 'wallet_balance':new_balance})
+				return JsonResponse({'status':'Save', 'wallet_balance':new_balance, 'trans_code':trans_ref})
 
 			elif (userBal < cash ):
 				return JsonResponse({'status':1, 'wallet_balance':userBal})
@@ -283,14 +354,14 @@ def request_cash(request):
 			else:
 				return JsonResponse({'status':0, })
 
-# send money to other account function 
+# sending money account function 
+# Confirm send moeny to mek account function 
 def confirm_mek_account(request):
 	if request.method == "POST":
 		account_type = request.POST.get('account_type')
 		sender = request.POST.get('sender')
 		account_number = request.POST.get('reciever_account')
 		senderAcc = UserAccount.objects.get(id=sender)	
-
 
 		# checking if its mek account to get the account number 
 		if account_type == 'Mek':
@@ -303,35 +374,32 @@ def confirm_mek_account(request):
 				 'response':response,
 				 'bank':bnk, 'number':account_number, 
 				 'acc_type': account_type})
-				
-				#print(response)
-				print(rec_data.wallet_balance)
-
-
-				print(account_type)
 					
-
 			except Exception as e:
 				return JsonResponse({'status':100 })
 			
 		if account_type == 'Other':
-			print("sending to other bank ")
-			return JsonResponse({'status':0 })
+			return JsonResponse({'status':50,
+				'number':account_number, 
+				 'acc_type': account_type,
+				})
+
+	return JsonResponse( { 'status': 0})
 
 
-	return JsonResponse( { 'status': 50})
-
-
-
+# send money to other account function 
 def send_money(request):
 	if request.method == "POST":
 		account_type = request.POST.get('account_type')
 		sender = request.POST.get('sender')
 		amount = request.POST.get('amount')
+		rec_account_name = request.POST.get('account')
 		bank = request.POST.get('bank')
 		account_number = request.POST.get('account_num')
 		senderAcc = UserAccount.objects.get(id=sender)	
 		senderBal = senderAcc.wallet_balance
+		cash = float(amount)
+		low_cash = float(300)
 
 		# checking if its mek account to get the account number 
 		if account_type == 'Mek':
@@ -343,30 +411,27 @@ def send_money(request):
 			rec_note = "Recieved Funds from  " + str(senderAcc)
 
 			recBal = rec_data.wallet_balance
-			cash = float(amount)
-			low_cash = float(300)
-
 
 			# Checking Senders Account and deductin the amount 
 		
 			if (senderBal <= low_cash ):
 				return JsonResponse({'status':300, 'wallet_balance':senderBal})
 
-
 			elif (senderBal > cash ):
 				new_balance = senderBal - cash
 				senderAcc.wallet_balance = new_balance
 				senderAcc.save()
+				trans_code = create_trans_code()
 
 				# Creating sender's transaction 
 				sender_trans = Transaction(
-					transaction_type= 'SE',
+					transaction_type= 'Send',
 					date= date ,
 					time= time,
 					note = send_note,
 					amount = cash,
 					status= 'Debited',
-					ref_code = create_trans_code(),
+					ref_code = trans_code 
 					)
 				sender_trans.account = senderAcc
 				sender_trans.save()
@@ -377,18 +442,18 @@ def send_money(request):
 				rec_data.save()
 
 				reciever_trans = Transaction(
-					transaction_type= 'T',
+					transaction_type= 'Topup',
 					date= date ,
 					time= time,
 					note= rec_note,
 					amount = cash,
 					status= 'Credited',
-					ref_code = create_trans_code(),
+					ref_code = trans_code ,
 					)
 				reciever_trans.account = rec_data
 				reciever_trans.save()
 
-				return JsonResponse({'status':200, 'wallet_balance':new_balance, 'reciever_wallet_balance':rec_new_bal})
+				return JsonResponse({'status':200, 'wallet_balance':new_balance, 'reciever_wallet_balance':rec_new_bal, 'trans_code':trans_code })
 
 			elif (senderBal < cash ):
 				return JsonResponse({'status':100, 'wallet_balance':senderBal})
@@ -399,9 +464,59 @@ def send_money(request):
 			else:
 				return JsonResponse({'status':0, })
 
-	
+
+		# Functions for sendind cash to other bank 
 		if account_type == 'Other':
-			print("sending to other bank ")
+			#print(rec_account)
+			#print(rec_data)
+			send_note = "Sendind to " + bank  + " bank " + " Num: " +  account_number  +  " Name: " + rec_account_name  
+			# Checking Senders Account and deductin the amount 
+			if (senderBal <= low_cash ):
+				return JsonResponse({'status':300, 'wallet_balance':senderBal})
+
+			elif (senderBal > cash ):
+				new_balance = senderBal - cash
+				senderAcc.wallet_balance = new_balance
+				senderAcc.save()
+
+				ref_code = create_trans_code(),
+
+				# Creating sender's transaction 
+				sender_trans = Transaction(
+					transaction_type= 'SE',
+					date= date ,
+					time= time,
+					note = send_note,
+					amount = cash,
+					status= 'Pending',
+					ref_code = ref_code 
+					)
+				sender_trans.account = senderAcc
+				sender_trans.save()
+
+				# Create send hitory model data 
+
+				send_trans = SendHistory(
+					account_type= 'Other',
+					amount = cash,
+    				account_name = rec_account_name,
+    				account_number = account_number,
+    				bank_name = bank,
+   					trans_ref = ref_code, 
+					)
+				send_trans.sender = senderAcc
+				send_trans.save()
+
+				return JsonResponse({'status':200, 'wallet_balance':new_balance, 'trans_code':ref_code})
+
+			elif (senderBal < cash ):
+				return JsonResponse({'status':100, 'wallet_balance':senderBal})
+
+			elif (senderBal <= cash ):
+				return JsonResponse({'status':350, 'wallet_balance':senderBal})
+
+			else:
+				return JsonResponse({'status':0, })
 
 
 	return JsonResponse( { 'status':'ok'})
@@ -412,6 +527,7 @@ def send_money(request):
 def invest(request):
 	if request.method == "POST":
 		acctUserid = request.POST.get('actUser')
+		duration = request.POST.get('pay_day')
 		amount = request.POST.get('amount')
 		userAcc = UserAccount.objects.get(id=acctUserid)
 		userBal = userAcc.wallet_balance
@@ -419,26 +535,50 @@ def invest(request):
 			# converting the form field amount to float 
 		cash = float(amount)
 
-		if (userBal > cash):
+		trans_code = create_trans_code()
+
+		if (userBal > cash and  float(duration) > 2):
 			new_balance = userBal - cash
 			new_sav_balance = user_save_Bal + cash
 			userAcc.wallet_balance = new_balance
 			userAcc.sav_balance = new_sav_balance
 			userAcc.save()
+
+			# Calculating Future pay_day
+			pay_d = d + relativedelta(months=+int(duration))
+
+			sav_note = " savings duration is " + str(pay_d)
+
 			
+  			#pay_d = date + timedelta(days=24)
 			trans = Transaction(
-				transaction_type= 'Save',
+				transaction_type= 'SV',
 				status= 'Debited',
 				date= date ,
+				note=sav_note,
 				time= time,
 				amount = cash,
-				ref_code = create_trans_code(),
+				ref_code = trans_code,
 				)
 			trans.account = userAcc
 			trans.save()
 			
+			save_funds = Saving(
+				amount = cash,
+				save_date = date,
+				pay_date = pay_d,
+				ref_code = trans_code,
+
+				)
+			save_funds.owner = userAcc
+
+			save_funds.save()
 			
-			return JsonResponse({'status':'Save', 'wallet_balance':new_balance, 'sav_balance':new_sav_balance})
+			return JsonResponse({'status':'Save', 'wallet_balance':new_balance, 'sav_balance':new_sav_balance, 'pay_out':pay_d})
+
+		elif (userBal > cash and  float(duration) < 3 ):
+			return JsonResponse({'status':100, 'wallet_balance':userBal})
+		
 
 		elif (userBal < cash ):
 			return JsonResponse({'status':1, 'wallet_balance':userBal})
@@ -452,8 +592,8 @@ def invest(request):
 def trans_history(request, code):
 	client = UserProfile.objects.get(client_code=code)
 	bank = UserAccount.objects.get(user=client.user)
-	trans = bank.transaction_set.all()
-	topup = bank.topupfund_set.all()
+	trans = bank.transaction_set.all().order_by('-date')
+	topup = bank.transaction_set.filter(status='Pending', transaction_type='T').order_by('-date')
 	context={
 	'topup':topup,
 	'client':client,
@@ -596,7 +736,8 @@ def register(request):
 @login_required(login_url ='login')
 #@admin_only
 def order_history(request):
-	orders = request.user.order_set.all()
+	orders = request.user.order_set.filter().order_by('-ordered_date')
+	
 	item_ordered = orders.filter(ordered=True)
 	total_order = item_ordered.count()
 	delivered = item_ordered.filter(status='Delivered').count()
@@ -610,7 +751,7 @@ def order_history(request):
 	'pending': pending,
 	'out_delivery': out_delivery
 	}
-	return render(request, 'user_account/order_history.html', context)
+	return render(request, 'dashboard/order_history.html', context)
 
 
 def password(request):
@@ -622,13 +763,14 @@ def password(request):
 @admin_only
 #@allowed_users('admin')
 def admin_dashboard(request):
-	#clients = Client.objects.all()
-	orders = Order.objects.all()
+	#clients = UserProfile.objects.all()
+	orders = Order.objects.all().order_by('-ordered_date')
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
 	context = {
+	#'clients':clients,
 	'orders':orders,
 	'total_order':total_order,
 	'delivered':delivered,
@@ -636,24 +778,27 @@ def admin_dashboard(request):
 	'out_delivery':out_delivery,
 
 	}
+	return render(request, 'dashboard/sales-dashboard.html', context)
 
-	return render(request, 'admin_account/dashboard.html', context)
+	#return render(request, 'admin_account/dashboard.html', context)
 
-	
+
 
 # cleark or CFO dashboard 
 def admin_cleark(request):
 	form = ConTopUpForm()
+	tr = Transaction.objects.all()
+	trans= tr.filter(status='Pending').order_by('-time')
 	client = request.user.userprofile.client_code
 	order = Order.objects.all()
 	orders = order.filter(status='Delivered')
 	delivered = order.filter(status='Delivered').count()
 	context = {
+	'trans':trans,
 	'form':form,
 	'client': client,
 	'orders':orders,
 	'delivered':delivered,
-
 	}
 	return render(request, 'dashboard/cleark-dashboard.html', context)
 

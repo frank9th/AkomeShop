@@ -38,7 +38,26 @@ class UserProfile(models.Model):
     image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
 
     def __str__(self):
+        return str(self.client_code)
+
+
+class UserAccount(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    account_name = models.CharField(max_length=200, blank=True, null=True)
+    bank_name = models.CharField(max_length=200, blank=True, null=True)
+    account_number = models.IntegerField(blank=True, null=True)
+    wallet_balance = models.FloatField(default=0.00)
+    flex_balance = models.FloatField(default=0.00)
+    sav_balance = models.FloatField(default=0.00)
+
+    def __str__(self):
         return self.user.username
+
+def useraccount_receiver(sender, instance, created, *args, **kwargs):
+    if created:
+        useraccount = UserAccount.objects.create(user=instance)
+
+post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
 
 
 CATEGORY_CHOICES = (
@@ -60,7 +79,7 @@ ADDRESS_CHOICES = (
 
 # STORE PRODUCTS 
 class Product(models.Model):
-    seller = models.ForeignKey(Vendor, on_delete=models.CASCADE, blank=True, null=True)
+    seller = models.ForeignKey(UserAccount, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100)
     cost_price = models.FloatField()
     price = models.FloatField()
@@ -281,30 +300,13 @@ post_save.connect(profile_receiver, sender=UserProfile)
 '''
 
 
-class UserAccount(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    account_name = models.CharField(max_length=200, blank=True, null=True)
-    bank_name = models.CharField(max_length=200, blank=True, null=True)
-    account_number = models.IntegerField(blank=True, null=True)
-    wallet_balance = models.FloatField(default=0.00)
-    flex_balance = models.FloatField(default=0.00)
-    sav_balance = models.FloatField(default=0.00)
-
-    def __str__(self):
-        return self.user.username
-
-def useraccount_receiver(sender, instance, created, *args, **kwargs):
-    if created:
-        useraccount = UserAccount.objects.create(user=instance)
-
-post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
 
 
 class Transaction(models.Model):
     TRANS_STATUS = (
-    ('D', 'Debited'),
-    ('C', 'Credited'),
-    ('P', 'Pending')
+    ('Debited', 'Debited'),
+    ('Credited', 'Credited'),
+    ('Pending', 'Pending')
     )
 
     TRANS_TYPE = (
@@ -328,19 +330,13 @@ class Transaction(models.Model):
     def __str__(self):
         return self.status
 
-class TopupFund(models.Model):
-    reciever = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
-    pay_type = models.CharField(max_length=20) 
-    amount = models.FloatField()
-    date = models.DateField()
-    time= models.TimeField()
-    ref_code = models.CharField(max_length=30)
 
-    def __str__(self):
-        return self.reciever.account_name
 
+
+# This is to keep track of who confirm the topup
 class TopupConfirm(models.Model):
-    user = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+    approved_by = models.ForeignKey('UserProfile', on_delete=models.CASCADE)
+    amount = models.FloatField()
     #sender_account = models.CharField(max_length=200, null=True, blank=True)
     trans_ref = models.CharField(max_length=200)
 
@@ -365,4 +361,15 @@ class SendHistory(models.Model):
     def __str__(self):
         return self.account_type
 
+
+class Saving(models.Model):
+    owner = models.ForeignKey('UserAccount', on_delete=models.CASCADE)
+    amount = models.FloatField()
+    save_date = models.DateField()
+    pay_date = models.DateField()
+    is_paid = models.BooleanField(default=False)
+    ref_code = models.CharField(max_length=30) 
+
+    def __str__(self):
+        return str(self.amount)
 
