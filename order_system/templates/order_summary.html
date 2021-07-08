@@ -1,25 +1,33 @@
-{% extends "base.html" %}
-
+{% extends 'sections/boiler_plate.html'%}
+{% load static %}
 {% block content %}
-  <main>
+
+
+
     <div class="container">
 
-    <div class="table-responsive text-nowrap">
-    <h2>Order Summary</h2>
+    <h2><strong>Cart Item</strong></h2>
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Item title</th>
-            <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
-            <th scope="col">Total Item Price</th>
+            <th scope="col-sm">#</th>
+            <th scope="col-sm">Item title</th>
+            <th scope="col-sm">Price</th>
+            <th scope="col-sm">Quantity</th>
+            <th scope="col-sm">Total Item Price</th>
         </tr>
         </thead>
         <tbody>
         {% for order_item in object.items.all %}
         <tr>
-            <th scope="row">{{ forloop.counter }}</th>
+            <td scope="row">
+           <!--- {{ forloop.counter }}--->
+            {% if order_item.item.image %}
+                <img src="{{ order_item.item.image.url }}" style="height: 80px; width: 80px;">
+                {% else %}
+                 <img src="..." class="card-img-top">
+                {% endif %}
+            </td>
             <td>{{ order_item.item.title }}</td>
             <td> &#8358; {{ order_item.item.price }}</td>
             <td>
@@ -57,23 +65,27 @@
         {% endif %}
         {% if object.get_total %}
         <tr>
-            <td colspan="4"><b>Order Total</b></td>
+            <td colspan="4">
+                <h5> Order summary </h5>
+
+                <b>delivery charges not inclusive </b>
+            </td>
             <td><b>&#8358; {{ object.get_total }}</b></td>
         </tr>
         <tr>
             <td colspan="5">
-            <a class='btn btn-warning float-right ml-2' href="{% url 'store:confirm-checkout' %}">Proceed to checkout</a>
-            <a class='btn btn-primary float-right' href="{% url 'store:home'%}">Continue shopping</a>
+            <a class='btn btn-warning float-left ml-2' href="{% url 'store:confirm-checkout' %}">Proceed to checkout</a>
+            <a class='btn btn-primary float-left' href="{% url 'store:home'%}">Continue shopping</a>
             </td>
         </tr>
         {% endif %}
         </tbody>
     </table>
 
-    </div>
+
 
     </div>
-  </main>
+
 
 {% endblock content %}
 

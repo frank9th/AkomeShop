@@ -51,14 +51,23 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     # ... include the providers you want to enable:
-    #'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
     'fontawesome-free',
     'crispy_forms',
     'store',
     'staffs',
-    'shopapi',
+    'shopapi.apps.ShopapiConfig',
     'rest_framework',
+    'rest_framework.authtoken',
+    'djoser',
+
+    #django-rest-apps
+    'rest_auth',
+    'rest_auth.registration',
+
+
+
    
 ]
 '''
@@ -67,6 +76,8 @@ INSTALLED_APPS += (
     'dajaxice',
     )
 '''
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,6 +92,26 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'akomStore.urls'
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        #'rest_framework.renderers.<corresponding_renderer>'
+    ]
+}
+
+
+
+
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -92,6 +123,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'store.context_processors.menu_category',
             ],
         },
     },

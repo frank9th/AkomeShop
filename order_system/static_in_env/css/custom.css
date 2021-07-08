@@ -46,35 +46,182 @@
   --z-fixed: 100;
 }
 
+body{
+  background-color: white;
+}
 
+
+
+/* ======== Top Section =====*/
 
 
 .banner{
-    background-color: orange;
+    background-color:#6C1719;
+    color: white;
     height:50px;
 }
 
-
-
-
-
-
-.auto-save {
-    position: absolute;
-    right: 1.5rem;
-    top: 2.2rem;
-    display: flex;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #929191;
+.opening__time{
+  padding-top: 10px;
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: var(--mb-2);
 }
-.auto-save-text{
-	position: absolute;
-	right: 1.5rem;
-	font-size: 10px;
-	font-color: #929191;
+
+
+/* ======== Left  Section =====*/
+.left-side{
+  background-color: #6C1719;
+  width: 90px;
+  left: 0px;
+  top: 70px;
+  border-radius: 0px;
+
 
 }
+
+
+/* ======== Right Section =====*/
+.right-side{
+  background-color: #6C1719;
+
+  width: 90px;
+  left: 1370px;
+  top: 70px;
+  border-radius: 0px;
+
+}
+
+
+/* ======== Middle section =====*/
+/*==== Nav ======*/
+
+.form-search{
+  width: 462px;
+  height: 40px;
+  margin-top: 10px;
+  margin-left: 50px;
+  background: rgba(196, 196, 196, 0.3);
+  border-radius: 20px;
+
+}
+
+.search-btn{
+  height: 40px;
+  left: 892px;
+  top: 92px;
+  background: #6C1719;
+  border-radius: 20px;
+  color: white;
+
+}
+.search-btn:hover{
+  color: grey;
+
+}
+
+.nav-log-link{
+   margin-left: 50px;
+}
+/*===== End Nav section =====*/
+
+
+
+
+
+.main_sec {
+  margin-top: 30px; 
+  background-color: red;
+  border-radius: 10px;
+
+}
+
+
+/*===== Category Section ======*/
+
+.category{
+  
+  font-family: Montserrat;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 29px;
+
+  color: #4C4C4C;
+}
+
+.border{
+  width: 108px;  
+  border: 0.7px solid #666666;
+  margin-bottom: 10px;
+
+}
+
+
+.t-space{
+  margin-top: 10px;
+}
+
+.cat-item-head{
+  font-size: 16px;
+  margin-left:  10px ;
+  color: black;
+}
+
+.cat-item-head:hover{
+  font-weight: bold;
+
+}
+.cat-img{
+  width: 30px;
+  height: 14.3px;
+
+}
+a:hover{
+  color: #6C1719;
+  font-weight: bold;
+}
+
+
+a {
+    color: #6C1719;
+}
+
+.item-bk {
+  background-color: #FFFFE7;
+
+}
+
+
+/*===== info section=====*/
+.card-title{
+  color: #6C1719;
+  font-weight: bold;
+  font-size: 20px;
+  text-align: center;
+}
+
+
+.card-sub-title{
+  margin: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.card-text{
+  margin-left: 10px;
+  margin-right:  10px;
+  color: #6C1719; 
+  text-align: center;
+  padding-bottom: 10px;
+}
+/*===== info section end =====*/
+
+
+/*========= Footer Section =====*/
+
 
 .shop-footer{
     position: absolute;
@@ -88,21 +235,13 @@
 
 
 
-.opening__time{
-  padding-top: 10px;
-  text-align: center;
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: var(--mb-2);
-}
-
 
 
 
 .footer_container{
 height: 350px;
 left: 0px;
-margin-top: 200px;
+
 padding-left: 100px;
 padding-top: 50px;
 
@@ -161,6 +300,13 @@ color: #666666;
 
 }
 
+
+.cart-img {
+  width: 80px;
+  height: 80px;
+
+}
+
 @media screen and (max-width: 768px){
     .footer_container{
     height: 600px;
@@ -170,6 +316,15 @@ color: #666666;
     }
     .opening__time{
         font-size: 14px;
+    }
+
+    .left-side, .right-side{
+      display: none;
+    }
+    .form-search{
+      width: 200px;
+      margin-left: 0;
+
     }
 
 }

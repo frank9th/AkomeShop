@@ -14,6 +14,7 @@ from django.views.generic import ListView, DetailView, View
 import requests 
 from .forms import *
 from .models import *
+from django.db.models import Q
 from staffs.models import *
 import datetime
 from staffs.views import *
@@ -35,12 +36,34 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
+
+# Product listing function 
 def products(request):
     context = {
         'items': Product.objects.all()
     }
     return render(request, "products.html", context)
 
+# Product category function 
+def product_category(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    products = category.products.all()
+    context= {'category':category, 'products':products}
+    return render(request, "category_page.html", context)
+
+
+# Search product function 
+def search(request):
+    query = request.GET.get('query')
+    products = Product.objects.filter(Q(title__icontains=query) |  Q(description__icontains=query))
+    context = {
+    'query':query,
+    'products':products
+    }
+    return render(request, 'search.html', context)
+
+
+# Form validation function 
 def is_valid_form(values):
     valid = True
     for field in values:
@@ -48,6 +71,8 @@ def is_valid_form(values):
             valid = False
     return valid
 
+
+# Cart function 
 def cart(request):
     #form= CreataOrderForm()
     couponForm = CouponForm()
@@ -97,9 +122,7 @@ def clientCheckout(request):
                     order_items = order.items.all()
                     order_items.update(ordered=True)
                     for item in order_items:
-
-                        sel_amount = item.quantity * item.item.price
-
+                        sel_amount = item.quantity * item.item.cost_price
                         #geting the seller of the item 
                         seller = item.item.seller
 
@@ -143,7 +166,6 @@ def clientCheckout(request):
     return render(request, 'checkout-page.html', context)
 
 # checkout to enter client details
-
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:

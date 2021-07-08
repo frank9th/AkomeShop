@@ -10,7 +10,7 @@ import string
 
 
 def create_unique_code():
-    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    return ''.join(random.choices(string.digits, k=10))
 
 client_code = create_unique_code()
 
@@ -26,11 +26,11 @@ class UserProfile(models.Model):
     phone1 = models.CharField(max_length=200, null=True )
     phone2 = models.CharField(max_length=200, null=True, blank=True )
     town = models.CharField(max_length=200, null=True)
-    apartment_address = models.CharField(max_length=200, null=True, )
+    apartment_address = models.CharField(max_length=200, null=True, blank=True)
     land_mark = models.CharField(max_length=200, null=True )
     client_code = models.CharField(max_length=10, null=True)
     agent_code = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True)
-    sex = models.CharField(max_length=70, null=True )
+    sex = models.CharField(max_length=70, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add= True, null=True )
     is_seller = models.BooleanField(default=False)
     bus_account = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
@@ -38,7 +38,7 @@ class UserProfile(models.Model):
     image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
 
     def __str__(self):
-        return str(self.client_code)
+        return self.user.username
 
 
 class UserAccount(models.Model):
@@ -60,9 +60,26 @@ def useraccount_receiver(sender, instance, created, *args, **kwargs):
 post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
 
 
-CATEGORY_CHOICES = (
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+    thubnail= models.ImageField(blank=True, null=True)
+    image = models.ImageField(upload_to='product', blank=True, null=True)
+
+    """docstring for Category"""
+    class Meta:
+        verbose_name_plural = 'Categories'
+
+    def __str__(self):
+        return self.name
+
+
+TAG = (
     ('G', 'Goods'),
-    ('S', 'Services')
+    ('S', 'Services'),
+    ('FS', 'FastFood')
     )
 
 LABEL_CHOICES = (
@@ -79,14 +96,16 @@ ADDRESS_CHOICES = (
 
 # STORE PRODUCTS 
 class Product(models.Model):
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE )
     seller = models.ForeignKey(UserAccount, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=100)
-    cost_price = models.FloatField()
+    cost_price = models.FloatField(blank=True, null=True)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
+    tag = models.CharField(choices=TAG, max_length=10)
     label = models.CharField(choices=LABEL_CHOICES, max_length=1, default='P')
     slug = models.SlugField()
+    short_desc = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='product', blank=True, null=True)
 
@@ -99,6 +118,11 @@ class Product(models.Model):
             'slug': self.slug
         })
 
+    def get_category_url(self):
+        return reverse("store:product", kwargs={
+            'category': self.category.name
+        })
+
     def get_add_to_cart_url(self):
         return reverse("store:add-to-cart", kwargs={
             'slug': self.slug
@@ -109,12 +133,13 @@ class Product(models.Model):
             'slug': self.slug
         })
 
+
 # this model is not yet in use. this may be required later 
 class Item(models.Model):
     title = models.CharField(max_length=100)
     price = models.FloatField()
     discount_price = models.FloatField(blank=True, null=True)
-    category = models.CharField(choices=CATEGORY_CHOICES, max_length=10)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     #label = models.CharField(choices=LABEL_CHOICES, max_length=1)
     slug = models.SlugField()
     description = models.TextField()
@@ -137,6 +162,7 @@ class Item(models.Model):
         return reverse("store:remove-from-cart", kwargs={
             'slug': self.slug
         })
+
 
 
 class OrderItem(models.Model):
@@ -287,19 +313,6 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
 
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
 
-'''
-# We are trying to reverse the sign up Logic here. auto creating a user account once a user is created
-def profile_receiver(sender, instance, created, *args, **kwargs):
-    if created:
-        user_profile = settings.AUTH_USER_MODEL.create(username=full_name,
-        password1=full_name, password2=full_name)
-
-
-post_save.connect(profile_receiver, sender=UserProfile)
-
-'''
-
-
 
 
 class Transaction(models.Model):
@@ -373,3 +386,31 @@ class Saving(models.Model):
     def __str__(self):
         return str(self.amount)
 
+
+
+class Reviews(models.Model):
+    name = models.ForeignKey(UserProfile, on_delete=models.CASCADE, blank=True, null=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    comment = models.TextField()
+    rating = models.IntegerField()
+
+    def __str__(self):
+        return self.product.title
+
+    class Meta:
+        verbose_name_plural = 'Reviews'
+
+
+class Expensis(models.Model):
+    #sender = models.CharField(max_length=200 )
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    porpurse = models.TextField()
+    amount = models.IntegerField()
+    date = models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.amount 
+
+    class Meta:
+        verbose_name_plural = 'Expensis'

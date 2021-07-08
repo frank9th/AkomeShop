@@ -705,14 +705,13 @@ def register(request):
 			user = form.save()
 			username = form.cleaned_data.get('username')
 			email = form.cleaned_data.get('email')
-
 			group = Group.objects.get(name='client')
 			user.groups.add(group)
 
 			#client_code = create_unique_code()
 			messages.success(request, 'Account was created for ' + username )
-			#return redirect('my-account/'+client_code)
-			return redirect('login')
+			return redirect('my-account/'+client_code)
+			#return redirect('login')
 
 	elif request.user.is_authenticated:
 		if request.method == 'POST':
@@ -725,9 +724,7 @@ def register(request):
 
 			#client_code = create_unique_code()
 			messages.success(request, 'Account was created for ' + username + 'with ' + client_code)
-			return redirect('my-account/'+client_code)
-
-			
+			return redirect('my-account/'+client_code)			
 
 	context = {'form':form}
 	return render(request, 'register.html', context)
@@ -737,7 +734,6 @@ def register(request):
 #@admin_only
 def order_history(request):
 	orders = request.user.order_set.filter().order_by('-ordered_date')
-	
 	item_ordered = orders.filter(ordered=True)
 	total_order = item_ordered.count()
 	delivered = item_ordered.filter(status='Delivered').count()

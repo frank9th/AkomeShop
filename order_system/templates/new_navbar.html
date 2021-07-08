@@ -4,10 +4,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
          <div class="container-fluid">
-
-
-
-      <a class="navbar-brand" href="#">
+      <a class="navbar-brand" href="{% url 'store:home' %}">
       <img  src="{% static 'dash/assets/img/logo_new_small.png' %}" alt="" >
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,10 +15,16 @@
           <!-- Left -->
         <ul class="navbar-nav mr-auto">
 
-          <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-warning" type="submit">Search</button>
-      </form>
+          <form method="GET" action="{% url 'store:search' %}">
+          <input type="search" name="query">
+          <input type="submit" name="Submit">
+          
+        </form>
+
+         {% comment %} <form class="d-flex" method="GET" action="{% url 'store:search' %}">
+               <input class="form-control me-2" type="text" placeholder="Search" name="query" >
+        <button class="btn btn-warning" type="submit" >Search</button>
+      </form> {% endcomment%}
 
 
 
@@ -75,3 +78,5 @@
     </div>
   </div>
 </nav>
+
+
