@@ -22,6 +22,7 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
     path('', include('store.urls')),
     path('', include('staffs.urls')),
     path('', include('shopapi.urls')),

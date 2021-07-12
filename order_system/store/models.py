@@ -33,13 +33,12 @@ class UserProfile(models.Model):
     sex = models.CharField(max_length=70, null=True, blank=True)
     date_created = models.DateTimeField(auto_now_add= True, null=True )
     is_seller = models.BooleanField(default=False)
-    bus_account = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
+    #bus_account = models.ForeignKey(Seller, on_delete=models.SET_NULL, null=True, blank=True)
     is_agent = models.BooleanField(default=False)
     image = models.ImageField(upload_to='profile/cover/', null=True, blank=True)
 
     def __str__(self):
         return self.user.username
-
 
 class UserAccount(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -58,6 +57,33 @@ def useraccount_receiver(sender, instance, created, *args, **kwargs):
         useraccount = UserAccount.objects.create(user=instance)
 
 post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
+
+
+class Seller(models.Model):
+    owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    business_name = models.CharField(max_length=200, null=True)
+    description = models.TextField()
+    address = models.CharField(max_length=300, null=True, blank=True)
+    fast_food = models.BooleanField(default=False)
+    goods = models.BooleanField(default=False)
+    services = models.BooleanField(default=False)
+    skill = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add= True )
+    agent_code = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True)
+    image = models.ImageField(upload_to='cover', blank=True, null=True)
+
+
+    def __str__(self):
+        return self.business_name
+    @property
+    def get_total_pay(self):
+        payment = self.Seller_set.all()
+        total = sum([self.amount for amount in vendors])
+        return total
+
+
+
+
 
 
 
@@ -107,7 +133,9 @@ class Product(models.Model):
     slug = models.SlugField()
     short_desc = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='product', blank=True, null=True)
+    image = models.ImageField(upload_to='product', )
+    image_two = models.ImageField(upload_to='product', blank=True, null=True)
+    image_three = models.ImageField(upload_to='product', blank=True, null=True)
 
     def __str__(self):
         return self.title 
@@ -314,7 +342,6 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
 
 
-
 class Transaction(models.Model):
     TRANS_STATUS = (
     ('Debited', 'Debited'),
@@ -342,8 +369,6 @@ class Transaction(models.Model):
 
     def __str__(self):
         return self.status
-
-
 
 
 # This is to keep track of who confirm the topup

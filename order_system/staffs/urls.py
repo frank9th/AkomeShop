@@ -17,6 +17,7 @@ urlpatterns = [
     path('chart/', views.chart, name='chart'),
     path('table/', views.table, name='table'),
     path('my-account/<code>/',views.my_account, name='my-account'),
+    path('trader-account',views.TraderAccount, name='trade'),
     path('edit-account/<code>/', views.edit_account, name='edit-account'),
     path('wallet/<code>/', views.wallet, name='wallet'),
     path('topup/', views.topUp, name='topup'),

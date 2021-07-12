@@ -220,8 +220,9 @@ def DeleteClient(request, pk):
 
 
 class VendorView(viewsets.ModelViewSet): 
-	queryset = Vendor.objects.all()
+	queryset = Seller.objects.all()
 	serializer_class = VendorSerializer
+	
 
 class ProductView(viewsets.ModelViewSet): 
 	queryset = Product.objects.all()

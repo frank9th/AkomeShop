@@ -97,21 +97,23 @@ class AddClientForm(forms.Form):
 		}))
 	
 
-class AddVendorForm(forms.Form):
+class SellerForm(forms.Form):
 	BUS_CHOICES=(
 		('G', 'Goods'),
 		('S', 'Services'),
 		('Sk', 'Skill'),
 		)
-	business_name = forms.CharField(widget=forms.TextInput(
+	seller_number = forms.CharField(widget=forms.TextInput(
 		attrs={
-		'placeholder': 'Enter business name ',
+		'placeholder': 'Enter seller number',
 		'class':'form-control',
+		'id':'ownerNumId'
 			}))
-	product_name = forms.CharField(required=False, widget=forms.TextInput(
+	business_name = forms.CharField(required=False, widget=forms.TextInput(
 		attrs={
-		'placeholder': 'Enter Product/service name ',
+		'placeholder': 'Enter Business name ',
 		'class':'form-control',
+		'id':'busNameId'
 			}))
 	agent_code = forms.CharField(required=False, widget=forms.TextInput(
 		attrs={
@@ -122,13 +124,46 @@ class AddVendorForm(forms.Form):
 			}))
 	goods = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
 		'class':'custom-checkbox', 
+		'id':'goodsId'
 		}))
 	services = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
-		'class':'custom-checkbox'
+		'class':'custom-checkbox',
+		'id':'serviceId',
+		}))
+	fast_food = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
+		'class':'custom-checkbox', 
+		'id':'fastfoodId'
 		}))
 	skill = forms.BooleanField(required=False, widget=forms.CheckboxInput(attrs={
 		'class':'custom-checkbox', 
+		'id':'skillId'
 		}))
+	description = forms.CharField(required=False, widget=forms.Textarea(
+        attrs={
+        'id':'descripId',
+        'rows': 4,
+        'placeholder': 'give a brief description of your service/ business',
+        'class':'form-control'
+        }))
+	address = forms.CharField(required=False, widget=forms.Textarea(
+        attrs={
+        'id':'addressId',
+        'placeholder': 'Enter Business Address',
+        'class':'form-control'
+        }))
+	city = forms.CharField(required=False, widget=forms.TextInput(
+        attrs={
+        'id':'cityId',
+        'placeholder': 'Enter Business Address',
+        'class':'form-control'
+        }))
+	image = forms.FileField(required=False,)
+
+
+
+
+
+
 
 	"""
 		first_name

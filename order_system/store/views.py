@@ -51,6 +51,101 @@ def product_category(request, slug):
     context= {'category':category, 'products':products}
     return render(request, "category_page.html", context)
 
+# Add product function 
+def AddProduct(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            sel = form.cleaned_data.get('seller')
+            img = form.cleaned_data.get('image')
+            img2 = form.cleaned_data.get('image_two')
+            img3 = form.cleaned_data.get('image_three')
+            cost_price = form.cleaned_data.get('cost_price')
+            price = form.cleaned_data.get('price')
+            disc_price = form.cleaned_data.get('discount_price')
+            short_desc = form.cleaned_data.get('short_desc')
+            description = form.cleaned_data.get('description')
+            tag = form.cleaned_data.get('tag')
+            cate = form.cleaned_data.get('category')
+            label = form.cleaned_data.get('label')
+            unit = form.cleaned_data.get('unit')
+
+            try:
+                seller = UserProfile.objects.get(client_code=sel)
+                if seller.is_seller == True:
+                    seller_acct = UserAccount.objects.get(user=seller.user)
+
+                    category = Category.objects.get(name=cate)
+                    
+                    product = Product(
+                        category = category,
+                        seller = seller_acct,
+                        title = title,
+                        cost_price = cost_price,
+                        price = price,
+                        discount_price = disc_price,
+                        tag = tag,
+                        label = label,
+                        slug = title + create_slug(),
+                        short_desc = short_desc,
+                        description = description,
+                        image = img,
+                        image_two = img2,
+                        image_three = img3,
+                        )
+
+                    product.save()
+                    messages.success(request, "Product has been added")
+
+                    return redirect('/product')
+                else:
+                    seller.is_seller == False
+                    messages.warning(request, "Whoops this user those not have a business account \n Upgrade user account and try again. ")
+                    return redirect('/product')
+
+            except ObjectDoesNotExist:
+                messages.warning(request, "Something went wrong")
+               
+                #form.save()
+                return redirect('/product')
+    else:
+        form = ProductForm()
+        context = {
+        'form':form,
+        }
+        return render(request, "dashboard/product.html", context)
+
+
+
+    '''
+
+    form = ProductForm(request.POST or None)
+    try:
+        if request.method == 'POST':
+            if form.is_valid():
+
+                print('form is valid')
+                title = form.cleaned_data.get('title')
+                img = form.cleaned_data.get('image')
+                img2 = form.cleaned_data.get('image_two')
+
+                print(title)
+                print(img)
+                print(img2)
+            
+    except Exception as e:
+        raise e
+   
+
+    context = {
+    'form':form,
+    }
+    return render(request, "dashboard/product.html", context)
+   # return JsonResponse({'status':200, })
+    '''
+
+
 
 # Search product function 
 def search(request):
@@ -505,14 +600,14 @@ class PaymentView(View):
         messages.warning(self.request, "Invalid data received")
         return redirect("/payment/stripe/")
 
-
+# Home fuction 
 class HomeView(ListView):
     model = Product
     paginate_by = 10
     #template_name = "home.html"
     template_name = "welcome.html"
 
-
+# Order summary 
 class OrderSummaryView(LoginRequiredMixin, View):
     def get(self, *args, **kwargs):
         try:
@@ -525,11 +620,12 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(self.request, "You do not have an active order")
             return redirect("/")
 
-
+# Item Detail View 
 class ItemDetailView(DetailView):
     model = Product
     template_name = "product.html"
 
+# Add to Cart function 
 @login_required
 def add_to_cart(request, slug):
     item = get_object_or_404(Product, slug=slug)
@@ -559,6 +655,7 @@ def add_to_cart(request, slug):
         messages.info(request, "This item was added to your cart.")
         return redirect("store:order-summary")
 
+# Remove from cart 
 @login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Product, slug=slug)
@@ -586,6 +683,7 @@ def remove_from_cart(request, slug):
         messages.info(request, "You do not have an active order")
         return redirect("store:product", slug=slug)
 
+# Remove single item function 
 @login_required
 def remove_single_item_from_cart(request, slug):
     item = get_object_or_404(Product, slug=slug)
@@ -628,6 +726,8 @@ def delete_item(request, pk):
     context= {'item':item}
     return render(request, 'delete.html', context)
 
+
+# Get Coupon 
 def get_coupon(request, code):
     try:
         coupon = Coupon.objects.get(code=code)
@@ -636,6 +736,8 @@ def get_coupon(request, code):
         messages.info(request, "This coupon does not exist")
         return redirect("store:checkout")
 
+
+# Add Coupon 
 class AddCouponView(View):
     def post(self, *args, **kwargs):
         form = CouponForm(self.request.POST or None)
@@ -652,6 +754,7 @@ class AddCouponView(View):
                 messages.info(self.request, "You do not have an active order")
                 return redirect("store:checkout")
 
+# Request Refund 
 class RequestRefundView(View):
     def get(self, *args, **kwargs):
         form = RefundForm()
@@ -696,6 +799,8 @@ def get_client_code(request, code):
         return redirect("/")
         #return JsonResponse('Enter a valid code', safe=False)
 
+
+# Add Client Code 
 def AddClientCode(request):
     form = ClientCodeForm(request.POST or None)
     if form.is_valid():

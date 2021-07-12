@@ -52,36 +52,6 @@ def create_funding_code():
 '''
 
 
-@login_required
-def add_to_cart(request, slug):
-    item = get_object_or_404(Item, slug=slug)
-    order_item, created = OrderItem.objects.get_or_create(
-        item=item,
-        user=request.user,
-        ordered=False
-    )
-    order_qs = Order.objects.filter(user=request.user, ordered=False)
-    if order_qs.exists():
-        order = order_qs[0]
-        # check if the order item is in the order
-        if order.items.filter(item__slug=item.slug).exists():
-            order_item.quantity += 1
-            order_item.save()
-            messages.info(request, "This item quantity was updated.")
-            return redirect("store:order-summary")
-        else:
-            order.items.add(order_item)
-            messages.info(request, "This item was added to your cart.")
-            return redirect("store:order-summary")
-    else:
-        ordered_date = timezone.now()
-        order = Order.objects.create(
-            user=request.user, ordered_date=ordered_date)
-        order.items.add(order_item)
-        messages.info(request, "This item was added to your cart.")
-        return redirect("store:order-summary")
-
-
 # Create Order 
 def createOrder(request):
 	user = request.user
@@ -640,7 +610,7 @@ def update_client(request):
 
 class VendorView(ListView):
 	template_name = "dashboard/vendor-dashboard.html"
-	model = Vendor
+	model = Seller
 	#model = Vpayment
   
 
@@ -648,14 +618,15 @@ def vendor_account(request, code):
 	#item = VendorItem.objects.get(vendor.vendor_code)
 	#payment = ''
 	try:
-		payment = Vendor.objects.get(seller=code)
+		owner = UserProfile.objects.get(client_code=code)
+		payment = Seller.objects.get(owner=owner)
 	except Exception as e:
 		pass
 		print(payment)
 	
-	vendor = Vendor.objects.get(vendor_code=code)
+	vendor = Seller.objects.get(owner=owner)
 	#client = vendor.info
-	orders = vendor.order_set.all()
+	orders = seller.order_set.all()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
@@ -718,16 +689,66 @@ def register(request):
 			user = form.save()
 			username = form.cleaned_data.get('username')
 			email = form.cleaned_data.get('email')
-
 			group = Group.objects.get(name='staff')
 			user.groups.add(group)
-
 			#client_code = create_unique_code()
 			messages.success(request, 'Account was created for ' + username + 'with ' + client_code)
 			return redirect('my-account/'+client_code)			
 
 	context = {'form':form}
 	return render(request, 'register.html', context)
+
+
+#Update UserProfile to trader account 
+@login_required
+def TraderAccount(request):
+	form = SellerForm()
+	if request.method == 'POST':
+		form = SellerForm(request.POST, request.FILES)
+		if form.is_valid():
+			owner = form.cleaned_data.get('seller_number')
+			bus_name = form.cleaned_data.get('business_name')
+			goods = form.cleaned_data.get('goods')
+			services = form.cleaned_data.get('services')
+			fastFood = form.cleaned_data.get('fast_food')
+			skill = form.cleaned_data.get('skill')
+			descrip = form.cleaned_data.get('description')
+			address = form.cleaned_data.get('address')
+			city = form.cleaned_data.get('city')
+			img = form.cleaned_data.get('image')
+			try:
+				seller = UserProfile.objects.get(client_code=owner)
+				if seller.is_seller == True:
+					messages.info(request, 'this user already has a trading account')
+					return redirect('/trader-account')
+				else:
+					trader = Seller(
+						owner = seller,
+						business_name=bus_name,
+						description=descrip,
+						address=address,
+						fast_food=fastFood,
+						goods=goods,
+						services=services,
+						skill=skill,
+						image=img,
+						)
+					trader.save()
+					seller.is_seller = True
+					seller.save()
+					messages.success( request, 'User have been upgradered to a trader account')
+					return redirect('/trader-account')
+			except Exception as e:
+				messages.info(request, 'user does not exist, check your user number and try again ')
+				return redirect('/trader-account')
+			else:
+				pass
+		
+	context = {
+	'form':form
+	}
+	return render(request, 'dashboard/seller.html', context)
+	
 
 #User Dasbard View 
 @login_required(login_url ='login')

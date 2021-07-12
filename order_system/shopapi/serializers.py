@@ -36,7 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class VendorSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = Vendor 
+		model = Seller 
 		fields = '__all__'
 
 

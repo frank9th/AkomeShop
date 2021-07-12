@@ -67,6 +67,7 @@ admin.site.register(Refund)
 admin.site.register(Address, AddressAdmin)
 admin.site.register(UserProfile)
 admin.site.register(UserAccount)
+admin.site.register(Seller)
 admin.site.register(Transaction)
 
 admin.site.register(TopupConfirm)
