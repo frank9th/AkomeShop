@@ -1,0 +1,99 @@
+
+
+{% extends "dashboard/layouts/base.html" %}
+{% load static %}
+{% block content %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+       {{message }} 
+        <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
+        </div>   
+      {% endfor %}
+    {% endif %}
+    <div class="" style="text-align: center"><h3>Register Client</h3> </div>
+  
+    <div class="row">
+            <!--  Grid column-->
+             {% include 'user_account/confirm_code.html'%}  
+            <div class="col-md-8">
+                <form class="card-body" method="POST">
+                      {% csrf_token %}      
+                    <div class="row">
+                      <div class="col-md-6 mb-2">
+                        <div class="md-form ">
+                           {{form.title}}         
+                        <label for="firstName" class=""><strong> Title </strong></label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="md-form ">
+                     {{form.full_name}}
+                      <label for="fullName" class=""> <strong> Full Name  </strong> </label>
+                    </div>
+                    <div class="md-form ">
+                      {{form.apartment_address}}
+                      <label for="address" class=""> <strong>Apartment Address</strong></label>
+                    </div>
+                    address-2-
+                    <div class="md-form ">
+                       {{form.land_mark}}
+                      <label for="address-2" class=""> <strong> Nearest Land mark</strong></label>
+                    </div>
+                      <div class="md-form ">
+                       {{form.town}}
+                      <label for="address-2" class=""><strong>Town</strong></label>
+                    </div>
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                        <label for="cc-name"><strong> Phone Number</strong> </label>
+                        {{form.phone1}}          
+                      </div>
+                      <div class="col-md-6 mb-3">
+                        <label for="cc-number"><strong>Phone Number 2 </strong> </label>
+                       {{form.phone1}}
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-lg-4 col-md-6 ">
+                        {{form.email}}
+                        <label for="email" class=""><strong> Email (optional)</strong> </label>
+                      </div>
+                        <div class="col-lg-4 col-md-6 ">
+                        {{form.agent_code}}
+                        <label for="email" class=""><strong> Agent Code </strong> </label>
+                      </div>
+                         <div class="col-lg-4 col-md-6 ">
+                        {{form.sex}}
+                        <label for="email" class=""><strong> Sex </strong> </label>
+                      </div>
+                    </div>
+                    <hr>
+                    <hr class="mb-4">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Register Client </button>
+                </form>
+                </div>
+              </div>
+ {% block javascripts %}
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
+ 
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

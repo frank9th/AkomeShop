@@ -1,0 +1,196 @@
+{% extends "dashboard/layouts/base.html" %}
+
+{% block title %} Dashboard {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+<!--
+    <div class="row">
+      <div class="col-12">
+        <div class="card card-chart">   
+          <div class="card-body">
+            <div class="chart-area">
+              <-- This is for the first graph -
+              <canvas id="chartBig1" ></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Pending Payment</h5>
+            <h3 class="card-title"><i class="tim-icons icon-bell-55 text-primary"></i> 
+              {{ pending_pay }}
+            </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+               <--- This is for the second  graph for pending payment --
+              <canvas id="chartLinePurple"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Payment Recieved </h5>
+            <h3 class="card-title"><i class="tim-icons icon-delivery-fast text-info"></i> 3,500 </h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <--- This is for the Third  graph for payment recieved--
+              <canvas id="CountryChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card card-chart">
+          <div class="card-header">
+            <h5 class="card-category">Number of Item Ordered</h5>
+            <h3 class="card-title"><i class="tim-icons icon-send text-success"></i> 12,100K</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-area">
+              <--- This is for the Fourt graph for payment recieved--
+              <canvas id="chartLineGreen"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  ---->
+
+
+<div class="row">
+
+  <div class="col-sm-6 col-lg-4" id="tpForm-card" style="display: none;">
+    <form method="POST" action="" id="tpForm">
+      {% csrf_token %}
+      <h4> Enter Top up amount </h4>
+      {{tform.amount}}
+      <br>
+      <p>Select your payment option </p>
+      <div class="d-block my-3">
+        {% for value, name in tform.fields.payment_type.choices %}
+        <div class="custom-control custom-radio">
+          <input id="{{ name }}" name="payment_type" value="{{ value }}" type="radio" class="custom-control-input" required>
+          <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
+        </div>
+        {% endfor %}
+      </div>
+      <input type="submit" name="submit" class="btn btn-primary" value="Proceed" id="Top-proceed">     
+    </form>
+  </div>
+
+      <div class="col-sm-6 col-lg-4" id="tpCard"> 
+        <div id="tdmsg" class="alert alert-danger" style="display: none;"></div>
+        <div id="tpmsg" class="alert alert-primary" style="display: none;"></div>
+        <div id="tsmsg" class="alert alert-success" style="display: none;"></div>
+      <a href="#" id="top-up">
+        <div class="card card-chart btn-primary ">
+          <div class="card-header">
+            <h5 class="card-category">Top Up  </h5>
+            <h2 class="card-title" style="text-align:  center;">
+              <i class="tim-icons icon-coins text-primary"></i>
+
+              Top Up 
+         
+            </h2>
+          </div>
+          <div class="card-body">   
+          </div>
+        </div>
+        </a>
+      </div>
+      <!-- Witdrawal card--->
+        <div class="col-sm-6 col-lg-4" id="draw">
+          <!-- witdrawal message--->
+           <div id="wdmsg" class="alert alert-danger" style="display: none;"></div>
+           <div id="wpmsg" class="alert alert-primary" style="display: none;"></div>
+           <div id="wsmsg" class="alert alert-success" style="display: none;"></div>
+           <!-- end witdrawal message --->
+          <a href="#" id="wit-draw">
+          <div class="card card-chart btn-danger">
+          <div class="card-header">
+            <h5 class="card-category">Withdrawal </h5>
+            <h2 class="card-title" style="text-align:  center;"><i class="tim-icons icon-simple-delete text-primary"></i> Withdraw </h2>
+          </div>
+            <div class="card-body"> 
+            </div>
+          </div>
+
+          </a>
+
+        </div>
+
+         <!-- Witdrawal card form--->
+         <form method="POST" action="" class="col-sm-6 col-lg-4" id="dform" style=" display: none;">
+          <input name="accUserId" style="display:none" type="text" id="accUserId" value="{{bank.id}}">
+          {% csrf_token %}
+          <h3> Confirm Cashout </h3>
+            {{wform}}
+            <input type="submit" value="Confirm Request" class="btn" id="btnwit">
+      
+        </form>
+
+        <div class="col-sm-6 col-lg-4" id="savForm-card" style="display: none;">
+        <form method="POST" action="" id="savForm">
+          {% csrf_token %}
+          <h4> Enter amount to save/invest </h4>
+          {{sform}}
+          <input type="submit" name="submit" class="btn btn-primary" value="Invest Funds" id="sav-proceed">     
+        </form>
+
+      </div>
+
+        <div class="col-sm-6 col-lg-4" id="savCard">
+          <div id="smsg" class="alert alert-success" style="display: none;"></div>
+          <div id="spmsg" class="alert alert-primary" style="display: none;"></div>
+          <div id="sdmsg" class="alert alert-danger" style="display: none;"></div>
+          <a href="#" id="sav">
+          <div class="card card-chart btn-success">
+          <div class="card-header">
+            <h5 class="card-category"> Save </h5>
+            <h3 class="card-title" style="text-align:  center;"><i class="tim-icons  icon-lock-circle text-primary"></i> Save </h3>
+          </div>
+          <div class="card-body">  
+
+    
+            
+          </div>
+          </div>
+        </a>
+        </div>  
+</div>
+
+
+
+    {% include 'dashboard/includes/transaction-history-table.html' %} 
+
+
+    {% include 'dashboard/includes/acc-order-card-snippet.html' %} 
+    <div class="row">
+      <div class="col-lg-12 col-md-12">
+         {% include 'dashboard/includes/acc-order-table-snippets.html' %}
+        
+      </div>
+    </div>
+
+{% endblock content %}
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% include 'testajax.html'%}
+
+{% endblock javascripts %}

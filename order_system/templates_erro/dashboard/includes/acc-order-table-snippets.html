@@ -1,0 +1,54 @@
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table mr-1"></i>
+        DataTable Example
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                     <tr>
+                        <th>Item </th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Agent</th>
+                        <th>Vendor</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th>Item </th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Agent</th>
+                        <th>Vendor</th>
+                        <th>Total</th>
+                        <th>Action </th>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {% for order in orders %}
+            <tr>
+              <td>{% for item in order.items.all %}
+              {{item}}
+              {% endfor %}</td>
+              <td>{{order.ordered_date}}</td> 
+               <td>{{order.ordered_time}}</td>
+              <td>{{order.agent}}</td>
+              <td><a class="btn btn-info" href="#">{{order.vendor}}</a></td>
+              <td> &#8358; {{order.payment.amount}}</td>
+              <td><a class="btn btn-warning"  href="{% url 'update_order' order.id %}">Action </a></td>
+              <!--
+              <td><a class="btn btn-primary" href="{% url 'update_order' order.id %}">Update </a></td>
+              <td><a class="btn btn-danger" href="{% url 'store:delete_order' order.id %}">Delete</a></td>
+              --->
+            </tr> 
+            
+            {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

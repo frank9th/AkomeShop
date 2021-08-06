@@ -11,12 +11,11 @@
 
   <link rel="apple-touch-icon" sizes="76x76" href="#">
   <link rel="icon" type="image/png" href="{% static 'dash/assets/img/favicon.png'    %}">
-
   <title>
      Dashboard - {% block title %}{% endblock %} | Mekly
   </title>
 
-  <!--     Fonts and icons     -->
+  <!--Fonts and icons-->
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
 
@@ -24,11 +23,11 @@
   <link href="{% static 'dash/assets/css/nucleo-icons.css' %}" rel="stylesheet" />
   <!-- CSS Files -->
   <link href="{% static 'dash/assets/css/black-dashboard.css' %}" rel="stylesheet" />
-  <!-- CSS Just for demo purpose, don't include it in your project -->
-  <link href="{% static 'dash/assets/demo/demo.css' %}" rel="stylesheet" />
+  <!-- CSS Just for demo purpose, don't include it in your project
+  <link href="{% static 'dash/assets/demo/demo.css' %}" rel="stylesheet" /> -->
 
-  <!-- Specific Page CSS goes HERE  -->
-  <link href="{% static 'dash/assets/css/data_table.css' %}" rel="stylesheet" />
+  <!-- Specific Page CSS goes HERE 
+  <link href="{% static 'dash/assets/css/data_table.css' %}" rel="stylesheet" /> -->
 
   <link href="{% static 'dash/assets/css/custom.css' %}" rel="stylesheet" />
 
@@ -47,13 +46,25 @@
       {% include 'dashboard/includes/navigation.html' %}
 
       <div class="content">
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                {% endfor %}
+            {% endif %}
+           
+        {% block content %}
 
-        {% block content %}{% endblock content %}
 
+
+
+        {% endblock content %}
       </div>
-
       {% include 'dashboard/includes/footer.html' %}
-
     </div>
     
   </div>

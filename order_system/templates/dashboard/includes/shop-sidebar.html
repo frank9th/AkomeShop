@@ -1,0 +1,58 @@
+
+    <div class="sidebar " >
+      <div class="sidebar-wrapper " >
+        <div class="logo white-content" >
+           <a target="_blank" 
+             href="#" class="simple-text logo-normal" style="color:black;">
+           Browse Category
+          </a>
+
+        </div>
+        <ul class="nav">
+          {% for category in menu_categories %}
+        <a href="{% url 'store:category' category.slug  %}">
+        <li class=" d-flex cat-item-space">
+          {% if category.thubnail %}
+            <span style="padding-right: 10px; margin-left: 10px" class="cat-img"><img  src="{{category.thubnail.url}}" alt="" ></span>
+         {% else %}
+         <span style="padding-right: 10px;" class="cat-img"><img  src="..." alt="" ></span>
+
+          {% endif %}
+        <h5 class="cat-item-head white"> {{category.name }}   </h5>
+      </li> 
+       </a>
+
+       <div class="border" style="width: 90%"> </div> 
+           
+        {% endfor %}
+
+   
+                    
+        </ul>
+        
+      </div>
+    </div>
+
+
+<!---
+<ul class="list-group">
+        {% for category in menu_categories %}
+        <a href="{% url 'store:category' category.slug  %}">
+        <li class=" d-flex cat-item-space">
+          {% if category.thubnail %}
+            <span style="padding-right: 10px;" class="cat-img"><img  src="{{category.thubnail.url}}" alt="" ></span>
+         {% else %}
+         <span style="padding-right: 10px;" class="cat-img"><img  src="..." alt="" ></span>
+
+          {% endif %}
+        <h5 class="cat-item-head"> {{category.name }}   </h5>
+      </li> 
+       </a>
+
+       <div class="border" style="width: 100%"> </div> 
+           
+          {% endfor %}
+
+      </ul>
+
+----->

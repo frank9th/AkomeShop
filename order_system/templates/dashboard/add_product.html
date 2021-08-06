@@ -1,0 +1,126 @@
+
+{% extends 'dashboard/layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Add Product {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+ <div class="">
+  {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+  {% endif %}
+  </div>
+	
+<form method="POST" enctype="multipart/form-data">
+	{% csrf_token %}
+	<div class="row">
+		<div class="col-md-8">
+			<h1> Add Product </h1>
+			
+		</div>
+		<div class="col">
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</div>
+	</div>
+
+	<hr>
+	<div class="row">
+		<div class="col-sm-4">
+			<label> Produt / Service Title</label>
+			{{ form.title}}
+			<br>
+			<label for="price"> Price</label>
+			{{ form.price}}
+			<br>
+			<label for="discount_price">Discount Price (Optional)</label>
+			{{ form.discount_price}}
+			
+			<br>
+			<label for="cost_price"> Market Price(Optional)</label>
+			{{ form.cost_price}}				
+		</div>
+		<div class="col-sm-4">
+			
+			<label for="short_desc"> Short Description</label>
+			{{ form.short_desc}}
+
+			<br>
+			<label for="description">Description</label>
+			{{ form.description}}
+
+			<br>
+
+			<p> Seller / Provider's Details </p>
+			{{form.seller}}
+				<hr>
+			
+			<p> Product/ service Cover images </p>
+			{{ form.image}}
+
+			
+			
+			<hr>
+
+		</div>
+		<div class="col-sm">
+			<p> Product Features </p>
+			<p>{{ form.category}}</p>
+			<p>{{ form.tag}}</p> 
+
+			<br>
+			<label >Choose label</label> <br>
+			{{ form.label}} 
+			<label >Status</label> <br>
+			{{ form.status}} 
+
+
+			<hr>
+			<p>Is this a Unit of a product/service ? </p> 
+			  {% for value, name in form.fields.unit.choices %}
+	        <div class="custom-control custom-radio">
+	          <input id="{{ name }}" name="unit" value="{{ value }}" type="radio" class="custom-control-input" required>
+	          <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
+	        </div>
+	        {% endfor %}
+	        <hr>
+
+			<p> Galary images (optional)</p>
+			<label> Image one</label>
+			{{ form.image_two}}
+			<label> Image two</label>
+			{{ form.image_three}}
+		</div>
+
+
+</form>	
+
+
+ {% block javascripts %}
+
+  {% include 'testajax.html'%}
+
+
+
+ {% endblock javascripts %}
+		
+
+{% endblock %}
+
+
+
+
+
+
+
+

@@ -1,0 +1,72 @@
+
+{% extends "dashboard/layouts/base.html" %}
+{% load static %}
+{% block content %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+       {{message }} 
+        <button type="button" class="btn-close btn-infor" data-bs-dismiss="alert" aria-label="Close"> Close</button>
+        </div>   
+      {% endfor %}
+    {% endif %}
+      <h2 class="my-5 h2 text-center">Register Vendor </h2>
+		    <div class="row">
+		       <div class="col-md-8 mb-4">
+		          <div class="card">
+		            <form class="card-body" method="POST" >
+		              {% csrf_token %}
+		              <input name="clientId" style="display:none" type="text" id="clientId" value="{{client.id}}">
+		              <div>
+		              <label for="agent_code"> Agent code (optional)</label> 
+		              {{form.agent_code}}      	
+		              </div>
+		              	<h3> Business Info: </h3>
+		              	<div class="md-form mb-5h">
+		              	<label for="business_type">Business /Skill name </label>
+		                 {{form.business_name }}
+		              	</div>
+		              	<div class="md-form mb-5h">
+		              	<label for="business_type">Product /Service </label>
+		                 {{form.product_name }}
+		              	</div>
+		              	<div class="row">
+		                <div class="col-lg-4 col-md-12 mb-4">
+		                  <label for="business_type">Business Type</label>
+			               <div class="custom-control custom-checkbox">
+			                {{form.goods}}
+			                <label for="goods" >Do you sell product? </label>
+			              </div>
+			              <div class="custom-control custom-checkbox">
+			                   {{form.services}}
+			                <label for="service">Do you offer services? </label>
+			              </div>
+			              <div class="custom-control custom-checkbox">
+			                {{form.skill}}
+			                <label for="skill" >Do you have a skill? </label>
+			              </div>      
+
+			            </div>
+			             <hr>
+		              	</div>
+		              	{{form.errors}}
+
+		              <!--Grid row-->
+		              <hr class="mb-4">
+		              <button class="btn btn-primary btn-lg btn-block" type="submit">Register </button>
+		            </form>
+		          </div>
+		     	</div>
+
+           		{% include 'user_account/confirm_code.html'%}	  
+		   	</div>
+		     
+  
+      
+
+ {% block javascripts %}
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
+ 
+{% endblock %}

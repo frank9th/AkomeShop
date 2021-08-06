@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+			<div class="row">
+			  <div class="col-sm-6">
+			    <div class="card">
+			      <div class="card card-body">
+
+						<h4> Are you sure you want to delete {{item}}? </h4>
+						<form action="" method="POST">
+							{% csrf_token %}
+							{{form}}
+							<a class="btn btn-warning" href="{% url 'home' %}"> Cancle</a>
+							<input class="btn btn-danger" type="submit" value="Delete" name="submit">
+						</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+{% endblock %}

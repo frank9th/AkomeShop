@@ -1,0 +1,38 @@
+
+                      <form class="card-body" method="POST" action=".">
+                        {% csrf_token %}
+                            <div class="input-group">
+                              <input type="text" class="form-control" placeholder="Enter Agent ID" name="client" >
+                              <div class="input-group-append">
+                                <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Agent " >
+                              </div>
+                            </div>
+                          </form>
+                      <!-- Client's Details  -->          
+                      <ul class="list-group mb-3 z-depth-1">
+                        <li class="list-group-item d-flex justify-content-between lh-condensed">
+                          <div>
+                            <h6 class="my-0"> Full Name: {{code.title}} .  {{client_dstails.full_name}}</h6>
+                            <small class="text-muted"> Email : {{client.email}} </small>
+                            <hr>
+                            <h6 class="my-0"> Contact </h6>
+                            <br>
+                            <small class="text-muted"> Phone 1 : {{client.phone1 }} </small>
+                            <br>
+                             <small class="text-muted"> Phone 2 : {{client.phone2 }} </small>
+                            <br>
+                            <small class="text-muted"> Town : {{client.town }} </small>
+                            <br>
+                            <small class="text-muted"> Address : {{client.address }} </small>
+                           
+                          </div>
+                        </li>  
+                        <li class="list-group-item d-flex justify-content-between">
+                          <span>CLIENT ID: </span>
+                          <strong>{{id.client_id}}</strong>
+                        </li>
+                      </ul>
+                  
+                    
+                    </div>
+                   

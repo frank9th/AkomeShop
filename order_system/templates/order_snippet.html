@@ -86,7 +86,7 @@
      <!--   {% endif %}-->
      
 
-    {% if DISPLAY_COUPON_FORM %}
+    
     <form class="card p-2" action="{% url 'store:add-coupon' %}" method="POST">
         {% csrf_token %}
         <div class="input-group">
@@ -96,7 +96,7 @@
             </div>
         </div>
     </form>
-    {% endif %}
+   
 
 </div>
 

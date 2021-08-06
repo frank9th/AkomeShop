@@ -76,10 +76,12 @@
             </a>
           </li>
           --->
-            <li class="{% if 'product' in segment %} active {% endif %}">
-            <a href="{% url 'store:product' %}">
+            <li class="{% if 'trade' in segment %} active 
+
+            {% endif %}">
+            <a href="{% url 'trade' %}">
               <i class="tim-icons icon-spaceship btn-primary"></i>
-              <p class="">Product</p>
+              <p class="">My Store</p>
             </a>
           </li>
           <li class="{% if 'contact' in segment %} active {% endif %}">

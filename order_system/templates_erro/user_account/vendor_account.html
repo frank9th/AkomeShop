@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+		<div class="container"> 
+			<hr>
+			<h2>Vendor </h2>
+			<div class="row">
+				{{vendor}}
+				{{total_order}}
+				{{orders.vendor_code}}
+
+
+			<div class="col">
+					<!----- Left Card --->
+			    	<div class="card" style="width: 20rem;">
+			    		{% if infor.client.image %}
+					  <img style="height: 200px; width: 200px; border-radius: 50px; padding:25px;" src="{{ vendor.info.image.url }}" class="card-img-top" alt="{{ vendor.info.title }}">
+					  {% else %}
+             			<span class="text-muted">No profile pics </span>
+			             <form method="POST" action="#">
+			             	{% csrf_token %}
+			                <input type="file" name="file" value="upload">
+			                  
+		            	</form>  
+					  {% endif %}
+					  <div class="card-body">
+					    <h5 class="card-title">{{vendor.info.title}} {{vendor.info.full_name}}</h5>
+					    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+					  </div>
+					  <ul class="list-group list-group-flush">
+					    <li class="list-group-item"><b>Tel:</b> {{vendor.info.phone1}} | {{vendor.info.phone2}} </li>
+					    <li class="list-group-item"><b>Town: </b> {{vendor.info.town}}</li>
+					    <li class="list-group-item"><b>Email: </b> {{vendor.info.email}}</li>
+					  </ul>
+					   <ul class="list-group list-group-flush">
+					    <li class="list-group-item"><b>Address: </b> {{vendor.info.apartment_address}}</li>
+					    <li class="list-group-item"><b>Land Mark: </b> {{vendor.info.land_mark}}</li>
+					  </ul>
+					  <div class="card-body">
+					    <a href="#" class="card-link">Edit Details</a>  | <b>Code: {{vendor.vendor_code}}</b>
+					  </div>
+					</div>	
+				</div>
+			
+
+
+			<!------ end left Grid---->	 
+				<!------ Start Middle card ---->	
+			
+
+
+
+				<!--- End middle Grid --->
+
+
+
+				<!--- start right Grid --->
+			
+			<!--- End right Grid --->
+			</div>	
+		</div>	
+	
+
+{% endblock %}

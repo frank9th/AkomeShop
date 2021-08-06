@@ -35,7 +35,7 @@
     </div>
     <div class="carousel-inner" >
       <div class="carousel-item active">
-        <img src="{% static 'dash/assets/img/kom.jpg' %}" class="d-block w-100" alt="...">
+        <img src="{% static 'dash/assets/img/mek_food.png' %}" class="d-block w-100" alt="...">
         <div class="carousel-caption d-none d-md-block">
           
         </div>
@@ -79,24 +79,8 @@
 <div class="row ">
   <div class="col"></div>
   <div class="col-sm-8">
-    <ul class="nav nav-pills nav-fill">
-    <li class="nav-item card item-bk" >
-      <a class="nav-link" aria-current="page" href="#"> <i class="fab fa-cc-mastercard"></i> Wallet Services </a>
-    </li>
-    <li class="nav-item" >
-      <a class="nav-link" href="#"> <i class="fas fa-hamburger"></i> Fast Food </a>
-    </li>
-    <li class="nav-item card item-bk" >
-      <a class="nav-link" href="#"> <i class="fas fa-toolbox"></i> Home Services </a>
-    </li>
-     <li class="nav-item ">
-      <a class="nav-link" href="#"> <i class="fas fa-shipping-fast"></i> Logistic Services </a>
-    </li>
-    <li class="nav-item card item-bk" >
-      <a class="nav-link " href="#" tabindex="-1" aria-disabled="true"> <i class="fas fa-shopping-basket"></i> Market Place </a>
-    </li>
-  </ul>
-    
+
+       {% include 'sections/menu-snippets.html' %}
 
   </div>
   <div class="col"></div>
@@ -107,43 +91,70 @@
 
 <!---Product ---Section----->
 <div class="row container">
-  <h5 class="h5" style="font-weight: bold;"> Available Products </h5>
-
+  <h5 class="h5" style="font-weight: bold;"> Product whish list </h5>
+  <p> All items would be available soon </p>
+  <br>
     {% for item in object_list %}
           <div class="col-lg-3 col-md-6 mb-4">
 
             <div class="card">
               <div class="view overlay">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top">
+
+                <img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;">
+
                 {% else %}
-                 <img src="..." class="card-img-top">
+                 <img src="..." class="card-img-top" style="height: 12rem;">
                 {% endif %}
-                <a href="{{ item.get_absolute_url }}">
+                
+                {% if item.status == 'NOT ON SALE' %}
+                <a href="#">
+                {% else %}
+                 <a href="{{ item.get_absolute_url }}">
+                {% endif %}
                   <div class="mask rgba-white-slight"></div>
                 </a>
               </div>
-            
-
               <div class="card-body text-center">
                 <a href="" class="grey-text">
                   <h5>{{ item.get_category_display }}</h5>
                 </a>
                 <h5>
                   <strong>
+                    {% if item.status == 'NOT ON SALE' %}
+                    <a class="grey-text">{{ item.title }}
+                    {% else %}
                     <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
-                      <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
+                    {% endif %}
+
+                    {% if item.status != 'NOT ON SALE' %}
+                      <span class="badge badge-pill {{ item.get_label_display }}-color"> {{item.status}} </span>
+                      {% else %}
+                       <span class="badge badge-pill" style="background-color: grey;"> {{item.status}} </span>
+                      {% endif %}
                     </a>
                   </strong>
                 </h5>
-
+                {% if item.status == 'NOT ON SALE' %}
+                <h4 class="font-weight-bold grey-text">
+                <strong> &#8358;
+                {% else %}
                 <h4 class="font-weight-bold blue-text">
-                  <strong>$
+                  <strong> &#8358;
+                {% endif %}
+
+                {% if item.status != 'NOT ON SALE' %}
                   {% if item.discount_price %}
-                  {{ item.discount_price }}
+                    {{ item.discount_price }}
                   {% else %}
-                  {{ item.price }}
+
+                    {{ item.price }}
                   {% endif %}
+
+                  {% else %}
+                  Available soon    
+
+                {% endif %}          
                   </strong>
                 </h4>
 

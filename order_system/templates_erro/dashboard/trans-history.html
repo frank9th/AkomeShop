@@ -1,0 +1,152 @@
+
+{% extends 'dashboard/layouts/base.html' %}
+{% load static %}
+
+{% block title %} Page User {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+	<h1> Transaction History  </h1>
+	<div class="row">
+	{% if topup %}
+	<div class="col-md-4">
+    	<div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Top Up History </h4>
+
+        <!-- Fisrt Alert--->
+
+           <div class="alert alert-info">
+          <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+            <i class="tim-icons icon-simple-remove"></i>
+          </button>
+          <span><strong> Pay into:</strong> <br>
+          	Acc Name: <br>
+          		Mekly Integrated Service Ltd <br>
+          		Acc No.: <br>
+          		Bank Name: United Bank of Africal  <br>
+          	
+         	and click the action button to enter ref_code and Account Name. </span>
+        </div>
+
+      </div>
+      	<div class="card-body">
+      	<table class="table responsive">
+			<thead>
+			
+				<th> time </th>
+				<th> amount </th>
+				<th> ref </th>
+				<th> Action </th>
+			</thead>
+			<tbody id="topupTable">
+				{% for object in topup %}
+				<tr>
+					
+					<td> {{object.time}}</td>
+					<td> &#8358; {{object.amount}}</td>
+					<td> {{object.ref_code}}</td>
+					<td> <input type="button" name="action" data-sid="{{object.id}}" value="Action" class="btn btn-warning btn-sm btn-edit">
+					
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>		
+		</table>
+
+      </div>
+    	</div>
+ 	</div>
+
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Notification states</h4>
+      </div>
+     	<div class="card-body">
+	      	<table class="table table-hover responsive">
+				<thead>
+					<th> Type </th>	
+					<th> date </th>
+					<th> time </th>
+					<th> staues </th>
+					<th> amount </th>
+				</thead>
+				<tbody id="TransTable">
+					{% for object in trans %}
+					<tr>
+						<td> {{object.transaction_type}}</td>	
+						<td> {{object.date}}</td>
+						<td> {{object.time}}</td>
+						<td> {{object.status}}</td>
+						{% if object.status == 'Debited' %}
+						<td> - &#8358; {{object.amount}}</td>
+						{% else %}
+						<td> &#8358; {{object.amount}}</td>
+						{% endif %}
+						
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>		
+			</table>
+	   
+      	</div>
+    </div>
+  </div>
+
+  {% else %}
+   <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="card-title">Notification states</h4>
+      </div>
+     	<div class="card-body">
+	      	<table class="table table-hover responsive">
+				<thead>
+					<th> Type </th>	
+					<th> date </th>
+					<th> time </th>
+					<th> staues </th>
+					<th> amount </th>
+				</thead>
+				<tbody id="TransTable">
+					{% for object in trans %}
+					<tr>
+						<td> {{object.transaction_type}}</td>	
+						<td> {{object.date}}</td>
+						<td> {{object.time}}</td>
+						<td> {{object.status}}</td>
+						{% if object.status == 'Debited' %}
+						<td> - &#8358; {{object.amount}}</td>
+						{% else %}
+						<td> &#8358; {{object.amount}}</td>
+						{% endif %}
+						
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>		
+			</table>
+	   
+      	</div>
+    </div>
+  </div>
+
+
+
+  	{% endif %}
+</div>
+
+
+
+
+ {% block javascripts %}
+ {% include 'testajax.html'%}
+
+ {% endblock javascripts %}
+		
+
+{% endblock %}

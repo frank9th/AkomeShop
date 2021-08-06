@@ -1,4 +1,7 @@
 
+
+
+
 {% extends 'dashboard/layouts/base.html' %}
 {% load static %}
 
@@ -8,145 +11,117 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
-	<h1> Transaction History  </h1>
-	<div class="row">
-	{% if topup %}
-	<div class="col-md-4">
-    	<div class="card">
-      <div class="card-header">
-        <h4 class="card-title">Top Up History </h4>
 
-        <!-- Fisrt Alert--->
+<div class="row">
+    <div class="col"></div>
+  <div class="col-md-8">
+    <div class="">
+      <div class="row">
+        <div class="col"></div>
+        <h4 class="col" style="color:grey;">Transaction History </h4>
+        {% if topup %}
+         <a class="btn " onclick="demo.showNotification('top','right')"> Pay</a>
+        {% endif %}
 
-           <div class="alert alert-info">
+
+      </div>
+      <div class="card-body">
+        
+        {% for obj in trans %}
+        {% if obj.transaction_type == 'T' %}
+
+        <div class="alert  alert-with-icon card " data-notify="container">
+          <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+           <h5><i class="tim-icons icon-simple-remove"></i></h5> 
+          </button>
+          <h5><span data-notify="icon" class="tim-icons icon-bell-55"></span></h5>
+
+          {% if obj.status == 'Debited' %}
+          <h5><strong>{{ obj.note }}  - &#8358; {{obj.amount}}</strong></h5>
+                    
+                        {% elif obj.status == 'Pending' %}
+                          <h5><strong>{{ obj.note }}  &#8358; {{obj.amount}} <input type="button" name="action" data-sid="{{obj.id}}" value="Action" class="btn btn-warning btn-sm btn-edit">
+                          </strong> </h5>
+                          {% else %}
+                            <h5><strong>{{ obj.note }}  &#8358; {{obj.amount}}  </strong> </h5>
+                        {% endif %}
+
+          <p><strong>Status: {{obj.status}} </strong>| Time: {{obj.time}}  | Type: {{obj.transaction_type}}  | Ref: {{obj.ref_code}}</p>
+        </div>
+        
+        {% else %}
+          <div class="alert alert-info alert-with-icon" data-notify="container">
           <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
             <i class="tim-icons icon-simple-remove"></i>
           </button>
-          <span><strong> Pay into:</strong> <br>
-          	Acc Name: <br>
-          		Mekly Integrated Service Ltd <br>
-          		Acc No.: <br>
-          		Bank Name: United Bank of Africal  <br>
-          	
-         	and click the action button to enter ref_code and Account Name. </span>
-        </div>
+          <span data-notify="icon" class="tim-icons icon-bell-55"></span>
+
+          {% if obj.status == 'Debited' %}
+           <span data-notify="message">{{ obj.note }}  - &#8358; {{obj.amount}}</span>
+              {% else %}
+               <span data-notify="message">{{ obj.note }}  &#8358; {{obj.amount}}</span>
+                 {% endif %}
+
+          <p><strong>Status: {{obj.status}} </strong>| Time: {{obj.time}} | Type: {{obj.transaction_type}}  | Ref: {{obj.ref_code}} </p>
+        </div>     
+
+        {% endif %}
+
+        {% empty %}
+       <h5> Your Transactions appear Here</h5>
+
+        {% endfor %}
 
       </div>
-      	<div class="card-body">
-      	<table class="table responsive">
-			<thead>
-			
-				<th> time </th>
-				<th> amount </th>
-				<th> ref </th>
-				<th> Action </th>
-			</thead>
-			<tbody id="topupTable">
-				{% for object in topup %}
-				<tr>
-					
-					<td> {{object.time}}</td>
-					<td> &#8358; {{object.amount}}</td>
-					<td> {{object.ref_code}}</td>
-					<td> <input type="button" name="action" data-sid="{{object.id}}" value="Action" class="btn btn-warning btn-sm btn-edit">
-					
-					</td>
-				</tr>
-				{% endfor %}
-			</tbody>		
-		</table>
-
-      </div>
-    	</div>
- 	</div>
-
-  <div class="col-md-8">
-    <div class="card">
-      <div class="card-header">
-        <h4 class="card-title">Notification states</h4>
-      </div>
-     	<div class="card-body">
-	      	<table class="table table-hover responsive">
-				<thead>
-					<th> Type </th>	
-					<th> date </th>
-					<th> time </th>
-					<th> staues </th>
-					<th> amount </th>
-				</thead>
-				<tbody id="TransTable">
-					{% for object in trans %}
-					<tr>
-						<td> {{object.transaction_type}}</td>	
-						<td> {{object.date}}</td>
-						<td> {{object.time}}</td>
-						<td> {{object.status}}</td>
-						{% if object.status == 'Debited' %}
-						<td> - &#8358; {{object.amount}}</td>
-						{% else %}
-						<td> &#8358; {{object.amount}}</td>
-						{% endif %}
-						
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>		
-			</table>
-	   
-      	</div>
     </div>
   </div>
-
-  {% else %}
-   <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        <h4 class="card-title">Notification states</h4>
-      </div>
-     	<div class="card-body">
-	      	<table class="table table-hover responsive">
-				<thead>
-					<th> Type </th>	
-					<th> date </th>
-					<th> time </th>
-					<th> staues </th>
-					<th> amount </th>
-				</thead>
-				<tbody id="TransTable">
-					{% for object in trans %}
-					<tr>
-						<td> {{object.transaction_type}}</td>	
-						<td> {{object.date}}</td>
-						<td> {{object.time}}</td>
-						<td> {{object.status}}</td>
-						{% if object.status == 'Debited' %}
-						<td> - &#8358; {{object.amount}}</td>
-						{% else %}
-						<td> &#8358; {{object.amount}}</td>
-						{% endif %}
-						
-						</td>
-					</tr>
-					{% endfor %}
-				</tbody>		
-			</table>
-	   
-      	</div>
-    </div>
-  </div>
+  <div class="col"></div>
 
 
-
-  	{% endif %}
 </div>
-
-
-
 
  {% block javascripts %}
  {% include 'testajax.html'%}
 
  {% endblock javascripts %}
-		
+        
 
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

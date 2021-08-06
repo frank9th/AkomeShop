@@ -37,6 +37,17 @@ def create_ref_code():
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
 
+# Home fuction 
+class HomeView(ListView):
+    model = Product
+    paginate_by = 10
+    #template_name = "home.html"
+    template_name = "index.html"
+    #template_name = "welcome.html"
+
+
+
+
 # Product listing function 
 def products(request):
     context = {
@@ -50,6 +61,15 @@ def product_category(request, slug):
     products = category.products.all()
     context= {'category':category, 'products':products}
     return render(request, "category_page.html", context)
+
+# Product Listing 
+def ProductList(request):
+    products = Product.objects.all()
+    context ={
+    'products':products
+    }
+    return render(request, 'dashboard/product_list.html', context)
+
 
 # Add product function 
 def AddProduct(request):
@@ -144,6 +164,67 @@ def AddProduct(request):
     return render(request, "dashboard/product.html", context)
    # return JsonResponse({'status':200, })
     '''
+
+# Not yet working 
+def UpdateProduct(request, pk):
+    product = Product.objects.get(id=pk)
+    form = UpdateProductForm(instance=product)
+    if request.method == 'POST':
+        form = UpdateProductForm(request.POST, request.FILES ) 
+        print(request.FILES) 
+        if form.is_valid():
+            print("form is valid")   
+           
+            #form.save()
+            return redirect('/product-list')
+    
+    context = {
+    'product': product,
+    'form':form,
+    }
+    return render(request, 'dashboard/update_product.html', context)
+
+
+
+# Fastfood listing page 
+def FoodSellers(request):
+    seller = Seller.objects.filter(fast_food=True)
+    context= {
+    'seller':seller
+    }
+    return render(request, 'food_sellers.html', context)
+
+
+# Fast Food page 
+def FastFood(request, code):
+    #print(shop)
+    #print(shop.owner)
+    #print(shop.owner.client_code)
+    #user_code = UserProfile.objects.get(user=shop.owner.user)
+    user_code = UserProfile.objects.get(client_code=code)
+    admin= Seller.objects.get(owner=user_code)
+    owner = UserAccount.objects.get(user=user_code.user)
+    item = Product.objects.filter(seller=owner, tag='FS')
+    print(item)
+    print(admin)
+    context= {
+    'item':item,
+    'admin':admin
+    }
+    return render(request, 'fast_food.html', context)
+
+
+def ServicePage(request):
+    serve = Product.objects.filter(tag= 'S' )
+    context = {
+    'serve':serve
+    }
+    return render(request, 'service_page.html', context)
+
+
+
+
+
 
 
 
@@ -600,12 +681,7 @@ class PaymentView(View):
         messages.warning(self.request, "Invalid data received")
         return redirect("/payment/stripe/")
 
-# Home fuction 
-class HomeView(ListView):
-    model = Product
-    paginate_by = 10
-    #template_name = "home.html"
-    template_name = "welcome.html"
+
 
 # Order summary 
 class OrderSummaryView(LoginRequiredMixin, View):

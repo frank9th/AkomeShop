@@ -8,23 +8,27 @@
             <div class="block block-three"></div>
             <div class="block block-four"></div>
             <a href="javascript:void(0)">
-              <img class="avatar" src="/static/dash/assets/img/emilyz.jpg" alt="...">
-              <h3> Balance: N {{ client.wallet_balance}}</h3>
-               
+              {% if client.image %}
+              <img class="avatar" src="{{ client.image.url }}" alt="...">
+
+              {% else %}
+                <img  class="avatar" src="/static/dash/assets/img/avatar.png" class="card-img-top" alt="{{ client.title }}">   
+              {% endif %}
+              <h4> Bal: N {{wallet}}</h4>           
                 <h5 class="title">
-                {% if client.title %}
+                  {% if client.title %}
                {{client.title}}.  {{client.first_name}} {{client.last_name}}
                 {% else %}
-                <h3> User: {{client.user}}</h3>
+                <h5> User: {{client.user}}</h5>
               {% endif %}
                </h5>
             </a>
+
             {% if client.email %}
             <p class="description">
              {{client.email}}
             </p>
               {% endif %}
-
           </div>
         </p>
        
@@ -34,22 +38,22 @@
           Phone 2 : {{client.phone2 }}  <hr>
         {% endif %}
         {% if client.town %}
-          Town : {{client.town }} <hr>
-          Land mark: 
+          <b>Town :</b> {{client.town }} <hr>
+          <b>Land mark: </b> {{client.land_mark}}
           <hr>
-          Address : {{client.apartment_address }}
+          <b>Address : </b>{{client.apartment_address}}
           <hr>
           {% endif %}
 
-
-
-          Do not be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
         </div>
       </div>
       <div class="card-footer">
+        <a href="{% url 'edit-account' client.client_code %}" class="card-link">Edit Details</a>  | <b>Code: {{client.client_code}}</b>
         <div class="button-container">
         
         </div>
       </div>
     </div>
   </div>
+
+

@@ -246,3 +246,48 @@ class ProductForm(forms.Form):
     
     
     #slug = models.SlugField()
+
+class UpdateProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = '__all__'
+        widgets = {
+            'title' : forms.TextInput(
+                attrs={
+                'id':'proNameId',
+                'required': True, 
+                'placeholder': 'Enter Product/Service name ',
+                'class':'form-control',
+                }),
+            'cost_price' : forms.NumberInput(
+                attrs={
+                'id': 'costPriceId', 
+                'placeholder': 'Enter market price',
+                'class':'form-control',
+                }),
+            'price' : forms.NumberInput(
+                attrs={
+                'id': 'proPriceId', 
+                'placeholder': 'Enter amount',
+                'class':'form-control',
+                }),
+            'discount_price' : forms.NumberInput(
+                attrs={
+                'id': 'proDicePriceId', 
+                'placeholder': 'Enter discount amount',
+                'class':'form-control',
+                }),
+             'short_desc': forms.Textarea(attrs={
+                'id': 'shortDectId', 
+                'rows': 3,
+                'class':'form-control',
+                'placeholder': 'Enter short description',
+            }),
+            'description' : forms.Textarea(attrs={
+                'id': 'descId', 
+                'rows': 2,
+                'class':'form-control',
+                'placeholder': 'product/services detail description',
+            })
+
+        }

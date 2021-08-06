@@ -1,0 +1,18 @@
+<h2>
+	DashBoard 
+</h2>
+{% for user in users %}
+<h3>{{user}}</h3>
+<h3>{{user.email}}</h3>
+{%endfor%}
+{% for order in orders %}
+<h2>{{order.items}}</h2>
+<h2>{{order.payment.amount}}</h2>
+<h2>{{order.ref_code}}</h2>
+{% endfor %}
+
+<h1> Trying to get the item with  the ref code </h1>
+{% for item in item_order%}
+<p> {{item.items.orderitems.item}}</p>
+<p> {{item.payment.amount}}</p>
+{% endfor %}

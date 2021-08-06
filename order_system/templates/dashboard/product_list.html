@@ -1,0 +1,106 @@
+
+{% extends 'dashboard/layouts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Add Product {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+ <div class="">
+  {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+  {% endif %}
+  </div>
+
+  <div class="row">
+		<div class="col-md-8">
+			<h1> Products </h1>
+			<p> You have {{products.count}} products in store </p>
+			
+		</div>
+		<div class="col">
+			<a href="{% url 'store:product' %}" class="btn">Add Product</a>
+	
+		</div>
+	</div>
+
+	<hr>
+
+	   <div class="container">
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col-sm">#</th>
+            <th scope="col-sm">Img</th>
+            <th scope="col-sm">Title</th>
+            <th scope="col-sm">Price</th>
+            <th scope="col-sm">Disc. Price </th>
+            <th scope="col-sm">Category</th>
+            <th scope="col-sm">Tag </th>
+            <th scope="col-sm">Lable</th>
+            <th scope="col-sm">Status</th>
+            <th scope="col-sm">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        	{% for item in products %}
+        <tr>
+        	<td>{{ forloop.counter }}</td>
+            <td scope="row">
+           <!--- {{ forloop.counter }}--->
+            {% if item.image %}
+                <img src="{{ item.image.url }}" style="height: 60px; width: 80px;">
+                {% else %}
+                 <img src="..." class="card-img-top">
+                {% endif %}
+            </td>
+            <td>{{ item.title }}</td>
+            <td> &#8358; {{item.price }}</td>
+            <td> &#8358; {{item.discount_price }}</td>
+            <td> {{item.category }} </td>
+            <td> {{item.tag }} </td>
+            <td> {{item.label }} </td>
+            <td> {{item.status }} </td>
+            <td> <a href="{% url 'store:update-product' item.id %}" class="btn"> Edit</a> </td>
+        </tr>
+        {% endfor %}
+       
+        </tbody>
+    </table>
+
+
+
+    </div>
+
+
+
+
+ {% block javascripts %}
+
+  {% include 'testajax.html'%}
+
+
+
+ {% endblock javascripts %}
+		
+
+{% endblock %}
+
+
+
+
+
+
+
+

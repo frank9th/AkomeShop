@@ -1,0 +1,21 @@
+  <ul class="nav nav-pills nav-fill">
+
+    {% if request.user.is_authenticated %}
+    <li class="nav-item card item-bk" >
+      <a class="nav-link" aria-current="page" href="{% url 'wallet' user.userprofile.client_code %}"> <i class="fab fa-cc-mastercard"></i> Wallet Services </a>
+    </li>
+    {% endif %}
+
+    <li class="nav-item" >
+      <a class="nav-link" href="{% url 'store:fastfood' %}"> <i class="fas fa-hamburger"></i> Fast Food </a>
+    </li>
+    <li class="nav-item card item-bk" >
+      <a class="nav-link" href="{% url 'store:services' %}"> <i class="fas fa-toolbox"></i> Home Services </a>
+    </li>
+     <li class="nav-item ">
+      <a class="nav-link" href="#"> <i class="fas fa-shipping-fast"></i> Logistic Services </a>
+    </li>
+    <li class="nav-item card item-bk" >
+      <a class="nav-link " href="#" tabindex="-1" aria-disabled="true"> <i class="fas fa-shopping-basket"></i> Market Place </a>
+    </li>
+  </ul>

@@ -68,23 +68,19 @@ class Seller(models.Model):
     goods = models.BooleanField(default=False)
     services = models.BooleanField(default=False)
     skill = models.BooleanField(default=False)
+    active= models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add= True )
     agent_code = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='cover', blank=True, null=True)
 
-
     def __str__(self):
         return self.business_name
+
     @property
     def get_total_pay(self):
         payment = self.Seller_set.all()
         total = sum([self.amount for amount in vendors])
         return total
-
-
-
-
-
 
 
 
@@ -108,6 +104,14 @@ TAG = (
     ('FS', 'FastFood')
     )
 
+STAT = (
+    ('NEW', 'NEW'),
+    ('FREE', 'FREE'),
+    ('ON SALE', 'ON SALE'),
+    ('NOT ON SALE', 'NOT ON SALE'),
+    ('HOT', 'HOT')
+    )
+
 LABEL_CHOICES = (
     ('P', 'primary'),
     ('S', 'secondary'),
@@ -120,6 +124,7 @@ ADDRESS_CHOICES = (
 )
 
 
+
 # STORE PRODUCTS 
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE )
@@ -130,12 +135,15 @@ class Product(models.Model):
     discount_price = models.FloatField(blank=True, null=True)
     tag = models.CharField(choices=TAG, max_length=10)
     label = models.CharField(choices=LABEL_CHOICES, max_length=1, default='P')
+    status = models.CharField(choices=STAT, max_length=100, default='NEW')
     slug = models.SlugField()
+    unit = models.BooleanField(default=False)
     short_desc = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='product', )
     image_two = models.ImageField(upload_to='product', blank=True, null=True)
     image_three = models.ImageField(upload_to='product', blank=True, null=True)
+
 
     def __str__(self):
         return self.title 

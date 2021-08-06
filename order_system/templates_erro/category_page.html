@@ -1,0 +1,114 @@
+
+{% extends 'sections/boiler_plate.html'%}
+{% load static %}
+
+{% block content %}
+
+   <!--- beggin slider section ---->
+
+  <div class="container "> 
+    <div class="col-sm">
+      <ul class="nav nav-pills nav-fill">
+      <li class="nav-item card item-bk" >
+        <a class="nav-link" aria-current="page" href="#"> <i class="fab fa-cc-mastercard"></i> Wallet Services </a>
+      </li>
+      <li class="nav-item" >
+        <a class="nav-link" href="#"> <i class="fas fa-hamburger"></i> Fast Food </a>
+      </li>
+      <li class="nav-item card item-bk" >
+        <a class="nav-link" href="#"> <i class="fas fa-toolbox"></i> Home Services </a>
+      </li>
+       <li class="nav-item ">
+        <a class="nav-link" href="#"> <i class="fas fa-shipping-fast"></i> Logistic Services </a>
+      </li>
+      <li class="nav-item card item-bk" >
+        <a class="nav-link " href="#" > <i class="fas fa-shopping-basket"></i> Market Place </a>
+      </li>
+    </ul>   
+    </div>
+  </div>
+
+  <div class="container">
+     <h6 ><a href="/"> Home  </a>  |  Category  |  <strong>{{category.name}}</strong> </h6>
+    
+  </div>
+ 
+
+
+ <div class="row">
+  <div class="col">
+    <div class="container">
+      <div class="" style="padding: 50px;">
+         {% include 'sections/category-snippet.html' %}
+        
+      </div>     
+    </div>    
+  </div>
+  <div class="col-sm-8">
+<!---Product ---Section----->
+<div class="row container">
+  <h6> Found {{products.count}} {% if products.count == 1 %}
+
+  item matching {{category.name}} category 
+  {% else %} items matching 
+  {{category.name}} category 
+  {% endif %}
+
+  </h6>
+  <hr>
+   {% for item in products %}
+          <div class="col-lg-4 mb-4">
+
+            <div class="card">
+              <div class="view overlay">
+                {% if item.image %}
+                <img src="{{ item.image.url }}" class="card-img-top">
+                {% else %}
+                 <img src="..." class="card-img-top">
+                {% endif %}
+                <a href="{{ item.get_absolute_url }}">
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
+            
+
+              <div class="card-body text-center">
+                <a href="" class="grey-text">
+                  <h5>{{ item.get_category_display }}</h5>
+                </a>
+                <h5>
+                  <strong>
+                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
+                      <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
+                    </a>
+                  </strong>
+                </h5>
+
+                <h4 class="font-weight-bold blue-text">
+                  <strong>$
+                  {% if item.discount_price %}
+                  {{ item.discount_price }}
+                  {% else %}
+                  {{ item.price }}
+                  {% endif %}
+                  </strong>
+                </h4>
+
+              </div>
+
+            </div>
+
+          </div>
+          {% endfor %}
+
+
+
+</div>
+    
+  </div>
+   
+ </div>
+
+
+
+{% endblock %}

@@ -1,0 +1,65 @@
+
+<form method="POST" action=""  id="con_top_form" style=" display: none;">
+            <input name="userid" style="display:none" type="text" id="userId" value="{{user.id}}">
+            {% csrf_token %}
+            <h3> Confirm Topup </h3>
+              {{form}}
+              <input type="submit" value="Confirm Request" class="btn" id="con_top_form_btn">
+        
+          </form>
+
+<div id="tran_smsg" class="alert alert-success" style="display:none;"></div> 
+<div class="card mb-4">
+    <div class="card-header">
+
+        <i class="fas fa-table mr-1"></i>
+        <h1> Trans History </h1>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                     <tr>
+                        <th> Status  </th>
+                        <th>Type  </th>
+                    
+                        <th>Amount </th>
+                        <th> Note </th>
+                        <th>Time </th>
+                        <th>ref_code </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                   <tr>
+                        <th> Status  </th>
+                        <th>Type  </th>
+                        <th>Amount </th>
+                        <th> Note </th>
+                        <th>Time </th>
+                        <th>ref_code </th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+                <tbody id="transTable">
+                    {% for object in trans %}
+            <tr>
+            
+              <td>{{object.status }}</td> 
+               <td>{{object.transaction_type }}</td>
+             
+              <td> &#8358; {{object.amount}}</td>
+              <td>{{object.note}}</td>
+              <td>{{object.time}}</td>
+              <td>{{object.ref_code}}</td>
+
+              <td> <input type="button" name="action" data-sid="{{object.ref_code}}" value="Action " class="btn btn-warning btn-sm btn-action"></td>
+           
+            </tr> 
+            
+            {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

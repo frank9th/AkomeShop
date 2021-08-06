@@ -1,0 +1,43 @@
+
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+    	{% if messages %}
+	        {% for message in messages %}
+		        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="alert">
+		          {{ message }}
+		          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+		            <span aria-hidden="true">&times;</span>
+		          </button>
+		        </div>
+	        {% endfor %}
+   		{% endif %}
+    	<form method="POST" id="bnkform">
+			{% csrf_token %}
+			{{form}}
+			<input class="btn btn-warning" type="submit" name="submit " value="Save Account" id="updateAcc">
+		</form>
+ 
+    </div>
+    <div class="col">
+    	<div class="alert alert-info" role="alert">
+		  <h4 class="alert-heading">Read Me !</h4>
+		  <p>To receive funds, make sure to enter all fields correctly</p>
+		  <hr>
+		  <p class="mb-0">We process all withdraw request manualy, so its important to double check your account details.</p>
+		  <p class="mb-0">Account topUps are process automaticaly in a seperate network encrypt with best and upt -to-date security system. </p>
+		</div>
+    	
+	   	
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+	
