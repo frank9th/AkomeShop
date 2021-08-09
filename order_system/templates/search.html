@@ -1,21 +1,24 @@
 
-{% extends 'sections/boiler_plate.html'%}
+{% extends 'dashboard/layouts/base-store.html' %}
 {% load static %}
 
 {% block title %} Search | {% endblock%}
 {% block content %}
 
 
-
  
 <div class="container"> 
-      <h2 class="title"> Search </h2>
-    <h3 class="sub-title"> Search term: "{{ query}}" </h3>
+    <h3 class="sub-title"> Searched term: <strong>{{ query}}</strong> </h3>
+    <h5> Found {{products.count}} {% if products.count == 1 %}
+          item matching {{ query}} 
+          {% else %} items matching 
+          {{ query}} 
+          {% endif %}
+          </h5> 
 
   <!--- End slider section ---->
 <!---Product ---Section----->
 <div class="row container">
-  <h5 class="h5" style="font-weight: bold;"> "{{query }}"</h5>
   {% if products %}
     {% for item in products %}
           <div class="col-lg-3 col-md-6 mb-4">
@@ -57,14 +60,11 @@
           </div>
           {% endfor %}
   {% else %}
-  <h1> Hoops! we couldn't find anything relating to your search </h1>
+  <h1 class="text-center"> Hoops! we couldn't find anything relating <br> to your search  </h1>
+  <h4 class="text-center">Please check that you spelled the word correctly. <br> you can also call our help line to help get what you want.  </h4>
   {% endif %}
 
-
 </div>
-
-
-
 </div>
 
 

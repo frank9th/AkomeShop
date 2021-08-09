@@ -56,7 +56,6 @@ class AddressAdmin(admin.ModelAdmin):
     list_filter = ['default', 'address_type', 'country']
     search_fields = ['user', 'street_address', 'apartment_address', 'zip']
 
-
 admin.site.register(Item)
 admin.site.register(Product)
 admin.site.register(OrderItem)
@@ -69,13 +68,13 @@ admin.site.register(UserProfile)
 admin.site.register(UserAccount)
 admin.site.register(Seller)
 admin.site.register(Transaction)
-
 admin.site.register(TopupConfirm)
 admin.site.register(SendHistory)
 admin.site.register(Saving)
 admin.site.register(Category)
 admin.site.register(Reviews)
 admin.site.register(Expensis)
+admin.site.register(Ads)
 #admin.site.register(Food)
 #admin.site.register(FastFood)
 
@@ -88,7 +87,6 @@ admin.site.register(Expensis)
 
 
 '''
-
 from django.contrib import admin
 from .models import * 
 

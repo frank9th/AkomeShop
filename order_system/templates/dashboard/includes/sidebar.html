@@ -1,15 +1,15 @@
 
    {% if request.user.is_authenticated %}
-    <div class="sidebar">
-      <div class="sidebar-wrapper">
-        <div class="logo">
+    <div class="sidebar white-content">
+      <div class="sidebar-wrapper " >
+        <div class="logo white-content" >
           <a target="_blank" 
              href="https://www.creative-tim.com/product/black-dashboard-django" class="simple-text logo-mini">
             GS | 
           </a>
           {% if client.client_code %}
           <a target="_blank" 
-             href="{% url 'my-account' client.client_code %}" class="simple-text logo-normal">
+             href="{% url 'my-account' client.client_code %}" class="simple-text logo-normal" style="color:black;">
             code: {{ client.client_code}}
           </a>
           {% else %}
@@ -21,7 +21,7 @@
           {% endif %}
         </div>
 
-        <ul class="nav">
+        <ul class="nav ">
         {% if request.user.is_authenticated %}
           <li class="{% if 'index' in segment %} active {% endif %} ">
             <a href="{% url 'store:home' %}">   

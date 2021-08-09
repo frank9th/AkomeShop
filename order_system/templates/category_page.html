@@ -1,113 +1,88 @@
 
-{% extends 'sections/boiler_plate.html'%}
+{% extends 'dashboard/layouts/base-store.html' %}
+
 {% load static %}
 
 {% block content %}
-
-   <!--- beggin slider section ---->
-
-  <div class="container "> 
-    <div class="col-sm">
-       {% include 'sections/menu-snippets.html' %}
-
+  <div class="container">
+    <div class="row">
+      <div class="col"><h6 ><a href="/"> Home  </a>  |  Category  |  <strong>{{category.name}}</strong> </h6></div>
+      <div class="col-md-6">
+         <h6> Found {{products.count}} {% if products.count == 1 %}
+          item matching {{category.name}} category 
+          {% else %} items matching 
+          {{category.name}} category 
+          {% endif %}
+          </h6> 
+      </div>
+      <div class="col"></div>
     </div>
   </div>
-
-
-
-  <div class="container">
-     <h6 ><a href="/"> Home  </a>  |  Category  |  <strong>{{category.name}}</strong> </h6>
-    
-  </div>
- 
-
-
- <div class="row">
-  <div class="col">
-    <div class="container">
-      <div class="" style="padding: 50px;">
-         {% include 'sections/category-snippet.html' %}
-        
-      </div>     
-    </div>    
-  </div>
-  <div class="col-sm-8">
-<!---Product ---Section----->
+<!--==========-Product -========--Section----->
 <div class="row container">
-  <h6> Found {{products.count}} {% if products.count == 1 %}
-
-  item matching {{category.name}} category 
-  {% else %} items matching 
-  {{category.name}} category 
-  {% endif %}
-
-  </h6>
-  <hr>
-   {% for item in products %}
-          <div class="col-lg-4 mb-4">
+  <h3 class="" style="font-weight: bold;"> Avalable Products </h3>
+  <br>
+    {% for item in products %}
+          <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" style="height: 10rem;">
-                {% else %}
-                 <img src="..." class="card-img-top" style="height: 10rem;">
-                {% endif %}
+                <img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;">
 
+                {% else %}
+                 <img src="..." class="card-img-top" style="height: 12rem;">
+                {% endif %}
+                
                 {% if item.status == 'NOT ON SALE' %}
                 <a href="#">
                 {% else %}
-                <a href="{{ item.get_absolute_url }}">
-
+                 <a href="{{ item.get_absolute_url }}">
                 {% endif %}
-               
                   <div class="mask rgba-white-slight"></div>
                 </a>
-              </div>    
+              </div>
               <div class="card-body text-center">
                 <a href="" class="grey-text">
                   <h5>{{ item.get_category_display }}</h5>
                 </a>
-                <h5>
+                <h4>
                   <strong>
-                     {% if item.status == 'NOT ON SALE' %}
-                     <a href="" class="grey-text">{{ item.title }}
-                     {% else %}
-                     <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
-                     {% endif %}
-                      <span class="badge badge-pill {{ item.get_label_display }}-color">{{item.status}}</span>
+                    {% if item.status == 'NOT ON SALE' %}
+                    <a class="grey-text">{{ item.title }}
+                    {% else %}
+                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
+                    {% endif %}
+                    {% if item.status != 'NOT ON SALE' %}
+                      <span class="badge badge-{{ item.get_label_display }}"> {{item.status}} </span>
+                      {% else %}
+                       <span class="badge badge-pill" style="background-color: grey;"> {{item.status}} </span>
+                      {% endif %}
                     </a>
                   </strong>
-                </h5>
+                </h4>
                 {% if item.status == 'NOT ON SALE' %}
-                <h4 class="font-weight-bold grey-text">
+                <h4 class=" grey-text" style="color:grey;">
                 <strong> &#8358;
                 {% else %}
                 <h4 class="font-weight-bold blue-text">
                   <strong> &#8358;
                 {% endif %}
+                {% if item.status != 'NOT ON SALE' %}
                   {% if item.discount_price %}
-                  {{ item.discount_price }}
+                    {{ item.discount_price }}
                   {% else %}
-                  {{ item.price }}
+                    {{ item.price }}
                   {% endif %}
+                  {% else %}
+                  Available soon    
+                {% endif %}          
                   </strong>
                 </h4>
-
               </div>
-
             </div>
-
           </div>
           {% endfor %}
-
-
-
-</div>
+      </div>
     
-  </div>
-   
- </div>
-
-
 
 {% endblock %}

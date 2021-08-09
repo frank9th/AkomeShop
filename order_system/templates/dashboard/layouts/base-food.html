@@ -12,14 +12,12 @@
   <link rel="apple-touch-icon" sizes="76x76" href="#">
   <link rel="icon" type="image/png" href="{% static 'dash/assets/img/fav.png'    %}">
   <title>
-     Mekly - {% block title %}{% endblock %} | Shop
+     Mekly - {% block title %}{% endblock %} | Fast Food
   </title>
 
   <!--Fonts and icons-->
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet" />
   <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
-
-  <script src="https://use.fontawesome.com/45c5bf262a.js"></script>
 
       <!-- BootStrap---CSS---->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
@@ -44,10 +42,11 @@
 
 <body class="">
   <div class="wrapper">
-  
-      {% include 'dashboard/includes/shop-sidebar.html' %}
+ 
+      {% include 'dashboard/includes/food-sidebar.html' %}
 
-   
+ 
+
   
 <!--style="background: #f5f6fa;"--->
     <div class="main-panel white-content" >
@@ -71,8 +70,7 @@
 
         {% endblock content %}
       </div>
-      {% include 'dashboard/includes/shop-footer.html' %}
-    
+      {% include 'dashboard/includes/footer.html' %}
     </div>
     
   </div>

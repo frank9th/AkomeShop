@@ -83,7 +83,6 @@ class Seller(models.Model):
         return total
 
 
-
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
@@ -138,6 +137,7 @@ class Product(models.Model):
     status = models.CharField(choices=STAT, max_length=100, default='NEW')
     slug = models.SlugField()
     unit = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     short_desc = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='product', )
@@ -358,6 +358,8 @@ class Transaction(models.Model):
     )
 
     TRANS_TYPE = (
+    ('Debit', 'Debit'),
+    ('Credit', 'Credit'),
     ('T', 'Top Up'),
     ('W', 'Withdrawal'),
     ('SV', 'Save'),
@@ -370,8 +372,6 @@ class Transaction(models.Model):
     date = models.DateField()
     time= models.TimeField()
     status = models.CharField( choices=TRANS_STATUS, max_length=10, default='Pending')
-    #debited = models.BooleanField(default=False)
-    #credited = models.BooleanField(default=False)
     note = models.CharField(max_length=200, null=True, blank=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
 
@@ -447,3 +447,22 @@ class Expensis(models.Model):
 
     class Meta:
         verbose_name_plural = 'Expensis'
+
+CLASS = (
+    ('B', 'Big'),
+    ('S', 'Small'),
+)
+
+class Ads(models.Model):
+    title = models.CharField(max_length=200)
+    message = models.CharField(max_length=500)
+    image = models.ImageField(upload_to='ads', )
+    slug= models.SlugField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    status = models.CharField(choices=CLASS, max_length=10)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
+

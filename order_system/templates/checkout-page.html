@@ -1,12 +1,12 @@
-{% extends 'sections/boiler_plate.html'%}
+{% extends 'dashboard/layouts/base-no-side.html' %}
 {% load static %}
 
 {% block content %}
   <!--Main layout-->
-  <main class="mt-5">
+  <main class="">
     <div class="container wow fadeIn">
       <!-- Heading -->
-      <h2 class="my-5 h2 text-center">Checkout form</h2>
+      <h2 class=" h2 text-center">Checkout form</h2>
       <!--Grid row-->
       <div class="row">
         <!--Grid column-->
@@ -17,7 +17,6 @@
             <div  id="msinfo" class="alert alert-info" style="display: none">
              
             </div>
-
            
             <form class="card-body" method="POST" action="{% url 'store:add-client-details' %}">
               <!-- <form>-->

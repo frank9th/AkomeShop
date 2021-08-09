@@ -284,6 +284,89 @@ def clientCheckout(request):
 
             elif payment_option == 'P':
                 return redirect('store:payment', payment_option='paypal')
+            # Pay with wallet function 
+            if payment_option == 'W':
+                client = order.client
+                client_wal = UserAccount.objects.get(user=client.user)
+                clientBal = client_wal.wallet_balance
+                total = order.ground_total()
+                if (clientBal > total):
+                    new_balance = clientBal - total
+                    client_wal.wallet_balance = new_balance
+                    client_wal.save()
+                    order_ref_code = create_ref_code()
+                     # create the payment
+                    payment = Payment()
+                    payment.user = request.user
+                    #payment.amount = order.get_total()
+                    payment.amount = order.ground_total()
+                    payment.ref_code = order_ref_code
+                    payment.save()
+                    # assign the payment to the order
+                    order_items = order.items.all()
+                    order_items.update(ordered=True)
+                    for item in order_items:
+                        if item.item.cost_price:
+                            sel_amount = item.quantity * item.item.cost_price
+                        #geting the seller of the item 
+                            seller = item.item.seller
+
+                        # adding each item price to the seller's flex balance 
+                            new_flex_bal = seller.flex_balance + sel_amount
+
+                            seller.flex_balance = new_flex_bal
+
+                            seller.save()
+                            print(item.item.seller.wallet_balance)
+                            item.save()
+                        else:
+                            sel_amount = item.quantity * item.item.price
+                            seller = item.item.seller
+
+                        # adding each item price to the seller's flex balance 
+                            new_flex_bal = seller.flex_balance + sel_amount
+
+                            seller.flex_balance = new_flex_bal
+
+                            seller.save()
+                            #print(item.item.seller.wallet_balance)
+                            item.save()
+                    order.ordered = True
+                    order.payment = payment
+                    #order.client = client_infor
+                    order.ordered_date = date
+                    order.ordered_time = time
+                    order.note = order_note
+                    order.ref_code = order_ref_code
+                    order.save()
+
+                    t_note = "Your Acct " + client.client_code + " Has Been Debited "
+                    trans = Transaction(
+                            transaction_type= 'Debit',
+                            status= 'Debited',
+                            date= date ,
+                            time= time,
+                            note = t_note,
+                            amount = order.ground_total(),
+                            ref_code = order_ref_code,
+                            )
+                    trans.account = client_wal
+                    trans.save()
+                    messages.success(request, "Your order was successful!")
+                    return redirect("/")
+
+                elif (clientBal < total ):
+                    messages.info(request, "Whoops! infuficent funds")
+                    #return JsonResponse({'status':1, 'wallet_balance':userBal})
+                    return redirect("/confirm-checkout")
+
+                elif (clientBal <= total ):
+                    messages.info(request, "infuficent funds. topup your account or select a different payment option")
+                    #return JsonResponse({'status':1, 'wallet_balance':userBal})
+                    return redirect("/confirm-checkout")
+
+                else:
+                    return JsonResponse({'status':0, })
 
             elif payment_option == 'PD':
                     order_ref_code = create_ref_code()
@@ -298,18 +381,31 @@ def clientCheckout(request):
                     order_items = order.items.all()
                     order_items.update(ordered=True)
                     for item in order_items:
-                        sel_amount = item.quantity * item.item.cost_price
+                        if item.item.cost_price:
+                            sel_amount = item.quantity * item.item.cost_price
                         #geting the seller of the item 
-                        seller = item.item.seller
+                            seller = item.item.seller
 
                         # adding each item price to the seller's flex balance 
-                        new_flex_bal = seller.flex_balance + sel_amount
+                            new_flex_bal = seller.flex_balance + sel_amount
 
-                        seller.flex_balance = new_flex_bal
+                            seller.flex_balance = new_flex_bal
 
-                        seller.save()
-                        #print(item.item.seller.wallet_balance)
-                        item.save()
+                            seller.save()
+                            print(item.item.seller.wallet_balance)
+                            item.save()
+                        else:
+                            sel_amount = item.quantity * item.item.price
+                            seller = item.item.seller
+
+                        # adding each item price to the seller's flex balance 
+                            new_flex_bal = seller.flex_balance + sel_amount
+
+                            seller.flex_balance = new_flex_bal
+
+                            seller.save()
+                            #print(item.item.seller.wallet_balance)
+                            item.save()
                     order.ordered = True
                     order.payment = payment
                     #order.client = client_infor
@@ -319,7 +415,6 @@ def clientCheckout(request):
 
                     order.ref_code = order_ref_code
                     order.save()
-    
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
             else:
