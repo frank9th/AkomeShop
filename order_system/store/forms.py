@@ -129,8 +129,13 @@ TAG = (
     ('FS', 'FastFood')
     )
 UNIT = (
-    ('YES', 'Yes'),
-    ('NO', 'No'),
+    ('True', 'Yes'),
+    ('False', 'No'),
+  
+    )
+ACTIVE = (
+    ('True', 'Make Live'),
+    ('False', 'Save Draft'),
   
     )
 
@@ -204,6 +209,7 @@ class ProductForm(forms.Form):
     tag = forms.ChoiceField(widget=forms.Select(),choices=TAG)
     label = forms.ChoiceField(widget=forms.Select(),choices=LABEL_CHOICES)
     unit = forms.ChoiceField(widget=forms.RadioSelect(),choices=UNIT)
+    active = forms.ChoiceField(widget=forms.RadioSelect(),choices=ACTIVE)
 
     '''
     class Meta:
@@ -297,6 +303,7 @@ class UpdateProductForm(forms.ModelForm):
                 'rows': 2,
                 'class':'form-control',
                 'placeholder': 'product/services detail description',
-            })
+            }), 
+           
 
         }

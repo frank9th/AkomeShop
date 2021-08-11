@@ -22,14 +22,15 @@
   {% endif %}
   </div>
 	
+	<div id="update_pro_msg" class="alert alert-success " style="display: none;">
 
-
-
+	</div> 
 
 <hr>
 
 <form method="POST" enctype="multipart/form-data" action="">
 	{% csrf_token %}
+	<input type="number" name="{{product}}" id="proId" value="{{product.id}}" style="display:none;">
 	<div class="row">
 		<div class="col-md-8">
 			<h4> Editing  {{ product.title }} </h4>
@@ -64,16 +65,6 @@
 			<br>
 			<label for="description">Description</label>
 			{{ form.description}}
-
-			<br>
-
-			<div class="" style="display: none;">{{form.seller}}</div>
-				<hr>
-			
-			<p> Product/ service Cover images </p>
-			{{ form.image}}
-
-			
 			
 			<hr>
 
@@ -92,23 +83,17 @@
 			<br>
 			<label >Choose label</label> <br>
 			{{ form.label}} 
-
 			<hr>
-			<p>Is this a Unit of a product/service ? </p> 
-			 <p> {{form.unit}} Yes </p>
+
+			<p> Is this a Unit of a product/service ? </p>	
+			{{form.unit}}
+			<label for="unit">Yes</label> 
+		
+			 <p>Publish product live? </p> 
+			 {{form.active}} 
+			 <label for="active">Yes</label>
 			 <hr>
-			 <p>Slug </p> 
-			 <p> {{form.slug}}  </p>
-	        <hr>
-	
-			<p> Galary images (optional)</p>
-			<label> Image one</label>
-			{{ form.image_two}}
-			<label> Image two</label>
-			{{ form.image_three}}
 		</div>
-
-
 </form>	
 
 
@@ -116,41 +101,6 @@
  {% block javascripts %}
 
   {% include 'testajax.html' %}
-<script type="text/javascript">
-
-		$("#pro_update_btn").click(function(){
-			console.log("Update product btn clicked")
-			let proId = $("#accUserId").val();
-			let proTitile = $("#proNameId").val();
-			let proCost = $("#costPriceId").val();
-			let disc_price  = $("#proDicePriceId").val();
-			let proAmount = $("#price").val();
-			let shortDesc = $("#shortDectId").val();
-			let desc = $("#descId").val();
-			let coverImg = $("input[id=id_image]").val();
-			console.log(proTitile)
-
-			console.log(coverImg)
-			//let desc = $("").val();
-			//let desc = $("").val();
-			//let desc = $("").val();
-			//let desc = $("").val();
-			//let desc = $("").val();
-		
-			let csrf = $("input[name=csrfmiddlewaretoken]").val();
-
-
-
-
-
-			//event.preventDefault();
-
-		})
-	
-
-
-
-</script>
 
 
  {% endblock javascripts %}

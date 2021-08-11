@@ -14,6 +14,75 @@
 
 		**/
 
+		
+
+
+
+		// product update function 
+		$("#pro_update_btn").click(function(){
+			console.log("Update product btn clicked")
+			let prodId = $("#proId").val();
+			let csrf = $("input[name=csrfmiddlewaretoken]").val();
+			let proTitile = $("#proNameId").val();
+			let proCost = $("#costPriceId").val();
+			let disc_price  = $("#proDicePriceId").val();
+			let proAmount = $("#proPriceId").val();
+			let shortDesc = $("#shortDectId").val();
+			let desc = $("#descId").val();
+			let cur_image = $("#cur_imgId").val();
+			let coverImg = $("input[id=id_image]").val();
+			let status = $("#id_status").val();
+			let cate = $("#id_category").val();
+			let tag = $("#id_tag").val();
+			let lable = $("#id_label").val();
+			let unit = $("input[name='unit']:checked").val();
+			let active = $("input[name='active']:checked").val();
+			let img2 = $("#id_image_two").val();
+			let img3 = $("#id_image_three").val();
+
+			data ={
+						id: prodId,
+						csrfmiddlewaretoken: csrf,
+						title:proTitile,
+						cost:proCost,
+						discount:disc_price,
+						amount:proAmount,
+						short:shortDesc,
+						desc:desc,
+						img:coverImg,
+						status:status,
+						cathegory:cate,
+						tag:tag,
+						lable:lable,
+						unit:unit,
+						active:active,
+						img2:img2,
+						img3:img3
+					}
+
+					$.ajax({
+								url : "{% url 'store:update-store' %}",
+								method: "POST",
+								data : data, 
+								success:function(data) {
+									if (data.status == 200){
+										$("#update_pro_msg").text(data.message)
+										$("#update_pro_msg").show();
+
+									}
+									
+								}
+
+
+							});
+				
+			
+			event.preventDefault();
+
+		});
+		
+
+
 		var now = Date()
 
 		$("#auto-save-off").click(function(){
@@ -503,13 +572,10 @@
 								//alert("topop successful")
 								$("#smsg").text("Congrats! you have successfully saved " +  savAmt )
 								$("#smsg").show()
-
 								new_bal += "<i class='tim-icons icon-wallet-43 text-primary'></i> " + ' &#8358; '  + x
 								sv_bal += "<i class='tim-icons icon-lock-circle text-primary'></i> " + ' &#8358; '  + y
-
 								$("#tbal").html(new_bal);
-								$("#sbal").html(sv_bal);
-							
+								$("#sbal").html(sv_bal);	
 							}
 
 						if (data.status == 100 ){

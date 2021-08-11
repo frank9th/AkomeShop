@@ -79,7 +79,12 @@
             <li class="{% if 'trade' in segment %} active 
 
             {% endif %}">
-            <a href="{% url 'trade' %}">
+            {% if client.is_seller == True %}
+             <a href="{% url 'store:seller-store' client.client_code %}">
+              {% else %}
+
+              <a href="{% url 'trade' %}">
+              {% endif %}
               <i class="tim-icons icon-spaceship btn-primary"></i>
               <p class="">My Store</p>
             </a>

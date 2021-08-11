@@ -71,6 +71,10 @@ def ProductList(request):
     return render(request, 'dashboard/product_list.html', context)
 
 
+
+
+
+
 # Add product function 
 def AddProduct(request):
     if request.method == 'POST':
@@ -90,6 +94,9 @@ def AddProduct(request):
             cate = form.cleaned_data.get('category')
             label = form.cleaned_data.get('label')
             unit = form.cleaned_data.get('unit')
+            active = form.cleaned_data.get('active')
+
+            print(unit)
 
             try:
                 seller = UserProfile.objects.get(client_code=sel)
@@ -113,6 +120,8 @@ def AddProduct(request):
                         image = img,
                         image_two = img2,
                         image_three = img3,
+                        unit=unit,
+                        active=active
                         )
 
                     product.save()
@@ -125,8 +134,7 @@ def AddProduct(request):
                     return redirect('/product')
 
             except ObjectDoesNotExist:
-                messages.warning(request, "Something went wrong")
-               
+                messages.warning(request, "Something went wrong")  
                 #form.save()
                 return redirect('/product')
     else:
@@ -134,55 +142,165 @@ def AddProduct(request):
         context = {
         'form':form,
         }
-        return render(request, "dashboard/product.html", context)
+        return render(request, "dashboard/add_product.html", context)
 
+'''
+def AddStoreProduct(request, pk):
+    user_code = UserProfile.objects.get(id=pk)
+    admin= Seller.objects.get(owner=user_code)
+    owner = UserAccount.objects.get(user=user_code.user)
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            sel = form.cleaned_data.get('seller')
+            img = form.cleaned_data.get('image')
+            img2 = form.cleaned_data.get('image_two')
+            img3 = form.cleaned_data.get('image_three')
+            cost_price = form.cleaned_data.get('cost_price')
+            price = form.cleaned_data.get('price')
+            disc_price = form.cleaned_data.get('discount_price')
+            short_desc = form.cleaned_data.get('short_desc')
+            description = form.cleaned_data.get('description')
+            tag = form.cleaned_data.get('tag')
+            cate = form.cleaned_data.get('category')
+            label = form.cleaned_data.get('label')
+            unit = form.cleaned_data.get('unit')
+            active = form.cleaned_data.get('active')
 
+            print(unit)
 
-    '''
+            try:
+                seller = UserProfile.objects.get(client_code=sel)
+                if seller.is_seller == True:
+                    seller_acct = UserAccount.objects.get(user=seller.user)
 
-    form = ProductForm(request.POST or None)
-    try:
-        if request.method == 'POST':
-            if form.is_valid():
+                    category = Category.objects.get(name=cate)
+                    
+                    product = Product(
+                        category = category,
+                        seller = seller_acct,
+                        title = title,
+                        cost_price = cost_price,
+                        price = price,
+                        discount_price = disc_price,
+                        tag = tag,
+                        label = label,
+                        slug = title + create_slug(),
+                        short_desc = short_desc,
+                        description = description,
+                        image = img,
+                        image_two = img2,
+                        image_three = img3,
+                        unit=unit,
+                        active=active
+                        )
 
-                print('form is valid')
-                title = form.cleaned_data.get('title')
-                img = form.cleaned_data.get('image')
-                img2 = form.cleaned_data.get('image_two')
+                    product.save()
+                    messages.success(request, "Product has been added")
 
-                print(title)
-                print(img)
-                print(img2)
-            
-    except Exception as e:
-        raise e
-   
+                    return redirect('/product')
+                else:
+                    seller.is_seller == False
+                    messages.warning(request, "Whoops this user those not have a business account \n Upgrade user account and try again. ")
+                    return redirect('/product')
 
-    context = {
-    'form':form,
-    }
-    return render(request, "dashboard/product.html", context)
-   # return JsonResponse({'status':200, })
-    '''
+            except ObjectDoesNotExist:
+                messages.warning(request, "Something went wrong")  
+                #form.save()
+                return redirect('/product')
+    else:
+        form = ProductForm()
+        context = {
+        'form':form,
+        'owner':owner,
+        }
+        return render(request, "dashboard/add_product.html", context)
 
-# Not yet working 
+'''
+
+# Get Requst to product update page 
 def UpdateProduct(request, pk):
     product = Product.objects.get(id=pk)
     form = UpdateProductForm(instance=product)
-    if request.method == 'POST':
-        form = UpdateProductForm(request.POST, request.FILES ) 
-        print(request.FILES) 
-        if form.is_valid():
-            print("form is valid")   
-           
-            #form.save()
-            return redirect('/product-list')
-    
     context = {
     'product': product,
     'form':form,
     }
     return render(request, 'dashboard/update_product.html', context)
+
+
+
+# POST Requst to product update page 
+def UpdateStore(request):
+    if request.method == 'POST':
+        pk = request.POST.get('id')
+        product = Product.objects.get(id=pk)
+        title = request.POST.get('title')
+        cost = request.POST.get('cost')
+        discount = request.POST.get('discount')
+        amount = request.POST.get('amount')
+        short = request.POST.get('short')
+        desc = request.POST.get('desc')
+        img = request.POST.get('img')
+        status = request.POST.get('status')
+        cat = request.POST.get('cathegory')
+        tag = request.POST.get('tag')
+        lable = request.POST.get('lable')
+        unit = request.POST.get('unit')
+        active = request.POST.get('active')
+        img2 = request.POST.get('img2')
+        img3 = request.POST.get('img3')
+
+        if unit == None:
+            unit = False
+        else:
+            unit = True
+
+        if active == 'on':
+            active = True
+        else:
+            active = False
+
+        # Get category from categories
+        category = Category.objects.get(id=cat)
+
+        # Updating the product   
+        product.category = category
+        product.title = title
+        product.price = amount 
+        if cost != '':
+            product.cost_price = cost
+        
+        if discount != '':
+            product.discount_price = discount
+        product.short_desc = short
+        product.description = desc
+        product.tag = tag
+        product.label = lable
+        product.unit = unit
+        product.status = status
+        product.active = active
+        #product.image = img
+        #product.image_two = img2
+        #product.image_three = img3
+
+        product.save() 
+        return JsonResponse({'status':200, 'message':'Item has been updated!',})
+        
+  
+    messages.warning(request, "Whoops! something went wrong. try again")
+    return JsonResponse({'status':300, 'message':'Whoops! something went wrong. try again'})
+
+
+# Delete store product  
+def delete_store_product(request, pk):
+    product = Product.objects.get(id=pk) 
+    product.delete() # saving the data in the db 
+    messages.success(request,  'product has been deleted')
+    return redirect('/product-list')
+
+ 
 
 
 
@@ -212,6 +330,25 @@ def FastFood(request, code):
     'admin':admin
     }
     return render(request, 'fast_food.html', context)
+
+
+# Product Listing 
+def SellerProduct(request, code):
+    user_code = UserProfile.objects.get(client_code=code)
+    admin= Seller.objects.get(owner=user_code)
+    owner = UserAccount.objects.get(user=user_code.user)
+    products = Product.objects.filter(seller=owner)  
+    context ={
+    'products':products,
+    'owner':owner,
+    }
+    return render(request, 'dashboard/product_list.html', context)
+
+
+
+
+
+
 
 
 def ServicePage(request):

@@ -27,8 +27,11 @@ urlpatterns = [
     path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('product/', views.AddProduct, name='product'),
+    #path('add-product/<str:pk>/', views.AddStoreProduct, name='add-product'),
     path('product-list/', views.ProductList, name='product-list'),
+    path('seller-store/<code>/', views.SellerProduct, name='seller-store'),
     path('update-product/<str:pk>/', views.UpdateProduct, name='update-product'),
+    path('update-store', views.UpdateStore, name='update-store'),
     path('fastfood/<str:code>/', views.FastFood, name= 'seller'),
     path('fastfood/', views.FoodSellers, name= 'fastfood'),
     path('services/', views.ServicePage, name= 'services'),
@@ -39,6 +42,7 @@ urlpatterns = [
     path('remove-item-from-cart/<slug>/', remove_single_item_from_cart,
          name='remove-single-item-from-cart'),
     path('delete_item/<str:pk>/',views.delete_item, name='delete_order'),
+    path('delete-product/<str:pk>/',views.delete_store_product, name='delete-product'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund')
 ]

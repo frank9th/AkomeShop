@@ -9,27 +9,15 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
- <div class="">
-  {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert" id="alert">
-        {{ message }}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% endfor %}
-  {% endif %}
-  </div>
-
   <div class="row">
 		<div class="col-md-8">
 			<h1> Products </h1>
 			<p> You have {{products.count}} products in store </p>
+
 			
 		</div>
 		<div class="col">
-			<a href="{% url 'store:product' %}" class="btn">Add Product</a>
+			<a href="{% url 'store:product' %}" class="btn" id="add_product_btn">Add Product</a>
 	
 		</div>
 	</div>
@@ -38,7 +26,7 @@
 
 	   <div class="container">
 
-    <table class="table">
+    <table class="table table-responsive">
         <thead>
         <tr>
             <th scope="col-sm">#</th>
@@ -65,30 +53,41 @@
                  <img src="..." class="card-img-top">
                 {% endif %}
             </td>
-            <td>{{ item.title }}</td>
+            <td>
+                {% if item.active == True %}
+                <a href="{% url 'store:product' item.slug %}">
+                <strong>{{ item.title }}</strong>
+                </a>
+                {% else %}
+                 {{ item.title }} | <span class="badge"> not selling</span>
+
+                 {% endif %} <br>
+                 <a href="{% url 'store:delete-product' item.id %}" style="color:grey;">Delet</a>
+            </td>
             <td> &#8358; {{item.price }}</td>
             <td> &#8358; {{item.discount_price }}</td>
             <td> {{item.category }} </td>
             <td> {{item.tag }} </td>
             <td> {{item.label }} </td>
             <td> {{item.status }} </td>
-            <td> <a href="{% url 'store:update-product' item.id %}" class="btn"> Edit</a> </td>
+            <td> <a href="{% url 'store:update-product' item.id %}" class="btn" id="product_update_btn"> Edit</a> </td>
         </tr>
         {% endfor %}
        
         </tbody>
     </table>
-
-
-
     </div>
-
-
-
-
  {% block javascripts %}
-
   {% include 'testajax.html'%}
+
+  <script >
+      $("#add_product_btn").click(function(){
+        console.log("add product buton clicked")  
+        $("#vendorId").val(owner);
+       
+      })
+
+  </script>
 
 
 
