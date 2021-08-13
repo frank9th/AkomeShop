@@ -63,6 +63,7 @@ class Seller(models.Model):
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=200, null=True)
     description = models.TextField()
+    town = models.CharField(max_length=20, null=True, blank=True)
     address = models.CharField(max_length=300, null=True, blank=True)
     fast_food = models.BooleanField(default=False)
     goods = models.BooleanField(default=False)

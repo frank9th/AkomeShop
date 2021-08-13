@@ -227,13 +227,13 @@
 	
 		    <h5 class="card-title">{{obj}}</h5>
 		    <p class="card-text"><strong></strong>{{obj.description}}</p>
-		    <p class="card-text">{{obj.address}}</p>
+		    <p class="card-text">located @ {{obj.city}}</p>
 		   <div class="card-body">
 		   
 		    {% if obj.active == True %}
 		    <a href="{% url 'store:seller' obj.owner.client_code %}" class="btn btn-danger rounded-pill"> View Menu</a> <span class="badge rounded-pill bg-dark">BUY</span>
 		    {% else %}
-		    <h5 class="grey-text"> Coming soon </h5>
+		    <h5 class="" style="font-weight:bold; color: grey;"> On boarding...</h5>
 		    {% endif %}
 		  </div>
 		</div>

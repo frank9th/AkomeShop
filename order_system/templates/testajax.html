@@ -65,11 +65,14 @@
 								method: "POST",
 								data : data, 
 								success:function(data) {
+
 									if (data.status == 200){
 										$("#update_pro_msg").text(data.message)
 										$("#update_pro_msg").show();
 
 									}
+
+								
 									
 								}
 

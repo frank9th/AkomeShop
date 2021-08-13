@@ -40,7 +40,7 @@ def create_ref_code():
 # Home fuction 
 class HomeView(ListView):
     model = Product
-    paginate_by = 10
+    #paginate_by = 10
     #template_name = "home.html"
     template_name = "index.html"
     #template_name = "welcome.html"
@@ -49,6 +49,7 @@ class HomeView(ListView):
 
 
 # Product listing function 
+@login_required
 def products(request):
     context = {
         'items': Product.objects.all()
@@ -63,6 +64,7 @@ def product_category(request, slug):
     return render(request, "category_page.html", context)
 
 # Product Listing 
+@login_required
 def ProductList(request):
     products = Product.objects.all()
     context ={
@@ -357,8 +359,6 @@ def ServicePage(request):
     'serve':serve
     }
     return render(request, 'service_page.html', context)
-
-
 
 
 

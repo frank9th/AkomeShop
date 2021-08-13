@@ -1,5 +1,5 @@
 
-{% extends 'dashboard/layouts/base-no-side.html' %}
+{% extends 'dashboard/layouts/base-store.html' %}
 {% load static %}
 
 {% block content %}
@@ -12,7 +12,12 @@
 
         <!--Grid column-->
         <div class="col-md-6 mb-4">
+          {% if product.image %}
           <img src="{{ product.image.url }}" class="img-fluid" alt="" style="height: 20rem;">
+          {% else %}
+          <img src="..." class="img-fluid" alt="" style="height: 20rem;">
+
+          {% endif %}
         </div>
         <div class="col-md-6 mb-4">
           <!--Content-->
@@ -35,8 +40,6 @@
             <h1 class=" font-weight-bold" style="font-weight:900; "> <strong>{{ object.title }}</strong></h1>
              <p style=" margin-bottom: 20px;">{{ object.description }}</p>
              <p style=" margin-bottom: 20px;">Sold by: {{ object.seller}} </p>
-
-       
 
             <a href="{% url 'store:add-to-cart' product.slug %}" class="btn btn-primary btn-md my-0 ">
               Add to cart

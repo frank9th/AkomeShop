@@ -23,10 +23,20 @@
     </div>
 
   {% else %}
-  <div class="card">
-     <h3 class="container" style="text-align: center; color: gray;"> You have not placed any orders yet </h3>
-    <a href="{% url 'edit-account' client.client_code %}" ><h4 class="btn btn-danger" >Update Profile</h4></a>
+  <div class="container">
+     <h4 class="" style="text-align: center; color: gray;"> Your orders appear here  </h4>
+     <hr>
+      <h4 class="" > Read Me  </h4>
+      <p> You can make use of our platform in the following ways;
+      </p>
+      
+        <li> Selling/Trading : <br> You can sale on our platform easily by first migrating to a trader account for FREE. click on <a href="{% url 'trade' %}"> MY Store </a>, provide your business details, enter mek account id to migrate succesfuly. to add product to store. click on the Add product link provided at the trader account dashboard. </li>
 
+        <li> Wallet Funding : <br> You can shop shop easily by funding you wallet and checkout with you wallet. we provide flexible options for wallet funding; funding via cash deposit. (to fund via cash deposit, locate any of our operational centers). Fundind via USSD/Direct Trans. you can fund u wallet via directly transfering funds to our account provided. this funds will be auto credited to your account once recieved. you can perform other finicial transactions such as send money to other bank, save money for a period etc. to view your wallet, click on the <a href="{% url 'wallet' client.client_code %}"> wallet </a> link at the side bar.  </li>
+        <li> Shopping Experience: <br> You can shop for any of our products listed in store. to do that, locate the <a href="/">create order </a>button at the side bar. click on your desired product, to view product details and add to cart. </li>
+
+
+    
   </div>
     
   {% endif %}

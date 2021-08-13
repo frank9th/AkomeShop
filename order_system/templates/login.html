@@ -4,7 +4,7 @@
 {%load static%}
 <html lang="en">
 <head>
-<title>Login V18</title>
+<title>Meklint | Login </title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -25,65 +25,201 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 	
 
+<style>
+/* Center the loader */
+#loader {
+  background-color: red;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 } 
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+  from{ bottom:-100px; opacity:0 } 
+  to{ bottom:0; opacity:1 }
+}
+/*
+#myDiv {
+  display: none;
+
+}
+*/
+
+
+.line {
+  position: relative;
+  top: 50%;
+  width: 12em;
+  margin: 0 auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.75);
+  font-size: 40px;
+  white-space: nowrap;
+  overflow: hidden; 
+  transform: translateY(-50%);
+  margin-top:15rem; margin-left: 5rem; color: wheat;
+
+}
+
+.anim-typewriter{
+  animation :typewriter 4s steps(40) 1s 1 normal both, 
+  blinkTextCursor 500ms steps(40) infinite;
+
+}
+@keyframes typewriter{
+  from{
+    width: 0;
+  }
+  to{
+    width: 11em;
+
+  }
+}
+
+
+@keyframes blinkTextCursor{
+  from {
+    border-right-color: rgba(255, 255, 255, 0.75);
+  }
+  to {
+    border-right-color: transparent;
+  }
+
+
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </head>
-<body style="background-color: #666666;">	
-<div class="limiter">
-<div class="container-login100">
+<body style="background-color: #666666;" >	
+<div id="loader"></div>
+<div class="limiter" id="myDiv">
+<div class="container-login100" >
 <div class="wrap-login100">
 <form action= "" class="login100-form validate-form" method= "POST" >
 	{% csrf_token %}
-<span class="login100-form-title p-b-43">
+  <span class="login100-form-title p-b-43">Login to continue</span>
 
-Login to continue
-</span>
+
 <div class="wrap-input100 validate-input">
 <input class="input100" type="text" name="username">
 <span class="focus-input100"></span>
-<span class="label-">username</span>
 </div>
-<div class="wrap-input100 validate-input" data-validate="Password is required">
+<p class="label-">Username</p>
+
+
+
+<div class="wrap-input100 " data-validate="Password is required">
 <input class="input100" type="password" name="password">
 <span class="focus-input100"></span>
-<span class="label-">Password</span>
 </div>
+<p>Password</p>
+
 <div class="flex-sb-m w-full p-t-3 p-b-32">
 <div class="contact100-form-checkbox">
+
 <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
 <label class="label-checkbox100" for="ckb1">
 Remember me  
 </label>
 </div>
+
 <div>
-<a href="#" class="txt1">
+<a href="#" class="txt1" style="text-decoration:none;">
 Forgot Password?
 </a>
 </div>
 </div>
+
 <div class="container-login100-form-btn">
-<button class="login100-form-btn">
+<button class="login100-form-btn" onload="myFunction()" >
 Login
 </button>
 </div>
 
 <div class="text-center p-t-46 p-b-20">
 <span class="txt2">
-<a href="#">Back to home </a>  | or <a href="{% url 'register'%}">sign up</a> 
+<a href="/">Back to home </a>  | or <a href="{% url 'register'%}">sign up</a> 
 
 </span>
 </div>
 
 </form>
+
 {% for messages in message %}
 	{{message}}
 {% endfor %}
-<div class="login100-more" style="background-image: url( 'static/images/bg_01.jpg');">
+<div class="login100-more" style="background-image: url( 'static/images/bg_03.png');">
+  <div class="container">
+    <h3 class="line anim-typewriter" style="">Shop Easy, Save Money <br>Save Stress </h3>
+  </div>
+</div>
 </div>
 </div>
 </div>
 
-</div>
+<script>
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 3000);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("myDiv").style.display = "block";
+}
+</script>
+
+
+
+
 
 </body>
 </html>

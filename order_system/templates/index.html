@@ -28,13 +28,16 @@
 <!--==========-Product -========--Section----->
 <div class="row container">
   <h3 class="" style="font-weight: bold;"> Popular Products  </h3>
+    <p> All items would be available soon </p>
   <br>
     {% for item in object_list %}
+    {% if item.active == True and item.status == 'HOT' %}
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;">
+                <a href="{{ item.get_absolute_url }}"><img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;"></a>
+                
                 {% else %}
                  <img src="..." class="card-img-top" style="height: 12rem;">
                 {% endif %}
@@ -84,7 +87,7 @@
                   {% endif %}
 
                   {% else %}
-                  Available soon    
+                  On boarding ...    
 
                 {% endif %}          
                   </strong>
@@ -95,20 +98,96 @@
             </div>
 
           </div>
+          {% endif %}
           {% endfor %}
 			</div>
 
-<!---Product ---Section----->
+<!---Porpular service section  ---Section----->
 <div class="row container">
-  <h3 class="" style="font-weight: bold;"> Product whish list </h3>
-  <p> All items would be available soon </p>
+  <h3 class="" style="font-weight: bold;"> Popular Services  </h3>
   <br>
     {% for item in object_list %}
+    {% if item.tag == 'S' %}
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">
                 {% if item.image %}
-                <img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;">
+                <a href="{{ item.get_absolute_url }}"><img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;"></a>
+                {% else %}
+                 <img src="..." class="card-img-top" style="height: 12rem;">
+                {% endif %}
+                
+                {% if item.status == 'NOT ON SALE' %}
+                <a href="#">
+                {% else %}
+                 <a href="{{ item.get_absolute_url }}">
+                {% endif %}
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
+              <div class="card-body text-center">
+                <a href="" class="grey-text">
+                  <h5>{{ item.get_category_display }}</h5>
+                </a>
+                <h4>
+                  <strong>
+                    {% if item.status == 'NOT ON SALE' %}
+                    <a class="grey-text">{{ item.title }}
+                    {% else %}
+                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
+                    {% endif %}
+
+                    {% if item.status != 'NOT ON SALE' %}
+                      <span class="badge badge-{{ item.get_label_display }}"> {{item.status}} </span>
+                      {% else %}
+                       <span class="badge badge-pill" style="background-color: grey;"> {{item.status}} </span>
+                      {% endif %}
+                    </a>
+                  </strong>
+                </h4>
+                {% if item.status == 'NOT ON SALE' %}
+                <h4 class=" grey-text" style="color:grey;">
+                <strong> &#8358;
+                {% else %}
+                <h4 class="font-weight-bold blue-text">
+                  <strong> &#8358;
+                {% endif %}
+
+                {% if item.status != 'NOT ON SALE' %}
+                  {% if item.discount_price %}
+                    {{ item.discount_price }}
+                  {% else %}
+
+                    {{ item.price }}
+                  {% endif %}
+
+                  {% else %}
+                  Available soon    
+
+                {% endif %}          
+                  </strong>
+                </h4>
+
+              </div>
+
+            </div>
+
+          </div>
+          {% endif %}
+          {% endfor %}
+			</div>
+
+<!---Porpular FOOD SECTION----->
+<div class="row container">
+  <h3 class="" style="font-weight: bold;"> Most Popular meal  </h3>
+  <br>
+    {% for item in object_list %}
+    {% if item.tag == 'FS' %}
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card">
+              <div class="view overlay">
+                {% if item.image %}
+                <a href="{{ item.get_absolute_url }}"><img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;"></a>
 
                 {% else %}
                  <img src="..." class="card-img-top" style="height: 12rem;">
@@ -170,8 +249,9 @@
             </div>
 
           </div>
+          {% endif %}
           {% endfor %}
-			</div>
+      </div>
 
 
 		
