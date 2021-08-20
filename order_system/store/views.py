@@ -18,6 +18,7 @@ from django.db.models import Q
 from staffs.models import *
 import datetime
 from staffs.views import *
+from pypaystack import Transaction, Customer, Plan
 
 t = datetime.datetime.now()
 d = datetime.datetime.now()
@@ -29,12 +30,14 @@ date = d.strftime('%Y-%m-%d')
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY  
+paystack_pk_key = settings.PAYSTACK_PUBLIC_KEY
+pastack_sk_key_t = settings.PAYSTACK_SECRET_TEST_KEY
 
 
 
 
 def create_ref_code():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
+    return ''.join(random.choices(string.digits, k=10))
 
 
 # Home fuction 
@@ -46,6 +49,30 @@ class HomeView(ListView):
     #template_name = "welcome.html"
 
 
+
+def Home(request):
+    trans = ''
+    if request.user.is_authenticated:
+        userAcc = UserAccount.objects.get(user=request.user)
+        trans= Transactions.objects.filter(account=userAcc)
+    product = Product.objects.all()
+    ads = Advert.objects.all()
+    context= {
+    'ads':ads,
+    'object_list':product,
+    'trans':trans
+    }
+    return render(request, 'index.html', context)
+
+
+
+# Card Payment 
+def CardPay(request):
+    context = {
+    'key':paystack_pk_key
+
+    }
+    return render(request, 'paystack.html', context)
 
 
 # Product listing function 
@@ -73,8 +100,20 @@ def ProductList(request):
     return render(request, 'dashboard/product_list.html', context)
 
 
-
-
+# providers Gig function 
+def Provider(request, code):
+    
+    user_code = UserProfile.objects.get(client_code=code)
+    #admin= Seller.objects.get(owner=user_code)
+    provider = UserAccount.objects.get(user=user_code.user)
+    services = Product.objects.filter(seller=provider)
+    serve = Product.objects.filter(tag= 'S').exclude(seller=provider)
+    context = {
+    'services':services,
+    'client':user_code,
+    'serve':serve
+    }
+    return render(request, 'provider.html', context)
 
 
 # Add product function 
@@ -347,21 +386,12 @@ def SellerProduct(request, code):
     return render(request, 'dashboard/product_list.html', context)
 
 
-
-
-
-
-
-
 def ServicePage(request):
     serve = Product.objects.filter(tag= 'S' )
     context = {
     'serve':serve
     }
     return render(request, 'service_page.html', context)
-
-
-
 
 
 
@@ -421,12 +451,16 @@ def clientCheckout(request):
 
             elif payment_option == 'P':
                 return redirect('store:payment', payment_option='paypal')
+
+
             # Pay with wallet function 
             if payment_option == 'W':
                 client = order.client
                 client_wal = UserAccount.objects.get(user=client.user)
                 clientBal = client_wal.wallet_balance
                 total = order.ground_total()
+                print(client)
+                print(client_wal)
                 if (clientBal > total):
                     new_balance = clientBal - total
                     client_wal.wallet_balance = new_balance
@@ -478,7 +512,8 @@ def clientCheckout(request):
                     order.save()
 
                     t_note = "Your Acct " + client.client_code + " Has Been Debited "
-                    trans = Transaction(
+                    trans = Transactions(
+                            payment_type = 'Wallet',
                             transaction_type= 'Debit',
                             status= 'Debited',
                             date= date ,
@@ -486,6 +521,7 @@ def clientCheckout(request):
                             note = t_note,
                             amount = order.ground_total(),
                             ref_code = order_ref_code,
+                            store_record = True
                             )
                     trans.account = client_wal
                     trans.save()
@@ -504,10 +540,13 @@ def clientCheckout(request):
 
                 else:
                     return JsonResponse({'status':0, })
-
+              
+            # Pay with Cash on delivery function 
             elif payment_option == 'PD':
+                    client = order.client
+                    client_wal = UserAccount.objects.get(user=client.user)
                     order_ref_code = create_ref_code()
-                     # create the payment
+                    # create the payment
                     payment = Payment()
                     payment.user = request.user
                     #payment.amount = order.get_total()
@@ -543,6 +582,19 @@ def clientCheckout(request):
                             seller.save()
                             #print(item.item.seller.wallet_balance)
                             item.save()
+                    t_note = "Pendind payment for order"
+                    trans = Transactions(
+                        payment_type = 'Cash',
+                        transaction_type= 'Debit',
+                        date= date ,
+                        time= time,
+                        note = t_note,
+                        amount = order.ground_total(),
+                        ref_code = order_ref_code,
+                        store_record = True
+                        )
+                    trans.account = client_wal
+                    trans.save()
                     order.ordered = True
                     order.payment = payment
                     #order.client = client_infor
@@ -554,10 +606,62 @@ def clientCheckout(request):
                     order.save()
                     messages.success(request, "Your order was successful!")
                     return redirect("/")
+
+
             else:
-                messages.warning(
-                    self.request, "Invalid payment option selected")
+                messages.warning(request, "Invalid payment option selected")
                 return redirect('store:checkout')
+
+        elif request.method == 'POST':
+            client = order.client
+            email = client.email
+            first_name= client.first_name
+            last_name = client.last_name              
+            total = order.ground_total()
+            order_ref_code = create_ref_code()
+            order_note = request.POST.get('order_note')   
+            payment_option = request.POST.get('pay_option')
+            clientAcct = UserAccount.objects.get(user=client.user)
+
+            if email == None:
+                return JsonResponse({
+                    'status':300, 
+                    'message':'Pls update your email',
+                    'amount':total,
+                    })
+            elif first_name and last_name == None:
+                return JsonResponse({
+                    'status':301, 
+                    'message':'clients profile is not updated' })
+
+            else:
+                order_ref_code = create_ref_code()
+                order.note = order_note
+                order.save()
+                t_note = "Pendind online payment for order"
+                trans = Transactions(
+                        payment_type = 'Online',
+                        transaction_type= 'Debit',
+                        date= date ,
+                        time= time,
+                        note = t_note,
+                        amount = order.ground_total(),
+                        ref_code = order_ref_code,
+                        store_record = True
+                        )
+                trans.account = clientAcct
+                trans.save()
+                #messages.success(request, "Your order was successful!")
+                return JsonResponse({
+                    'status':200, 
+                    'amount':total,
+                    'email':email,
+                    'order_note':order_note,
+                    'first_name':first_name,
+                    'last_name':last_name,
+                    'ref':order_ref_code,
+                    #'messages': messages       
+                    })
 
     except ObjectDoesNotExist:
         messages.error(request, "You do not have an active order")
@@ -568,12 +672,158 @@ def clientCheckout(request):
     'couponform':CouponForm(), 
     'order':order, 
     'client_code':ClientCodeForm(),
+ 
     #'client_dstails':client_dstails
     }
     #messages.warning(request, "Failed checkout")
     return render(request, 'checkout-page.html', context)
 
-# checkout to enter client details
+
+# payment verification 
+def verifyPayment(request, ref):
+    transaction = Transaction(authorization_key=pastack_sk_key_t)
+    response  = transaction.verify(ref) 
+    data = JsonResponse(response, safe=False)
+    status = response[0]
+    #return data
+    try:
+        order = Order.objects.get(user=request.user, ordered=False)
+        trans = Transactions.objects.get(ref_code=ref, status='Pending')
+        if status == 200:
+            if trans.store_record == True:
+                payment = Payment()
+                payment.user = request.user
+                #payment.amount = order.get_total()
+                payment.amount = order.ground_total()
+                payment.ref_code = ref
+                payment.save()
+                # assign the payment to the order
+                order_items = order.items.all()
+                order_items.update(ordered=True)
+                for item in order_items:
+                    if item.item.cost_price:
+                        sel_amount = item.quantity * item.item.cost_price
+                    #geting the seller of the item 
+                        seller = item.item.seller
+
+                    # adding each item price to the seller's flex balance 
+                        new_flex_bal = seller.flex_balance + sel_amount
+
+                        seller.flex_balance = new_flex_bal
+
+                        seller.save()
+                        print(item.item.seller.wallet_balance)
+                        item.save()
+                    else:
+                        sel_amount = item.quantity * item.item.price
+                        seller = item.item.seller
+
+                    # adding each item price to the seller's flex balance 
+                        new_flex_bal = seller.flex_balance + sel_amount
+
+                        seller.flex_balance = new_flex_bal
+
+                        seller.save()
+                        #print(item.item.seller.wallet_balance)
+                        item.save()
+                order.ordered = True
+                order.payment = payment
+                #order.client = client_infor
+                order.ordered_date = date
+                order.ordered_time = time
+                #order.note = order_note
+
+                trans.status = 'Debited'
+                trans.note = 'Online payment for order was successful'
+                trans.save()
+
+                order.ref_code = ref
+                order.save()
+                #messages.success(request, 'payment was successful')
+                messages.success(request, "Your order was successful!")
+                return redirect("/")
+                #return JsonResponse({'status':'ok', 'data': response })
+                print(response)
+            
+            else:
+                print(trans)
+                wallet = UserAccount.objects.get(user=trans.account.user)
+                staff_profile = UserProfile.objects.get(user=request.user)
+
+                # Identifiying and keeping record of who count and approved a transaction 
+                approver = TopupConfirm(
+                    amount=trans.amount,
+                    trans_ref=ref,
+                    )
+                approver.approved_by = staff_profile 
+                new_wal =  wallet.wallet_balance + trans.amount
+
+                # updating the other 
+
+                trans.status = 'Credited'
+                wallet.wallet_balance = new_wal
+                approver.save()
+                wallet.save()
+
+                trans.save()
+                messages.success(request, "Great! Account has been credited!")
+                return redirect("/wallet/" + staff_profile.client_code )
+        else:
+            messages.danger(request, "Whoops! somting whent wrong. try agin later ")
+ 
+    except ObjectDoesNotExist:
+            messages.info(request, "We found One record")
+            return data
+    '''
+    finally:
+        trans = Transactions.objects.get(ref_code=ref, transaction_type='Topup',
+             store_record=False, 
+             status='Pending', 
+             payment_type='Online')
+        print(trans)
+        wallet = UserAccount.objects.get(user=trans.account.user)
+        staff_profile = UserProfile.objects.get(user=request.user)
+
+        # Identifiying and keeping record of who count and approved a transaction 
+        approver = TopupConfirm(
+            amount=trans.amount,
+            trans_ref=ref,
+            )
+        approver.approved_by = staff_profile 
+        new_wal =  wallet.wallet_balance + trans.amount
+
+        # updating the other 
+
+        trans.status = 'Credited'
+        wallet.wallet_balance = new_wal
+        approver.save()
+        wallet.save()
+
+        trans.save()
+        return data
+    '''
+
+
+
+
+    '''
+        except ObjectDoesNotExist:
+            #messages.error(request, "Sorry payment wasn't successful")
+            return data
+
+
+    '''
+
+    
+
+
+
+
+
+    
+  
+
+# checkout to enter client address and billing  
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:
@@ -734,7 +984,7 @@ class CheckoutView(View):
                 if payment_option == 'S':
                     return redirect('store:payment', payment_option='stripe')
                 elif payment_option == 'P':
-                    return redirect('store:payment', payment_option='paypal')
+                    return redirect('store:payment', payment_option='paystack')
                 elif payment_option == 'PD':
                      # create the payment
                     payment = Payment()
@@ -766,6 +1016,9 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("store:order-summary")
+
+
+
 
 class PaymentView(View):
     def get(self, *args, **kwargs):

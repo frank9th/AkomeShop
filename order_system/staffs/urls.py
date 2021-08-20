@@ -7,6 +7,7 @@ from .views import (
 )
 
 urlpatterns = [
+
     path('order-form/', views.createOrder, name='order-form'),
     path('login', views.loginPage, name='login'),
     path('logout', views.logoutUser, name='logout'),
@@ -26,6 +27,7 @@ urlpatterns = [
     path('confirm-mek-account/', views.confirm_mek_account, name='confirm-mek-account'),
     path('send-money/', views.send_money, name='send-money'),
     path('invest/', views.invest, name='invest'),
+    path('ads/', views.Ads, name='ads'),
     path('trans-history/<code>/', views.trans_history, name='trans-history'),
     path('update-client/', views.update_client, name='update-client'),
     path('confirm-code/', views.confirmCode, name='confirm-code'),

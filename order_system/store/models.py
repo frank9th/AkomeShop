@@ -258,6 +258,7 @@ class Order(models.Model):
     vpaid = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
+    store_record = models.BooleanField(default=True)
 
   
 
@@ -351,23 +352,31 @@ def userprofile_receiver(sender, instance, created, *args, **kwargs):
 post_save.connect(userprofile_receiver, sender=settings.AUTH_USER_MODEL)
 
 
-class Transaction(models.Model):
+class Transactions(models.Model):
     TRANS_STATUS = (
     ('Debited', 'Debited'),
     ('Credited', 'Credited'),
     ('Pending', 'Pending')
     )
 
+    PAY_TYPE = (
+        ('Cash', 'Cash'),
+        ('Wallet', 'Wallet'),
+        ('Ussd', 'Ussd'),
+        ('Online', 'Online')
+        )
+
     TRANS_TYPE = (
     ('Debit', 'Debit'),
     ('Credit', 'Credit'),
-    ('T', 'Top Up'),
-    ('W', 'Withdrawal'),
-    ('SV', 'Save'),
-    ('SE', 'Send')
+    ('Topup', 'Top Up'),
+    ('Withdrawal', 'Withdrawal'),
+    ('Save', 'Save'),
+    ('Send', 'Send')
     )
 
     transaction_type = models.CharField(choices=TRANS_TYPE, max_length=20)
+    payment_type = models.CharField(choices=PAY_TYPE, max_length=10)
     account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     amount = models.FloatField()
     date = models.DateField()
@@ -375,6 +384,7 @@ class Transaction(models.Model):
     status = models.CharField( choices=TRANS_STATUS, max_length=10, default='Pending')
     note = models.CharField(max_length=200, null=True, blank=True)
     ref_code = models.CharField(max_length=20, blank=True, null=True)
+    store_record = models.BooleanField(default=False)
 
     def __str__(self):
         return self.status
@@ -449,21 +459,4 @@ class Expensis(models.Model):
     class Meta:
         verbose_name_plural = 'Expensis'
 
-CLASS = (
-    ('B', 'Big'),
-    ('S', 'Small'),
-)
-
-class Ads(models.Model):
-    title = models.CharField(max_length=200)
-    message = models.CharField(max_length=500)
-    image = models.ImageField(upload_to='ads', )
-    slug= models.SlugField()
-    start_date = models.DateField()
-    end_date = models.DateField()
-    status = models.CharField(choices=CLASS, max_length=10)
-    active = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.title
 

@@ -1,24 +1,27 @@
 
     <div class="sidebar " >
       <div class="sidebar-wrapper " >
-        <div class="logo white-content" >
+        <div class="logo " >
            <a target="_blank" 
              href="#" class="simple-text logo-normal" style="color:black;">
            Browse Category
           </a>
 
         </div>
-        <ul class="nav">
+        <ul class="nav ">
           {% for category in menu_categories %}
         <a href="{% url 'store:category' category.slug  %}">
         <li class=" d-flex cat-item-space">
           {% if category.thubnail %}
-            <span style="padding-right: 10px; margin-left: 10px" class="cat-img"><img  src="{{category.thubnail.url}}" alt="" ></span>
+           
+
+              <span style="padding-right: 10px; margin-left: 3rem " class="cat-img"><i class="tim-icons icon-chart-pie-36" style="color:black;"></i></span>
          {% else %}
-         <span style="padding-right: 10px;" class="cat-img"><img  src="..." alt="" ></span>
+         <span style="padding-right: 10px; margin-left: 3rem " class="cat-img"><i class="tim-icons icon-chart-pie-36" style="color:black;"></i></span>
 
           {% endif %}
         <h5 class="cat-item-head white"> {{category.name }}   </h5>
+
       </li> 
        </a>
 

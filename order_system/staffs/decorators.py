@@ -39,7 +39,8 @@ def admin_only(view_func):
 			
 
 		else:
-			return HttpResponse('You are not authorized to view this page')
+			return redirect('/')
+			#return HttpResponse('You are not authorized to view this page')
 	return wrapper_function
 
 

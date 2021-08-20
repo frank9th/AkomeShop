@@ -1,6 +1,7 @@
 
    {% if request.user.is_authenticated %}
-    <div class="sidebar ">
+    <div class="sidebar " style="background: linear-gradient(
+          179deg, #a3bf07 0%, #101d02 100%);">
       <div class="sidebar-wrapper " >
         <div class="logo t" >
           <a target="_blank" 
@@ -112,3 +113,48 @@
       </div>
     </div>
     {% endif %}
+
+
+
+
+
+
+
+
+
+<!----  
+
+     <div class="sidebar " style="background: linear-gradient(
+          179deg, #a3bf07 0%, #101d02 100%);">
+      <div class="sidebar-wrapper " >
+        <div class="logo t" >
+          <a target="_blank" 
+             href="#" class="simple-text logo-mini">
+            Menue | 
+          </a>
+    
+          <a target="_blank" href="#" class="simple-text logo-normal" style="color:black;">
+             Browse Category
+      
+          </a>
+      
+        </div>
+
+        <ul class="nav ">
+           {% for category in menu_categories %}
+    
+          <li class="">
+            <a href="{% url 'store:category' category.slug  %}">   
+              <i class="tim-icons icon-chart-pie-36"></i>
+              <p>{{category.name }} </p>
+            </a>
+          </li>
+
+          {% endfor %}
+     
+        </ul>
+        
+      </div>
+    </div>
+
+    ----->

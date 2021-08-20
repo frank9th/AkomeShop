@@ -18,7 +18,8 @@ from .views import (
 app_name = 'store'
 
 urlpatterns = [
-    path('', HomeView.as_view(), name='home'),
+    #path('', HomeView.as_view(), name='home'),
+    path('', views.Home, name='home'),
     path('product/category/<slug>/', views.product_category, name='category'),
     path('search/', views.search, name='search'),
     path('cart/',views.cart, name='cart'),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('product/', views.AddProduct, name='product'),
+    path('service/provider/<code>/', views.Provider, name='provider'),
     #path('add-product/<str:pk>/', views.AddStoreProduct, name='add-product'),
     path('product-list/', views.ProductList, name='product-list'),
     path('seller-store/<code>/', views.SellerProduct, name='seller-store'),
@@ -43,7 +45,9 @@ urlpatterns = [
          name='remove-single-item-from-cart'),
     path('delete_item/<str:pk>/',views.delete_item, name='delete_order'),
     path('delete-product/<str:pk>/',views.delete_store_product, name='delete-product'),
+    path('cardpay/', views.CardPay, name='cardpay'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
+    path('confirm/<int:ref>/', views.verifyPayment, name='confirm'),
     path('request-refund/', RequestRefundView.as_view(), name='request-refund')
 ]
 

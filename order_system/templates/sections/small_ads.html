@@ -7,16 +7,25 @@
       <div class="carousel-caption d-none d-md-block"> 
       </div>
     </div>
+     {% for item in ads %}
+      {% if item.display_section == 'Small' %}
     <div class="carousel-item" data-bs-interval="2000">
-      <a href="#"><img src="{% static 'dash/assets/img/bigAds/ads_here.png' %}" class="d-block w-100" alt="..."></a>
+      <a href="#"><img src="{{item.image.url}}" class="d-block w-100" alt="..."></a>
       <div class="carousel-caption d-none d-md-block"> 
       </div>
     </div>
-    <div class="carousel-item">
-      <a href="#"><img src="{% static 'dash/assets/img/bigAds/tomanto_here.png' %}" class="d-block w-100" alt="..."></a>
-      <div class="carousel-caption d-none d-md-block">   
-      </div>
-    </div>
+      {% endif %}
+        {% endfor %}
+
+  
+     
+
+
+
+
+
+
+
   </div>
 </div>
 </div>

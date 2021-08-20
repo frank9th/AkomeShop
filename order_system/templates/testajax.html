@@ -1,6 +1,7 @@
 <script  >
 
 
+
 	// Client Code form 
 	$(document).ready(function(){
 		/**	
@@ -10,13 +11,88 @@
 				}
 			$("#codeId").keyup(function(){});// key upclose 
 
-
-
 		**/
+	
 
+		$("#checkOut").click(function(){
+			console.log("Checkout clicked")
+			let csrf = $("input[name=csrfmiddlewaretoken]").val();
+			let pay_option = $("input[name='payment_option']:checked").val();
+			let order_note = $("#noteId").val();
+			if (pay_option == 'DC' ){
+				console.log(pay_option)
+
+					data ={
+						csrfmiddlewaretoken: csrf,
+						pay_option:pay_option,
+						order_note:order_note	
+					}
+					$.ajax({
+								url : "{% url 'store:confirm-checkout' %}",
+								method: "POST",
+								data : data, 
+								success:function(data) {
+									if (data.status == 200){
+										$("#amount").val(data.amount);
+										$("#first-name").val(data.first_name);
+										$("#last-name").val(data.last_name);
+										$("#ref").val(data.ref);
+										$("#checkOut-pay-option").hide();
+										$("#confirm-client-code-form").hide();
+										$("#coupon-form").hide();
+										$("#email-address").removeAttr('disabled');
+										//$("#confirm-paymentForm-container").show();
+										$("#paymentForm-contaner").show();
+
+										//$("#update_pro_msg").show();
+										//window.alert('submited successful' + data.amount)
+
+										//payWithPaystack();
+
+									};
+									if (data.status == 300 ){
+										$("#checkOut-pay-option").hide();
+										$("#confirm-client-code-form").hide();
+										$("#paymentForm-contaner").show();
+										$("#email-address").removeAttr('disabled');
+										$("#first-name").removeAttr('disabled');
+										$("#last-name").removeAttr('disabled');
+										$("#coupon-form").removeAttr('disabled');
+
+
+									  //let email = prompt(data.message);
+									  //let first_name = prompt("Please confirm your First name");
+									  //let last_name = prompt("Please confirm your Last name");
+									  if (email == null || email == "") {
+									    message = "Whoops. process cancled by you. pls update your profile or choose a different payment option";
+									    alert(message)
+									  } else {
+									  	$("#email-address").val(email);
+									  	$("#first-name").val(first_name);
+										$("#last-name").val(last_name);
+
+									   // text = "Hello " + person + "! How are you today?";
+									  }
+
+
+
+
+										//window.alert(data.message)
+
+									}; 
+									if (data.status == 301)	
+										window.alert(data.message)
+											
+									
+								}
+							});
+
+			event.preventDefault()
+
+			}
 		
-
-
+		})
+		
 
 		// product update function 
 		$("#pro_update_btn").click(function(){
@@ -70,13 +146,9 @@
 										$("#update_pro_msg").text(data.message)
 										$("#update_pro_msg").show();
 
-									}
-
-								
+									}			
 									
 								}
-
-
 							});
 				
 			
@@ -167,6 +239,7 @@
 			console.log("Top Up button clicked ")
 			$("#tpCard").hide();
 			$("#tpForm-card").show();
+			$("#bank-detail-card").hide();
 
 		});
 		// Top Up card and form data transfer function 
@@ -220,11 +293,20 @@
 							x = data.pending_fund
 							y = data.payment_type
 								new_bal = ""
-								$("#tpCard").show();
+								//$("#tpCard").show();
+								
+								$("#paymentForm").show();
 								$("#tpForm-card").hide();
 								//alert("topop successful")
-								$("#tdmsg").text("Whoops! sorry Card payment is not available at the moment ")
+								$("#tdmsg").text("Confirm billing details ")
 								$("#tdmsg").show()
+								//$("#payAmount").val(x);
+								$("#amount").val(x);
+								$("#email-address").val(data.email);
+								$("#first-name").val(data.fname);
+								$("#last-name").val(data.lname);
+								$("#ref").val(data.ref);
+								$("#topbtn").html('Confirm ' + x)
 							//alert("topop successful")
 								/*
 								TODO: SEND THIS TO CFO DASHBOARD TO CONFIRM PAY 
@@ -240,7 +322,7 @@
 								$("#tpCard").show();
 								$("#tpForm-card").hide();
 								//alert("topop successful")
-								$("#tpmsg").text("Greate, kindly pay into; Acc. No: 113339999. Bank: UBA to complete transaction  Ref_code: " + data.trans_code  )
+								$("#tpmsg").text("Great, kindly pay into; Acc. No: 113339999. Bank: UBA to complete transaction  Ref_code: " + data.trans_code  )
 								$("#tpmsg").show()
 							//alert("topop successful")
 								/*
@@ -379,7 +461,7 @@
 							rec_acc_type = data.acc_type
 							//console.log(rec_acc_type)
 
-							if (data.status == "True"){		
+							if (data.status == 200 ){		
 									new_bal = ""
 									$("#sendform").show();
 									$("#accnform").hide();

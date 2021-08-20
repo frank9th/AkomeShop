@@ -99,6 +99,7 @@
         </div>
         </a>
       </div>
+
       <!-- Witdrawal card--->
 
         <!-- Witdrawal card form--->
@@ -110,6 +111,51 @@
             <input type="submit" value="Confirm Request" class="btn" id="btnwit">
       
           </form>
+
+            <!---- Paystack Form----->
+        
+          <!---- Paystack Form-----> 
+        
+          
+         <form id="paymentForm"  class="" style="display:none;">
+            <div class="form-group">
+              <p>Confirm your billing details</p>
+              <label for="email">Email Address</label>
+              <input class="form-control " type="email" id="email-address" required  />
+            </div>
+            <div class="form-group" style="display:none;">
+              <label for="amount">Amount</label>
+              <input class="form-control" type="tel" id="amount" required  />
+            </div>
+             <div class="form-group" style="display:none;">
+              <label for="amount">Ref Code</label>
+              <input class="form-control" type="text" id="ref" required  />
+            </div>
+         
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="first-name">First Name</label>
+                  <input class="form-control" type="text" id="first-name"  />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input class="form-control" type="text" id="last-name" />
+            </div>
+              </div>
+            </div>
+
+            <div class="form-submit">
+              <button class="btn btn-block" type="submit" onclick="payWithPaystack()" id="topbtn" > Pay </button>
+            </div>
+          </form> 
+
+
+
+
 
         <div class="col-md" id="draw">
           <!-- witdrawal message--->
@@ -234,3 +280,6 @@
         </div>  
 </div>
 {% endif %}
+
+
+

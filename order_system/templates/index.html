@@ -27,11 +27,12 @@
 
 <!--==========-Product -========--Section----->
 <div class="row container">
-  <h3 class="" style="font-weight: bold;"> Popular Products  </h3>
-    <p> All items would be available soon </p>
-  <br>
+    <h3 class="" style="font-weight: bold;"> Popular Products  </h3>
     {% for item in object_list %}
     {% if item.active == True and item.status == 'HOT' %}
+    
+
+  <br>
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">
@@ -104,10 +105,11 @@
 
 <!---Porpular service section  ---Section----->
 <div class="row container">
-  <h3 class="" style="font-weight: bold;"> Popular Services  </h3>
-  <br>
+   <h3 class="" style="font-weight: bold;"> Popular Services  </h3>
     {% for item in object_list %}
+
     {% if item.tag == 'S' %}
+  <br>
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">
@@ -179,10 +181,11 @@
 
 <!---Porpular FOOD SECTION----->
 <div class="row container">
-  <h3 class="" style="font-weight: bold;"> Most Popular meal  </h3>
-  <br>
+   <h3 class="" style="font-weight: bold;"> Most Popular meal  </h3>
+  <hr>
     {% for item in object_list %}
     {% if item.tag == 'FS' %}
+     
           <div class="col-lg-3 col-md-6 mb-4">
             <div class="card">
               <div class="view overlay">

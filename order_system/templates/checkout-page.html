@@ -5,20 +5,21 @@
   <!--Main layout-->
   <main class="">
     <div class="container wow fadeIn">
+
       <!-- Heading -->
-      <h2 class=" h2 text-center">Checkout form</h2>
+      <h2 class=" h2 text-center">Checkout </h2>
       <!--Grid row-->
       <div class="row">
         <!--Grid column-->
         <div class="col-md-6 mb-4">
           <!--Card-->
-          <div class="card">
+          <div class="card" id="confirm-client-code-form">
           
             <div  id="msinfo" class="alert alert-info" style="display: none">
              
             </div>
            
-            <form class="card-body" method="POST" action="{% url 'store:add-client-details' %}">
+            <form class="card-body" method="POST" action="{% url 'store:add-client-details' %}" id="clientCodeForm">
               <!-- <form>-->
             {% csrf_token %}
                 <div class="input-group">
@@ -27,18 +28,17 @@
                   <input type="text" class="form-control" placeholder="Enter Client's Code" name="client" >--->
                  
                   <div class="input-group-append">
-                    <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Code " id="codeNo" >
+                    <input class="btn btn-secondary btn-md waves-effect m-0"type="submit" name="submit" value="Confirm Code " id="codeNo"  >
                   </div> 
                 </div>
               </form>
           </div>
+          {% if order.client %}
           <!--/.Card-->
-          <div class="card">
+          <div class="card" id="checkOut-pay-option" >
             <form class="card-body" method="POST", >
-
               {% csrf_token %}
                 <h3 style="text-align: center;"> Aditional info</h3>
-            
               <!--address-2-->
               <div class="md-form mb-5">
                  {{form.additional_note }}
@@ -61,13 +61,53 @@
             </form>
           </div>
           <!--/.Card-->
-        </div>
+          {% endif %}
 
-      <div class="col-md-4 mb-4">
+          <!---- Paystack Form----->
+          <div class="container " id="paymentForm-contaner" style="display:none;">
+            <h4 class="grey-text"> Confirm  billing address and click Pay </h4>
+            <form id="paymentForm"  class="">
+            <div class="form-group">
+              <label for="email">Email Address</label>
+              <input class="form-control " type="email" id="email-address" disabled="" required value="{{order.client.email}}" />
+            </div>
+            <div class="form-group" style="display:none;">
+              <label for="amount">Amount</label>
+              <input class="form-control" type="tel" id="amount" required value="{{ order.ground_total }}" />
+            </div>
+            <div class="form-group" style="display:none;">
+              <input class="form-control" type="text" id="ref" required value="{{ref_code }}" />
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <div class="form-group">
+                  <label for="first-name">First Name</label>
+                  <input class="form-control" type="text" id="first-name" disabled="" value="{{order.client.first_name}}" />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-group">
+              <label for="last-name">Last Name</label>
+              <input class="form-control" type="text" id="last-name" disabled="" value="{{order.client.last_name}}" />
+            </div>
+              </div>
+            </div>
+
+            <div class="form-submit">
+              <button class="btn btn-block" type="submit" onclick="payWithPaystack()" > Pay &#8358; {{ order.ground_total }} </button>
+            </div>
+          </form>           
+          </div>
+
+        
+
+
+        </div>
+       <div class="col-md-4 mb-4">
           {% include "order_snippet.html" %}
           
         </div>
-
       </div>
       <!--Grid row-->
 
@@ -77,6 +117,9 @@
 
   {% block javascripts %}
  {% include 'testajax.html'%}
+
+
+<script src="https://js.paystack.co/v1/inline.js"></script> 
 
  {% endblock javascripts %}
 

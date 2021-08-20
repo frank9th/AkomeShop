@@ -23,6 +23,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from store.signal_file import *
+from decouple import config 
+from django.conf import settings
 #from django.views.decorators.csrf import csrf_exempt
 
 t = datetime.datetime.now()
@@ -32,10 +34,6 @@ d = datetime.datetime.now()
 
 time = t.strftime("%X")
 date = d.strftime('%Y-%m-%d')
-
-
-
-
 # Create your views here.
 
 def create_slug():
@@ -120,9 +118,47 @@ def createOrder(request):
 	return render(request, 'order_form.html', context)
 
 
+
+# Create Ads fuction 
+def Ads(request):
+	form = AdsForm(request.POST, request.FILES or None)
+	if request.method == 'POST':
+		if form.is_valid():
+			title = form.cleaned_data.get('title')
+			text = form.cleaned_data.get('message')
+			img = form.cleaned_data.get('image')
+			display = form.cleaned_data.get('display')
+			start_date = form.cleaned_data.get('start_date')
+			end_date= form.cleaned_data.get('end_date')
+			
+			ads = Advert(
+				title = title,
+			    message = text,
+			    image = img,
+			    slug= title,
+			    start_date = start_date,
+			    end_date = end_date,
+			    display_section = display
+				)
+			ads.save()
+			messages.info(request, "your ads has been submited for a review")
+			return redirect('/ads')
+	
+
+	context= {
+	'form':form
+	}
+	return render(request, 'dashboard/ads-pay.html', context)
+
+
+
+
+
 # client detail page 
 def my_account(request, code):
 	client = UserProfile.objects.get(client_code=code)
+	userAcc = UserAccount.objects.get(user=client.user)
+	trans= Transaction.objects.filter(account=userAcc)
 	orders = client.order_set.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
@@ -130,7 +166,7 @@ def my_account(request, code):
 	out_delivery = orders.filter(status='Out for Delivery').count()
 	context= {'client': client, 'orders': orders, 
 	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
-	'out_delivery':out_delivery }
+	'out_delivery':out_delivery, 'trans':trans}
 	return render(request, 'dashboard/page-user.html', context)
 
 
@@ -144,7 +180,8 @@ def edit_account(request, code):
 
 	context ={
 	'form':form,
-	'client':client
+	'client':client,
+	
 	}
 	return render (request, 'dashboard/edit-account.html', context)
 
@@ -171,6 +208,8 @@ def wallet(request, code):
 	'sform': SavForm(),
 	'sendform':SendMoneyForm(),
 	'accnform':ConfirmAccountForm(),
+	'payStack':PaystackForm(),
+	'pk_key':settings.PAYSTACK_PUBLIC_KEY
 	}
 	return render (request, 'dashboard/wallet.html', context)
 
@@ -232,6 +271,8 @@ def topUp(request):
 		payment = request.POST.get('pay')
 		amount = request.POST.get('amount')
 		userAcc = UserAccount.objects.get(id=acctUserid)
+		client = UserProfile.objects.get(id=acctUserid)
+		email = client.email
 		bal = userAcc.wallet_balance
 
 		trans_ref = create_trans_code()
@@ -246,8 +287,9 @@ def topUp(request):
 		
 		if payment == 'C':
 			t_note = "Cash topup request, waiting to confirm cash"
-			top_wallet = Transaction(
-					transaction_type= 'T',
+			top_wallet = Transactions(
+					transaction_type= 'Topup',
+					payment_type = 'Cash',
 					date= date ,
 					time= time,
 					note = t_note,
@@ -261,13 +303,34 @@ def topUp(request):
 
 			print("successfully funded account. new balance will reflect in approximately 20min.")
 
-		if payment == 'CD':		
+		if payment == 'CD':	
+			t_note = "Online wallet topUp"
+			top_wallet = Transactions(
+						transaction_type= 'Topup',
+						payment_type = 'Online',
+						date= date ,
+						time= time,
+						note = t_note,
+						amount = amount,
+						ref_code = trans_ref,
+						)
+			top_wallet.account = userAcc
+
+			top_wallet.save()	
 			print("pls wait while the system redirect you to complet the transaction ")
-			return JsonResponse({'status':0, 'pending_fund':amount, 'pay_type':payment})
+			return JsonResponse({'status':0, 
+				'pending_fund':amount, 
+				'pay_type':payment,
+				'email':email,
+				'lname':client.last_name,
+				'fname':client.first_name,
+				'ref':trans_ref
+				})
 		if payment == 'U':
 			t_note = "Ussd code topup request, waiting to confirm alert "
-			top_wallet = Transaction(
-					transaction_type= 'T',
+			top_wallet = Transactions(
+					transaction_type= 'Topup',
+					payment_type = 'Ussd',
 					date= date ,
 					time= time,
 					note = t_note,
@@ -303,7 +366,7 @@ def request_cash(request):
 				new_balance = userBal - cash
 				userAcc.wallet_balance = new_balance
 				userAcc.save()
-				trans = Transaction(
+				trans = Transactions(
 					transaction_type= 'Withdrawal',
 					date= date ,
 					time= time,
@@ -333,14 +396,16 @@ def confirm_mek_account(request):
 		account_number = request.POST.get('reciever_account')
 		senderAcc = UserAccount.objects.get(id=sender)	
 
+
 		# checking if its mek account to get the account number 
 		if account_type == 'Mek':
 			try:
 				rec_account = UserProfile.objects.get(client_code=account_number)
 				rec_data = UserAccount.objects.get(user=rec_account.user)
+				
 				response = rec_account.first_name + ' ' + rec_account.last_name
 				bnk = "Mek Wallet"
-				return JsonResponse({'status':'True',
+				return JsonResponse({'status':200,
 				 'response':response,
 				 'bank':bnk, 'number':account_number, 
 				 'acc_type': account_type})
@@ -371,6 +436,7 @@ def send_money(request):
 		cash = float(amount)
 		low_cash = float(300)
 
+
 		# checking if its mek account to get the account number 
 		if account_type == 'Mek':
 			rec_account = UserProfile.objects.get(client_code=account_number)
@@ -394,7 +460,7 @@ def send_money(request):
 				trans_code = create_trans_code()
 
 				# Creating sender's transaction 
-				sender_trans = Transaction(
+				sender_trans = Transactions(
 					transaction_type= 'Send',
 					date= date ,
 					time= time,
@@ -411,7 +477,7 @@ def send_money(request):
 				rec_data.wallet_balance = rec_new_bal
 				rec_data.save()
 
-				reciever_trans = Transaction(
+				reciever_trans = Transactions(
 					transaction_type= 'Topup',
 					date= date ,
 					time= time,
@@ -452,7 +518,7 @@ def send_money(request):
 				ref_code = create_trans_code(),
 
 				# Creating sender's transaction 
-				sender_trans = Transaction(
+				sender_trans = Transactions(
 					transaction_type= 'SE',
 					date= date ,
 					time= time,
@@ -521,8 +587,8 @@ def invest(request):
 
 			
   			#pay_d = date + timedelta(days=24)
-			trans = Transaction(
-				transaction_type= 'SV',
+			trans = Transactions(
+				transaction_type= 'Save',
 				status= 'Debited',
 				date= date ,
 				note=sav_note,
@@ -675,14 +741,21 @@ def register(request):
 		if form.is_valid():
 			user = form.save()
 			username = form.cleaned_data.get('username')
+			password = form.cleaned_data.get('password1')
 			email = form.cleaned_data.get('email')
 			group = Group.objects.get(name='client')
 			user.groups.add(group)
 
 			#client_code = create_unique_code()
 			messages.success(request, 'Account was created for ' + username )
-			return redirect('my-account/'+client_code)
+			
 			#return redirect('login')
+
+			#authenticating the fields through django authentication package 
+			user = authenticate(request, username=username, password=password)
+			if user is not None:
+				login(request, user)
+				return redirect('my-account/'+client_code)
 
 	elif request.user.is_authenticated:
 		if request.method == 'POST':

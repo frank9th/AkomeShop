@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+{%load static%}
+<html lang="en">
+<head>
+<title>Meklint | Login </title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+
+  <!-- reference your installed Font Awesome Free package's files here -->
+  <script src="{% static 'fontawesome_free/js/all.min.js' %}"></script></head>
+
+
+<!--- Form css-->
+<link rel="stylesheet" type="text/css" href="{% static 'css/form_util.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form_main.css' %}">
+
+  <!---Bootstrap css -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+	
+
+<style>
+/* Center the loader */
+#loader {
+  background-color: red;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Add animation to "page content" */
+.animate-bottom {
+  position: relative;
+  -webkit-animation-name: animatebottom;
+  -webkit-animation-duration: 1s;
+  animation-name: animatebottom;
+  animation-duration: 1s
+}
+
+@-webkit-keyframes animatebottom {
+  from { bottom:-100px; opacity:0 } 
+  to { bottom:0px; opacity:1 }
+}
+
+@keyframes animatebottom { 
+  from{ bottom:-100px; opacity:0 } 
+  to{ bottom:0; opacity:1 }
+}
+
+
+.line {
+  position: relative;
+  top: 50%;
+  width: 12em;
+  margin: 0 auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.75);
+  font-size: 40px;
+  white-space: nowrap;
+  overflow: hidden; 
+  transform: translateY(-50%);
+  margin-top:15rem; margin-left: 5rem; color: wheat;
+
+}
+
+.line-p2 {
+  position: relative;
+  top: 50%;
+  width: 12em;
+  margin: 0 auto;
+  border-right: 1px solid rgba(255, 255, 255, 0.75);
+  font-size: 40px;
+  white-space: nowrap;
+  overflow: hidden; 
+  transform: translateY(-50%);
+  margin-left: 5rem; color: white;
+
+}
+
+
+
+
+
+/* Header text animation */
+.anim-typewriter{
+  animation :typewriter 4s steps(40) 1s 1 normal both, 
+  blinkTextCursor 500ms steps(40) infinite;
+
+}
+@keyframes typewriter{
+  from{
+    width: 0;
+  }
+  to{
+    width: 11em;
+
+  }
+}
+
+
+@keyframes blinkTextCursor{
+  from {
+    border-right-color: rgba(255, 255, 255, 0.75);
+  }
+  to {
+    border-right-color: transparent;
+  }
+
+
+}
+
+
+/* Header text animation */
+.anim-typewriter-p2{
+  animation :typewriter 4s steps(40) 4s 1 normal both, 
+  blinkTextCursor 500ms steps(40) infinite;
+
+}
+@keyframes typewriter{
+  from{
+    width: 0;
+  }
+  to{
+    width: 16em;
+
+  }
+}
+
+
+@keyframes blinkTextCursor{
+  from {
+    border-right-color: rgba(255, 255, 255, 0.75);
+  }
+  to {
+    border-right-color: transparent;
+  }
+
+
+}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body style="background-color: #666666;" >	
+
+<div class="limiter" id="myDiv">
+
+
+{% block content %}
+
+
+{% endblock %}
+
+
+
+
+</div>
+<script>
+  let spinner = $("#loader")
+
+  $("#btn-login").click(function(){
+    console.log("loging in....")
+    $("#form-loader").show();
+    $("#form-img").hide();
+
+      $.ajax({
+        type: 'GET',
+        url: '/',
+        success: function(res){
+          console.log("success")
+
+        }
+      })
+
+    //event.preventDefault();
+  })
+  console.log("hello word")
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 3000);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "None";
+  document.getElementById("myDiv").style.display = "block";
+}
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

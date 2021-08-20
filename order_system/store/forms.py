@@ -14,8 +14,11 @@ PAYMENT_CHOICES = (
 
 PAYMENT_CHOICES = (
     ('W', 'Wallet'),
-    ('P', 'PayStack'),
-    ('PD', 'Cash'),
+    #('S', 'Stripe'),
+    #('P', 'Paypal'),
+    ('DC', 'Debit Card'),
+    ('PD', 'Cash On Delivery'),
+
 
 )
 

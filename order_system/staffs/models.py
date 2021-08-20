@@ -29,6 +29,23 @@ class Contact(models.Model):
 
 
 
+CLASS = (
+    ('Big', 'Big'),
+    ('Small', 'Small'),
+)
+
+class Advert(models.Model):
+    title = models.CharField(max_length=200)
+    message = models.CharField(max_length=500)
+    image = models.ImageField(upload_to='ads', )
+    slug= models.SlugField()
+    start_date = models.DateField()
+    end_date = models.DateField()
+    display_section = models.CharField(choices=CLASS, max_length=20)
+    active = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.title
 
 
 

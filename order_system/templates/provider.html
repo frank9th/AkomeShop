@@ -1,0 +1,180 @@
+{% extends 'dashboard/layouts/base-no-side.html' %}
+
+
+{% block sidebar %}
+  <div class="sidebar " >
+      <div class="sidebar-wrapper " >
+      	<div class="card card-user" > 		
+			    	<div class="author">
+			    			
+				            {% if client.image %}
+			    			 <img  class="avatar" src="{{ client.image.url }}" class="card-img-top" alt="{{ client.title }}">
+
+			    			  {% else %}
+             		
+			            <img  class="avatar" src="/static/dash/assets/img/avatar.png" class="card-img-top" alt="photo">  
+					  {% endif %}
+			    		</div>
+					  <div class="">
+					    <h5 class="card-title">{{client.title}} {{client.full_name}}</h5>
+					     <h4 class="card-title">
+						Provider ID : {{client.client_code}}
+					  </h4>
+					
+					  </div>
+					  <ul class=" ">
+					    <li class=""><b>Tel:</b> {{client.phone1}}  </li>
+					    <li class=""><b>Town: </b> {{client.town}}</li>
+					    <li class=""><b>Email: </b> {{client.email}}</li>
+					  </ul>  
+					 
+					</div>	
+      
+    		
+    		 <p class=""> Rating / Reviews </p>
+    	
+    
+       
+      </div>
+    </div>
+
+
+{% endblock sidebar%}
+
+
+
+
+{% block content %}
+
+
+<!--==========-Product -========--Section----->
+<div class="row container">
+    <h3 class="" style="font-weight: bold;"> Available  Products/ Services   </h3>
+    {% for item in services %}
+   
+  <br>
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card">
+              <div class="view overlay">
+                {% if item.image %}
+                <a href="{{ item.get_absolute_url }}"><img src="{{ item.image.url }}" class="card-img-top" style="height: 12rem;"></a>
+                
+                {% else %}
+                 <img src="..." class="card-img-top" style="height: 12rem;">
+                {% endif %}
+                
+                {% if item.status == 'NOT ON SALE' %}
+                <a href="#">
+                {% else %}
+                 <a href="{{ item.get_absolute_url }}">
+                {% endif %}
+                  <div class="mask rgba-white-slight"></div>
+                </a>
+              </div>
+              <div class="card-body text-center">
+                <a href="" class="grey-text">
+                  <h5>{{ item.get_category_display }}</h5>
+
+                </a>
+                <h4>
+                  <strong>
+                    {% if item.status == 'NOT ON SALE' %}
+                    <a class="grey-text">{{ item.title }}
+                    {% else %}
+                    <a href="{{ item.get_absolute_url }}" class="dark-grey-text">{{ item.title }}
+                    {% endif %}
+
+                    {% if item.status != 'NOT ON SALE' %}
+                      <span class="badge badge-{{ item.get_label_display }}"> {{item.status}} </span>
+                      {% else %}
+                       <span class="badge badge-pill" style="background-color: grey;"> {{item.status}} </span>
+                      {% endif %}
+                    </a>
+                  </strong>
+                </h4>
+                {% if item.status == 'NOT ON SALE' %}
+                <h4 class=" grey-text" style="color:grey;">
+                <strong> 
+                {% else %}
+
+                <h4 class="font-weight-bold blue-text">
+                  <strong> &#8358;
+                {% endif %}
+
+                {% if item.status != 'NOT ON SALE' %}
+                  {% if item.discount_price %}
+                    {{ item.discount_price }}
+                  {% else %}
+                    {{ item.price }}
+
+                    <a href="{% url 'store:add-to-cart' item.slug %}"><span class="badge rounded-pill bg-danger">  Add |
+              <i class="fas fa-shopping-cart ml-1"></i></span></a>
+                  {% endif %}
+
+                  {% else %}
+                  On boarding ...    
+
+                {% endif %}          
+                  </strong>
+
+
+                </h4>
+
+              </div>
+
+            </div>
+
+          </div>  
+          {% endfor %}
+			</div>
+
+{% if obj in serve%}
+<h3 class="h1", style="color:grey; font-size: 25px;"> Other Services </h3>
+<p> Services you may like </p>
+{% endif %}
+	<div class="row p-4">
+		 {% for obj in serve %}
+		 {% if obj.active == True %}
+          <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card fs-card " >
+            	{% if obj.image %}
+		  			<img src="{{ obj.image.url }}" class="card-img-top " alt="..." style="height:10rem">
+		  			{% else %}
+		  				<img src="..." class="card-img-top " alt="..." style="height:10rem">
+		  			{% endif %}
+			 <span class="position-absolute top-5 start-100 translate-middle badge rounded-pill bg-danger"> {{obj.status}}
+			  </span>
+		   <div class="card-body">
+		   	<div class="row">
+				<div class="col">
+					{% if obj.seller.profile.image %}
+					<img src="{{ obj.seller.profile.image.url }}" alt="..." class="border border-2 rounded-circle border-secondary" style="height:3rem; width: 3rem;">
+					{% else %}
+					<img src="/static/dash/assets/img/avatar.png" alt="..." class="border border-2 rounded-circle border-secondary" style="height:2rem; width: 2rem;">
+
+					{% endif %}
+
+					</div>
+					<div class="col-md-8">
+						<h3 style="font-weight:bold;">{{obj}}</h3>
+						<p class="grey-text">Provider: {{obj.seller.user}} </p>
+					</div>	
+			</div>
+		    {% if obj.active == True %}
+		    <a href="{% url 'store:provider' obj.seller.user.userprofile.client_code %}" class="btn btn-danger rounded-pill"> View Gig</a> <a href="{{ obj.get_absolute_url }}"><span class="badge rounded-pill bg-dark">BUY</span></a>
+		    {% else %}
+		    <h5 class=""> {{obj.description}} </h5>
+		    {% endif %}
+		  </div>
+		</div>
+
+    </div>
+
+          {% endif %}
+          {% endfor %}
+
+	</div>
+
+
+
+{% endblock %}

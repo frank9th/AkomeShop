@@ -4,6 +4,7 @@ from django import forms
 from django.forms import ModelForm
 from .models import * 
 from store.models import *
+from django.forms import NumberInput
 
 
 class CreateUserForm(UserCreationForm):
@@ -205,20 +206,6 @@ class AddAgentForm(forms.Form):
 	agent_type = forms.ChoiceField(widget=forms.RadioSelect(), choices=AGENT_TYPE)
 
 
-'''
-	AGENT INFO:
-	full_name = 
-	email = 
-	phone1 = 
-	phone2 = 
-	town = 
-	address = 
-	agent_id = 
-	bike = 
-	keke = 
-	car = 
-
-'''
 class DeliveryForm(forms.Form):
 	ref_code = forms.CharField(widget=forms.TextInput(
 		attrs={
@@ -237,6 +224,59 @@ class CodeForm(forms.Form):
 		'aria-describedby':'basic-addon2'
 		}))
 
+
+
+class AdsForm(forms.Form):
+	SEC_CHOICES = (
+    ('Big', 'Big Section'),
+    ('Small', 'Small Section'),
+	)
+	title = forms.CharField(widget=forms.TextInput(
+		attrs={
+				'id': 'adsTitleId', 
+		        'required': True, 
+		        'placeholder': 'Enter a ads caption',
+		        'class':'form-control',
+		}))
+	message = forms.CharField(widget=forms.Textarea(attrs={
+				'id': 'textId', 
+		        'rows': 2,
+		        'class':'form-control',
+		        'placeholder': 'Say something about your ads',
+		    }
+
+
+		))
+	image = forms.FileField()
+	display = forms.ChoiceField(widget=forms.RadioSelect(), choices=SEC_CHOICES)
+
+	start_date = forms.DateField(widget=NumberInput(attrs={'type':'date'}))
+	end_date = forms.DateField(widget=NumberInput(attrs={'type':'date'}))
+
+
+'''
+class AdsForm(forms.ModelForm):
+	class Meta:
+		model = Advert
+		fields = '__all__'
+		widgets = {
+		'title': forms.TextInput(
+				attrs={
+				'id': 'adsTitleId', 
+		        'required': True, 
+		        'placeholder': 'Enter a ads caption',
+		        'class':'form-control',
+				}),
+		'message': forms.Textarea(attrs={
+				'id': 'textId', 
+		        'rows': 4,
+		        'class':'form-control',
+		        'placeholder': 'Say something about your ads',
+		    }),
+		'start_date': forms.DateField(widget=NumberInput(attrs={'type':'date'}))
+
+		}
+	'''
 
 class ContactForm(forms.ModelForm):
 	class Meta:
@@ -406,9 +446,16 @@ TODO: add cash out options
 
 '''
 
+
+
+
+
+
+
+
 class TransForm(forms.ModelForm):
 	class Meta:
-		model = Transaction
+		model = Transactions
 		fields = ['account', 'amount', 'note']
 		widgets = {
 			'account' : forms.TextInput(
@@ -511,43 +558,36 @@ class ConfirmAccountForm(forms.Form):
 		'class':'form-control',
 		}))
 
-'''
 
-class SendMoneyForm(forms.Form):
-	ACC_TYPE = (
-    ('Mek', 'Mek Wallet'),
-    ('Other', 'Other Bank')
-    )
-	account_type =forms.ChoiceField(
-   		widget=forms.RadioSelect(),
-   		choices=ACC_TYPE)
+
+class PaystackForm(forms.Form):
 	amount = forms.IntegerField(widget=forms.NumberInput(
 		attrs={
-		'id': 'rec_amtId', 
+		'id': 'payAmount', 
        'placeholder': 'Enter Reciever\'s amount ',
 		'class':'form-control',
 		}))
-	receiver_name = forms.CharField(widget=forms.TextInput(
+	email = forms.EmailField(widget=forms.EmailInput(
 		attrs={
-		'id': 'rec_naId', 
-       'placeholder': 'Enter Reciever\'s Name ',
+		'id': 'payEmail', 
+       'placeholder': 'Enter billing email ',
 		'class':'form-control',
 		}))
-	bank_name = forms.CharField(widget=forms.TextInput(
+	first_name = forms.CharField(widget=forms.TextInput(
 		attrs={
-		'id': 'rec_bnkId', 
-       'placeholder': 'Enter Reciever\'s bank name',
+		'id': 'payFname', 
+       'placeholder': 'Enter first Name ',
 		'class':'form-control',
 		}))
-	account_number = forms.IntegerField(widget=forms.NumberInput(
+	last_name = forms.CharField(widget=forms.TextInput(
 		attrs={
-		'id': 'rec_actkId', 
-       'placeholder': 'Enter Reciever\'s account name',
+		'id': 'payLname', 
+       'placeholder': 'Enter Last name',
 		'class':'form-control',
 		}))
+	
 
 
-'''
 
 
 

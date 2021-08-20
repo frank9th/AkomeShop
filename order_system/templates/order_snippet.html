@@ -24,7 +24,7 @@
     {% endif %}
      <li class="list-group-item d-flex justify-content-between bg-light">
         <div class="text-success">
-        <h6 class="my-0">Delivery Charges</h6>
+        <h6 class="my-0">Package / Delivery </h6>
         </div>
         <span class="text-success"> + &#8358; {{ order.delivery_charge }}</span>
     </li>
@@ -41,7 +41,7 @@
                 <h6 class="my-0"><b>Full Name:  </b></h6> 
                 <h5>
                 <strong> 
-                  {{order.client.title}}  {{order.client.full_name}}
+                {{order.client.first_name}} {{order.client.last_name}}
                 </strong> <h5>   
                 </h5>
                 <small class="text-muted"> Email : <strong>
@@ -87,7 +87,7 @@
      
 
     
-    <form class="card p-2" action="{% url 'store:add-coupon' %}" method="POST">
+    <form class="card p-2" action="{% url 'store:add-coupon' %}" method="POST" id="coupon-form">
         {% csrf_token %}
         <div class="input-group">
             {{ couponform.code }}

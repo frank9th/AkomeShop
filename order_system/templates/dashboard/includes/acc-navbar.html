@@ -1,6 +1,7 @@
 <!-- Static assets -->
 {% load static %}
 {% load cart_template_tags %}
+
       <!-- Navbar -->
       <nav class="navbar sticky-top navbar-expand-lg navbar-absolute navbar-transparent ">
         <div class="container-fluid">
@@ -42,36 +43,45 @@
                 </li>
 
               <li class="search-bar input-group">
-
-
-
-
-                <button class="btn btn-link" id="search-button" data-toggle="modal" data-target="#searchModal"><i class="tim-icons icon-zoom-split" style="color:black;"></i>
+                <button class="btn btn-link" id="search-button" data-toggle="modal" data-target="#searchModal"><i class="tim-icons icon-zoom-split" ></i>
                   <span class="d-lg-none d-md-block">Search</span>
                 </button>
               </li>
 
             <li class="nav-item">
             <a class="nav-link " href="{% url 'store:order-summary' %}">
-              <span class="badge badge-default">Cart | {{ request.user|cart_item_count }} </span>
+              <span class="badge badge-default">Cart | {{ request.user|cart_item_count }}  </span>
             
             </a>
           </li>
 
               <li class="dropdown nav-item">
                 <a href="javascript:void(0)" class="dropdown-toggle nav-link" data-toggle="dropdown">
-                  <div class="notification d-none d-lg-block d-xl-block"></div>
-                  <i class="tim-icons icon-sound-wave" style="color:black;"></i>
+                  <div class="notification d-none d-lg-block d-xl-block"> 
+
+                  {{ request.user|trans_item_count }} </div>
+                  <i class="tim-icons icon-sound-wave" ></i>
                   <p class="d-lg-none">
-                    Notifications
+                    {{ request.user|trans_item_count }} Pending Transactions 
                   </p>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right dropdown-navbar">
-                  <li class="nav-link"><a href="#" class="nav-item dropdown-item">Mike John responded to your email</a></li>
-                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">You have 5 more tasks</a></li>
-                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Your friend Michael is in town</a></li>
-                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Another notification</a></li>
-                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item">Another one</a></li>
+                
+                  {% if trans %}
+                  {% for item in trans %}
+
+                  <li class="nav-link"><a href="{% url 'trans-history' client.client_code%}" class="nav-item dropdown-item"> &#8358; {{item.amount }} {{item.transaction_type}} Transaction {{item.status}} </a></li>
+
+                  {% endfor %}
+
+                  {% else %}
+
+                 
+
+                  <li class="nav-link"><a href="#" class="nav-item dropdown-item">you have no recent transaction </a></li>
+
+
+                  {% endif %}
                 </ul>
               </li>
                <li class="nav-item card" >
@@ -80,7 +90,13 @@
               <li class="dropdown nav-item">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" style="color:black;">
                   <div class="photo">
-                    <img class="avatar" src="/static/dash/assets/img/emilyz.jpg" alt="Profile Photo">
+
+                  {% if request.user.userprofile.image %}
+      
+                  <img class="avatar" src="{{ request.user.userprofile.image.url }}" alt="Profile Photo">
+                     {% else %}
+                     <img class="avatar" src="/static/dash/assets/img/avatar.png" alt="Profile Photo">
+                        {% endif %}
                     
                   </div>
                   <b class="caret d-none d-lg-block d-xl-block"></b>
