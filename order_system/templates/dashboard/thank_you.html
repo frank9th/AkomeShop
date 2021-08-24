@@ -1,0 +1,73 @@
+{% extends 'dashboard/layouts/base-thanks.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+
+<div class="row container">
+	<div class="col">
+
+	</div>
+	<div class="col-sm-6">
+		<div class="row">
+			<div class="col">
+				<img src="{% static 'dash/assets/img/mek_logo_black.png' %}">
+				<p class="py-2"> &#174; RC-1768100 </p>
+			</div>
+			<div class="col"></div>
+			<div class="col">
+			<h1 class="h1"> #Transaction Reciept  </h1>
+			
+	</div>
+		</div>
+		<h3 class="text-center"> <strong> #Ref: {{data.3.reference}}</strong></h3>
+		<h5> To: {{data.3.customer.email}} </h5>
+		<table class="table">
+		  <thead>
+		  
+		  </thead>
+		  <tbody>
+		  	 <h6> Transaction Details </h6>
+		    <tr> 
+		      <td colspan="2"> Stataus: <span class="text-success"> <strong>{{data.3.status}}</strong></span> </td>
+		    
+		      <td>Currency: {{data.3.currency}} </td>
+		      
+		    </tr>
+		    <tr>  
+		      <td>Date: {{data.3.paid_at}} </td>
+		      <td>Card Type: {{data.3.authorization.card_type}}  </td>
+		      <td>*****{{data.3.authorization.last4}}   </td>
+		    </tr>
+		    <tr>     
+		      <td colspan="2"> <strong>Amount Paid: </strong></td>
+		      <td><strong>&#8358; {{amount|floatformat:2}}</strong> </td>
+		    </tr>	   
+		  </tbody>
+		</table>
+
+		
+		<h3 class="text-center"> Thank You...</h3>
+
+		<a href="/"> >>Back to store </a>
+
+	</div>
+	<div class="col"></div>
+	<div class="col"></div>
+</div>
+  <footer class="footer">
+    <div class="container-fluid">
+      <ul class="nav">
+        <li class="nav-item">
+        	 <p class="f__copy">&#169;Mekly Integrated Services Ltd  
+              </p>
+                <p class="text-center"><i>Shop easy, save money, save time </i> </p>
+        </li>
+      </ul>   
+    </div>
+  </footer>
+
+
+{% endblock %}

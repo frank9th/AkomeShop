@@ -1,0 +1,170 @@
+{% extends 'dashboard/layouts/base-store.html' %}
+{%load static%}
+
+
+
+
+{% block content %}
+
+
+
+<!-- Modal -->
+<div class="modal fade " id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"> Please not that a standard service fee of <strong> N 1000</strong> will be required from the receiver at delivery </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+          <i class="tim-icons icon-simple-remove"></i>
+        </button>
+      </div>
+
+
+      <div class="modal-body">
+      	<form method="POST">
+      		{% csrf_token %}
+      		
+      		<div class="form-row">
+      			<div class="col-md-6">
+      				<label for="title"> Item Name</label>
+		      		{{form.title}}
+		      		<label for="amount"> Item Value</label>
+		      		{{form.amount}}
+		      		<label for="location"> Pick Up Location </label>
+		      		{{form.location}}
+		      		<label for="destination"> Delivery Address </label>
+		      		{{form.destination}}			
+      			</div>
+      			<div class="col">
+      				<h4> Sender's Detail</h4>
+      			<label for="sender_name"> Sender's Name </label>	
+      			{{form.sender_name}}
+      			<label for="sender_number"> Sender's Number </label>	
+      			{{form.sender_number}}
+
+      			<hr>
+
+      			<p> Should will collect payment from the reciever ?  </p>	
+      			{% for value, name in form.fields.pay.choices %}
+               <div class="custom-control custom-radio">
+                  <input id="{{name}}" name="pay" value="{{value}}" type="radio" class="custom-control-input"
+                  checked required>
+                  <label class="custom-control-label" for="{{name}}">{{ name }}</label>
+                </div>
+                 {% endfor %} 
+      				
+      			</div>
+      		</div>
+
+      		<div class="row">
+      				<h4 class="text-center"> Receiver's Detail</h4>
+      			<div class="col-sm">
+      				<label for="sender_number"> Reciever's Number </label>	
+      			{{form.tel_two}}
+      			</div>
+      			<div class="col-sm">
+      			<label for="sender_name"> Reciever's Name </label>	
+      			{{form.receiver_name}}
+      		
+      			</div>	
+      		
+      		</div>
+      		<div>
+      			<label for="note"> Note(optional)</label>
+      			{{form.note}}
+      		</div>
+      		<button type="submit" class="btn btn-secondary btn-lg"> Place Order</button> 		
+      	</form>
+      
+
+      </div> 		
+    </div>
+  </div>
+</div>
+
+
+<div class="container">
+	<div class="row">
+	<div class="col-sm"> 
+		
+		<h1 class="my-5" style="font-weight: 800;"> What do u want us to deliver FOR U today? </h1>
+		<h4>Express pick up and dispach service within Warri and its environs for a flat rate of <strong> N1000 </strong> </h4>
+
+
+
+		<button type="button" class="btn-outline btn-lg" data-toggle="modal" data-target="#exampleModal">
+		 Place your order NOW
+		</button>
+
+
+
+
+	</div>
+
+	<div class="col-sm">
+		  <img src="{% static '/dash/assets/img/bigAds/bike3.png' %}" class="" alt="..."
+		 >	
+	</div>	
+</div>	
+</div>
+
+<div class="container">
+	<h3 class="text-center pt-4"> Quick Delivery in 3 steeps </h3>
+<div class="row">
+	<div class="col-sm card">
+		<div class="card-body">
+			<h3 class="text-center pt-4"> <strong>Place Your order</strong></h3> 
+		<p> <strong> You can place your order online or speak with us. on 07041354452
+	a reference code is generated on a successful order for tracking purposes.  </strong> </p>
+		</div>
+	</div>
+	<div class="col-sm card">
+		<div class="card-body">
+		<h3 class=""> <strong>Pick Up</strong></h3> 
+		<p> The item is picked up by our delivery agent and transported to its destination. </p>			
+		</div>		
+	</div>
+	<div class="col-sm card">
+		<div class="card-body">
+		<h3 class=""> <strong>Delivery</strong>  </h3>
+		<p> We deliver to your item destination address.  </p>		
+		</div>	
+	</div>
+	
+</div>
+<h4> Certified providers</h4>
+<hr>
+<div class="row">
+	<div class="col">
+		<a href="https://www.qubanlogistics.com/">
+			<div class="card bg-dark">
+		  	<div class="card-body">
+		    <p class="card-title" style="color:white;"><strong>QuBan </strong> </p>
+		  	</div>
+			</div>
+		</a>
+		
+	</div>
+	<div class="col">
+		<div class="card bg-dark" >
+	  	<div class="card-body">
+	    <p class="card-title" style="color:white;"> BigBrive </p>
+	  	</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="card bg-dark">
+	  	<div class="card-body">
+	    <p class="card-title" style="color:white;"> Live Express </p>
+	  	</div>
+		</div>
+	</div>
+
+	<div class="col"></div>
+	<div class="col"></div>
+
+</div>
+</div>
+
+
+{% endblock %}

@@ -12,7 +12,11 @@
 			$("#codeId").keyup(function(){});// key upclose 
 
 		**/
-	
+
+
+
+
+
 
 		$("#checkOut").click(function(){
 			console.log("Checkout clicked")
@@ -289,6 +293,13 @@
 								*/
 							
 							}	
+							if (data.status == 200){
+								location.reload();
+							}
+							if (data.status == 201){
+								location.reload();
+							}
+
 							if (data.status == 0){
 							x = data.pending_fund
 							y = data.payment_type
@@ -315,6 +326,7 @@
 
 								*/	
 							}
+
 							if (data.status == 1 ){
 							x = data.pending_fund
 							y = data.payment_type
@@ -871,79 +883,7 @@
 		});
 	});
 
-	// create user account function 
-	$("#editProfile").on("click", "#updateAcct", function(){
-		let csrf = $("input[name=csrfmiddlewaretoken]").val();
-		let ti = $("#tiId").val();
-		let em = $("#emId").val();
-		let fs = $("#fsId").val();
-		let ls = $("#lsId").val();
-		let ph1= $("#ph1Id").val();
-		let ph2= $("#ph2Id").val();
-		let tn = $("#tonId").val();
-		let lm = $("#lmId").val();
-		let sex= $("#seId").val();
-		let apt= $("#apId").val();
-		let agn= $("#agnId").val();
-		let user= $("#userId").val();
-		let bus= $("#busId").val();
-		let client = $("#clcId").val();
-
-		
-		console.log("Save Update Button Clicked")
-		console.log(user)
-
-		/*
-			condata = { 
-				"csrfmiddlewaretoken": csrf,
-			    "title": ti,
-			    "first_name": fs,
-			    "last_name": ls,
-			    "email": em,
-			    "phone1": ph1,
-			    "phone2": ph2,
-			    "town": tn,
-			    "apartment_address": apt,
-			    "land_mark": lm,
-			    "client_code": client,
-			    "sex": sex,
-			    "user": user,
-			    "agent_code": agn,
-			    "bus_account": bus,
-			}
-		*/
-
-		condata = { 
-				csrfmiddlewaretoken: csrf,
-			    title: ti,
-			    first_name: fs,
-			    last_name: ls,
-			    email: em,
-			    phone1: ph1,
-			    phone2: ph2,
-			    town: tn,
-			    apartment_address: apt,
-			    land_mark: lm,
-			    client_code: client,
-			    sex: sex,
-			    userId: user,
-			    agent_code: agn,
-			    bus_account: bus,
-			}
-
-		$.ajax({
-			url: "{% url 'update-client' %}",
-			method: "POST",
-			data: condata, 
-			success: function(data){
-				console.log(data);
-			
-		},
-
-		});
-
-		event.preventDefault();
-	});
+	
 
 	$("#saveAcct").click(function(){
 		console.log("Save Account button clicked");

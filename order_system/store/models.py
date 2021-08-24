@@ -377,7 +377,7 @@ class Transactions(models.Model):
 
     transaction_type = models.CharField(choices=TRANS_TYPE, max_length=20)
     payment_type = models.CharField(choices=PAY_TYPE, max_length=10)
-    account = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    account = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True)
     amount = models.FloatField()
     date = models.DateField()
     time= models.TimeField()
@@ -458,5 +458,30 @@ class Expensis(models.Model):
 
     class Meta:
         verbose_name_plural = 'Expensis'
+
+
+class Logistics(models.Model):
+    item = models.CharField(max_length=100)
+    value_price = models.CharField(max_length=100, null=True, blank=True)
+    item_location = models.CharField(max_length=200)
+    delivery_address = models.CharField(max_length=200)
+    sender_name = models.CharField(max_length=100, null=True, blank=True)
+    sender_number = models.IntegerField(null=True, blank=True)
+    receiver_name = models.CharField(max_length=100)
+    receiver_number = models.IntegerField()
+    delivery_charge = models.FloatField()
+    ref = models.CharField(max_length=50)
+    collect_payment = models.BooleanField(default=False)
+    is_delivered = models.BooleanField(default=False)
+    date= models.DateField(auto_now_add=True)
+    time = models.TimeField(auto_now_add=True)
+    note = models.CharField(max_length=200, null=True, blank=True)
+
+    def __str__(self):
+        return self.item
+
+    class Meta:
+        verbose_name_plural = 'Logistics'
+
 
 

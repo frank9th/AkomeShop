@@ -74,6 +74,7 @@ admin.site.register(Saving)
 admin.site.register(Category)
 admin.site.register(Reviews)
 admin.site.register(Expensis)
+admin.site.register(Logistics)
 
 #admin.site.register(Food)
 #admin.site.register(FastFood)

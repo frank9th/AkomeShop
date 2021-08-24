@@ -209,10 +209,10 @@ class AddAgentForm(forms.Form):
 class DeliveryForm(forms.Form):
 	ref_code = forms.CharField(widget=forms.TextInput(
 		attrs={
-		'placeholder': 'Enter Client id',
+		'placeholder': 'Enter order reffrence ',
 		'class':'form-control',
 		'aria-label':'Recipient\'s username', 
-		'aria-describedby':'basic-addon2'
+		
 		}))
 
 class CodeForm(forms.Form):
@@ -425,6 +425,7 @@ class WalletForm(forms.ModelForm):
 
 class TopUpForm(forms.Form):
 	PAYMENT_CHOICES = (
+	('F', 'Flex balance'),
     ('C', 'Cash'),
     ('CD', 'Card'),
     ('U', 'Ussd'),

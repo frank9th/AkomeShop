@@ -14,11 +14,8 @@ PAYMENT_CHOICES = (
 
 PAYMENT_CHOICES = (
     ('W', 'Wallet'),
-    #('S', 'Stripe'),
-    #('P', 'Paypal'),
     ('DC', 'Debit Card'),
     ('PD', 'Cash On Delivery'),
-
 
 )
 
@@ -152,6 +149,7 @@ CATEGORY = (
     ('Oil', 'Oil'),
     ('Beverage', 'Beverage'),
     ('Fruit', 'Fruit'),
+    ('Service', 'Service'),
     ('Other', 'Other')
     )
 
@@ -310,3 +308,78 @@ class UpdateProductForm(forms.ModelForm):
            
 
         }
+
+
+# Logistics form 
+class PickUpForm(forms.Form):
+    COL_TYPE = (
+    ('True', 'Collect Pay'),
+    ('False', 'don\'t collect pay')
+    )
+
+    pay =forms.ChoiceField(
+        widget=forms.RadioSelect(),
+        choices=COL_TYPE)
+  
+  
+    title = forms.CharField(widget=forms.TextInput(
+        attrs= {
+        'id':'pitemId',
+        'placeholder': 'Enter item/service name ',
+        'class':'form-control '
+        }))
+    amount = forms.IntegerField(widget=forms.NumberInput(
+        attrs={
+        'id':'pamountId',
+        'placeholder': 'Enter item value (amount) ',
+        'class':'form-control '
+        }))
+    location = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'pLocationID',
+        'placeholder': 'additional note/description',
+        'class':'form-control'
+        }))
+    sender_name = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'psendId',
+        'placeholder': 'Enter sender Name',
+        'class':'form-control'
+        }))
+    sender_number = forms.CharField(widget=forms.NumberInput(
+        attrs={
+        'id':'pteloneId',
+        'placeholder': 'contact of item location',
+        'class':'form-control'
+        }))
+    receiver_name = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'prnameId',
+        'placeholder': 'Enter Reciever\'s name' ,
+        'class':'form-control'
+        }))
+    tel_two = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'pteltwoId',
+        'placeholder': 'Enter Reciever\'s contact',
+        'class':'form-control'
+        }))
+    destination = forms.CharField(widget=forms.TextInput(
+        attrs={
+        'id':'destinationID',
+        'placeholder': 'Enter Item destination',
+        'class':'form-control'
+        }))
+    note = forms.CharField(widget=forms.Textarea(
+        attrs={
+        'id':'noteId',
+         'rows': 2,
+        'placeholder': 'Enter any additional information',
+        'class':'form-control'
+
+        }),required=False)
+
+
+# Upload Image Form 
+class ImageUploadForm(forms.Form):
+    img = forms.FileField()

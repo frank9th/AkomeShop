@@ -1,0 +1,90 @@
+{% extends 'dashboard/layouts/base-store.html' %}
+
+{% block title %} Logistic | confirm {% endblock title %}
+{% block content %}
+
+<div class="container">
+  <div class="row">
+    <div class="col"></div>
+     <div class="col-md-6">
+          <!-- Heading -->
+          <hr>
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted"> Confirm Delivery </span>
+          </h4>
+          <p> Enter the last 4 digit of the order refrence code to confirm the item has been delivered in good condition</p>
+
+          <!-- Promo code -->
+          <form class="card p-2" method="POST" >
+            {% csrf_token %}
+            <div class="input-group">
+              {{form.ref_code}}
+
+                <button class="btn btn-secondary btn-md waves-effect m-0" type="submit" >Confirm Delivery</button>
+            </div>     
+          </form>
+   </div>  
+   <div class="col"></div>
+  </div>
+</div>
+
+{% if data.status %}
+
+<div class="row container">
+  <div class="col">
+
+  </div>
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col">
+        
+      </div>
+      <div class="col"></div>
+      <div class="col">
+      <h1 class="h1"> #Transaction Reciept  </h1>   
+  </div>
+    </div>
+    <h3 class="text-center"> <strong> #Ref: {{data.ref_code}}</strong></h3>
+   
+    <table class="table">
+      <thead>
+      
+      </thead>
+      <tbody>
+         <h6> Transaction Details </h6>
+        <tr> 
+          <td colspan="2"> Stataus: <span class="text-success"> <strong>{{data.status}}</strong></span> </td>    
+          <td>Currency: NGN </td>  
+        </tr>
+        <tr>  
+          <td>Date: {{data.date}} </td>
+          <td>Payment Type: {{data.payment_type}}  </td>
+          <td>*****{{data.3.authorization.last4}}   </td>
+        </tr>
+        <tr>     
+          <td > <strong>Note: </strong></td>
+          <td colspan="2"> {{data.note}} </td>
+        </tr> 
+        <tr>     
+          <td colspan="2"> <strong>Amount Paid: </strong></td>
+          <td><strong>&#8358; {{data.amount|floatformat:2}}</strong> </td>
+        </tr>    
+      </tbody>
+    </table>
+
+    
+    <h3 class="text-center"> Thank You...</h3>
+
+
+
+  </div>
+  <div class="col"></div>
+  <div class="col"></div>
+</div>
+
+
+
+{% endif %}
+
+
+{% endblock %}

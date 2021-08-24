@@ -393,7 +393,105 @@ def ServicePage(request):
     }
     return render(request, 'service_page.html', context)
 
+# Logistics Page 
+def LogisticPage(request):
+    form = PickUpForm(request.POST or None)  
+    if form.is_valid():
+        item = form.cleaned_data.get('title')
+        item_value = form.cleaned_data.get('amount')
+        local = form.cleaned_data.get('location')
+        sender_name = form.cleaned_data.get('sender_name')
+        sender_number = form.cleaned_data.get('sender_number')
+        rec_name = form.cleaned_data.get('receiver_name')
+        rec_num =form.cleaned_data.get('tel_two')
+        destination = form.cleaned_data.get('destination')
+        note = form.cleaned_data.get('note')
+        pay = form.cleaned_data.get('pay')
 
+        if note == '':
+
+            note = 'Logistics service order '
+
+        item_ref = create_ref_code() 
+        std_delevey = 700.00
+        exp_delevry = 1200.00
+        normal_delivery = 1000
+        log_detail = Logistics(
+            item=item,
+            item_location=local,
+            value_price=item_value,
+            delivery_address=destination,
+            sender_name=sender_name,
+            sender_number=sender_number,
+            receiver_name=rec_name,
+            receiver_number=rec_num,
+            delivery_charge=normal_delivery,
+            collect_payment=pay,
+            note=note,
+            ref=item_ref,
+            )
+
+        trans = Transactions(
+                payment_type = 'Cash',
+                transaction_type= 'Debit',
+                status= 'Pending',
+                date= date ,
+                time= time,
+                note = note,
+                amount = normal_delivery,
+                ref_code = item_ref,       
+                )
+        if request.user.is_authenticated:
+            client = request.user
+            client_wal = UserAccount.objects.get(user=client)
+            trans.account = client_wal
+            trans.save()
+        else: 
+            trans.save()
+        messages.success(request, "Order has been placed. Please copy Ref: " + item_ref)
+        log_detail.save()
+    else:
+        print('form not valid ')
+
+    context = {
+    'form':form
+    }
+    return render(request, 'logistic_page.html', context)
+
+def ConfirmLogistics(request):
+    form = DeliveryForm(request.POST or None)
+    data = ''
+    if form.is_valid():
+        ref = form.cleaned_data.get('ref_code')
+        try:
+            data = Transactions.objects.get(ref_code=ref)      
+            if data.ref_code == ref and data.status == 'Pending':
+                log_detail = Logistics.objects.get(ref=ref)
+                if log_detail.ref == ref and log_detail.is_delivered == False:
+                    messages.success(request, "found one order")
+                    print(log_detail)
+                    data.status='Debited'
+                    log_detail.is_delivered = True
+                    data.save()
+                    log_detail.save()
+
+            elif data.status== 'Debited':
+                messages.info(request, "Order has been fullfilled ")
+
+            elif data.status == 'Credited':
+                messages.info(request, "Order fullfilled and account already credited" )
+    
+        except Exception as e:
+            messages.warning(request, "order does not exist")
+            print(e)
+    
+
+    context = {
+    'form':form,
+    'data':data
+    
+    }
+    return render(request, 'logistic_delevery.html', context)
 
 # Search product function 
 def search(request):
@@ -433,6 +531,7 @@ def cart(request):
     return render(request, 'store/checkout.html', context)
 
 # checkout with clients code 
+@login_required
 def clientCheckout(request):
     form = ClientCheckOutForm(request.POST or None)  
     order = {} 
@@ -685,6 +784,14 @@ def verifyPayment(request, ref):
     response  = transaction.verify(ref) 
     data = JsonResponse(response, safe=False)
     status = response[0]
+    amt = response[3]['amount']
+    con_amount = str(amt)
+    amount = con_amount[:-2]
+  
+    context = {
+    'data':response,
+    'amount':amount
+    }
     #return data
     try:
         order = Order.objects.get(user=request.user, ordered=False)
@@ -739,9 +846,15 @@ def verifyPayment(request, ref):
 
                 order.ref_code = ref
                 order.save()
+                context = {
+                'data':response,
+                'amount':amount,
+                'items':order
+                    }
                 #messages.success(request, 'payment was successful')
                 messages.success(request, "Your order was successful!")
-                return redirect("/")
+                return render(request, 'dashboard/thank_you.html', context)
+                #return redirect("/")
                 #return JsonResponse({'status':'ok', 'data': response })
                 print(response)
             
@@ -770,50 +883,12 @@ def verifyPayment(request, ref):
                 return redirect("/wallet/" + staff_profile.client_code )
         else:
             messages.danger(request, "Whoops! somting whent wrong. try agin later ")
+            return data
  
     except ObjectDoesNotExist:
-            messages.info(request, "We found One record")
-            return data
-    '''
-    finally:
-        trans = Transactions.objects.get(ref_code=ref, transaction_type='Topup',
-             store_record=False, 
-             status='Pending', 
-             payment_type='Online')
-        print(trans)
-        wallet = UserAccount.objects.get(user=trans.account.user)
-        staff_profile = UserProfile.objects.get(user=request.user)
-
-        # Identifiying and keeping record of who count and approved a transaction 
-        approver = TopupConfirm(
-            amount=trans.amount,
-            trans_ref=ref,
-            )
-        approver.approved_by = staff_profile 
-        new_wal =  wallet.wallet_balance + trans.amount
-
-        # updating the other 
-
-        trans.status = 'Credited'
-        wallet.wallet_balance = new_wal
-        approver.save()
-        wallet.save()
-
-        trans.save()
-        return data
-    '''
-
-
-
-
-    '''
-        except ObjectDoesNotExist:
-            #messages.error(request, "Sorry payment wasn't successful")
-            return data
-
-
-    '''
-
+            #messages.info(request, "We found One record")
+            return render(request, 'dashboard/thank_you.html', context)
+ 
     
 
 

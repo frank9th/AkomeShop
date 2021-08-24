@@ -158,13 +158,24 @@ def Ads(request):
 def my_account(request, code):
 	client = UserProfile.objects.get(client_code=code)
 	userAcc = UserAccount.objects.get(user=client.user)
-	trans= Transaction.objects.filter(account=userAcc)
+	trans= Transactions.objects.filter(account=userAcc)
 	orders = client.order_set.all()
 	total_order = orders.count()
 	delivered = orders.filter(status='Delivered').count()
 	pending = orders.filter(status='Pending').count()
 	out_delivery = orders.filter(status='Out for Delivery').count()
-	context= {'client': client, 'orders': orders, 
+	form = ImageUploadForm()
+	if request.method =='POST':
+		form = ImageUploadForm(request.POST, request.FILES)
+		if form.is_valid():	
+			photo = form.cleaned_data.get('img')
+			client.image = photo
+			client.save()
+			messages.success(request, 'profile photo has been updated')
+
+	context= {
+	'form':form,
+	'client': client, 'orders': orders, 
 	'total_order': total_order, 'delivered': delivered, 'pending': pending, 
 	'out_delivery':out_delivery, 'trans':trans}
 	return render(request, 'dashboard/page-user.html', context)
@@ -176,6 +187,7 @@ def edit_account(request, code):
 	if request.method == 'POST':
 		form = AccountForm(request.POST , instance=client) 
 		if form.is_valid():
+			messages.success(request, 'Great profile has been updated ')
 			form.save()
 
 	context ={
@@ -221,7 +233,7 @@ def topup_confirm(request):
 	if request.method == "POST":
 		tr_code = request.POST.get('code')
 		staff = request.POST.get('user_id')
-		trans = Transaction.objects.get(ref_code=tr_code)
+		trans = Transactions.objects.get(ref_code=tr_code)
 		wallet = UserAccount.objects.get(user=trans.account.user)
 		staff_profile = UserProfile.objects.get(user=staff)
 
@@ -249,7 +261,7 @@ def topup_confirm(request):
 
 		'''
 
-		tr = Transaction.objects.all()
+		tr = Transactions.objects.all()
 		trans= tr.filter(status='Pending').order_by('-time')
 		con = Transaction.objects.values().filter(status='Pending').order_by('-time')
 
@@ -276,14 +288,6 @@ def topUp(request):
 		bal = userAcc.wallet_balance
 
 		trans_ref = create_trans_code()
-
-		'''
-		# TODO: if the top up is cash;
-		create a refrenfe code and store the request in a request model
-		once the code is confirmed, the funds should be sent to the users 
-		account and deleted from the ref table. 
-
-		'''
 		
 		if payment == 'C':
 			t_note = "Cash topup request, waiting to confirm cash"
@@ -326,6 +330,32 @@ def topUp(request):
 				'fname':client.first_name,
 				'ref':trans_ref
 				})
+		# Topup from Flex Account 
+		if payment == 'F':	
+			if (userAcc.flex_balance >= float(amount)):
+				new_wal_bal = userAcc.wallet_balance + float(amount)
+				new_flex_bal= userAcc.flex_balance -  float(amount)
+				userAcc.wallet_balance = new_wal_bal
+				userAcc.flex_balance = new_flex_bal
+				userAcc.save()
+				t_note = "topup from flex balance"
+				top_wallet = Transactions(
+							transaction_type= 'Topup',
+							payment_type = 'Wallet',
+							status='Credited',
+							date= date ,
+							time= time,
+							note = t_note,
+							amount = amount,
+							ref_code = trans_ref,
+							)
+				top_wallet.account = userAcc
+				top_wallet.save()	
+				messages.success(request, "Wallet Balance has been Credited")		
+				return JsonResponse({'status':200})
+			else:
+				messages.warning(request, "Whoops! insufficent funds in your flex balance. Select another option to fund account")
+				return JsonResponse({'status':201})
 		if payment == 'U':
 			t_note = "Ussd code topup request, waiting to confirm alert "
 			top_wallet = Transactions(
@@ -641,45 +671,12 @@ def trans_history(request, code):
 
 
 
-
-
-# not yet in use. wanted to send data to this views via Ajax
-# Edite Contact Details 
-def update_client(request):
-	try:
-		if request.method == "POST":
-			id = request.POST.get('userId')
-			client = Contact.objects.get(pk=id)
-			client_data = { 
-				"id":client.id,
-			    "title": client.title,
-			    "first_name": client.first_name,
-			    "last_name": client.last_name,
-			    "email": client.email,
-			    "phone1": client.phone1,
-			    "phone2": client.phone2,
-			    "town": client.town,
-			    "apartment_address": client.apartment_address,
-			    "land_mark": client.land_mark,
-			    "client_code": client.client_code,
-			    "sex": client.sex,
-			    #"user": user,
-			    "agent_code": client.agent_code,
-			    "bus_account": client.bus_account,
-			}
-			#client_data.save()
-			return JsonResponse(client_data)
-		
-	except Exception as e:
-		raise e
-
-
 class VendorView(ListView):
 	template_name = "dashboard/vendor-dashboard.html"
 	model = Seller
 	#model = Vpayment
   
-
+'''
 def vendor_account(request, code):
 	#item = VendorItem.objects.get(vendor.vendor_code)
 	#payment = ''
@@ -714,6 +711,7 @@ def vendor_account(request, code):
 	}
 		
 	return render(request, 'dashboard/vendor-dashboard.html', context)
+'''
 
 @unauthenticated_user
 def loginPage(request):	
@@ -879,7 +877,7 @@ def admin_dashboard(request):
 # cleark or CFO dashboard 
 def admin_cleark(request):
 	form = ConTopUpForm()
-	tr = Transaction.objects.all()
+	tr = Transactions.objects.all()
 	trans= tr.filter(status='Pending').order_by('-time')
 	client = request.user.userprofile.client_code
 	order = Order.objects.all()
