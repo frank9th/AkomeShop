@@ -756,6 +756,8 @@ def TraderAccount(request):
 			address = form.cleaned_data.get('address')
 			city = form.cleaned_data.get('city')
 			img = form.cleaned_data.get('image')
+			tel_1 = form.cleaned_data.get('tel_one')
+			tel_2 = form.cleaned_data.get('tel_two')
 			try:
 				seller = UserProfile.objects.get(client_code=owner)
 				if seller.is_seller == True:
@@ -772,6 +774,8 @@ def TraderAccount(request):
 						services=services,
 						skill=skill,
 						image=img,
+						tel_one=tel_1,
+						tel_two=tel_2
 						)
 					trader.save()
 					seller.is_seller = True
@@ -789,6 +793,27 @@ def TraderAccount(request):
 	}
 	return render(request, 'dashboard/seller.html', context)
 	
+
+# Edit Busines Details function 
+def Edit_business(request, code):
+	client = UserProfile.objects.get(client_code=code)
+	sel = Seller.objects.get(owner=client)
+	form = SellerUpdatForm(instance=sel)
+	if request.method == 'POST':
+		form = SellerUpdatForm(request.POST , instance=sel) 
+		if form.is_valid():
+			form.save()
+			messages.success(request, 'store has been updated')
+			return redirect('/trader-account')
+
+	context = {
+	'form':form,
+	'sel':sel
+	}
+
+	return render(request, 'dashboard/edit-seller.html', context)
+
+
 
 #User Dasbard View 
 @login_required(login_url ='login')

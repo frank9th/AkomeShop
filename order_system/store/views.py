@@ -196,7 +196,6 @@ def UpdateProduct(request, pk):
     }
     return render(request, 'dashboard/update_product.html', context)
 
-
 # POST Requst to product update page 
 def UpdateStore(request):
     if request.method == 'POST':
@@ -252,9 +251,7 @@ def UpdateStore(request):
         #product.image_three = img3
 
         product.save() 
-        return JsonResponse({'status':200, 'message':'Item has been updated!',})
-        
-  
+        return JsonResponse({'status':200, 'message':'Item has been updated!',}) 
     messages.warning(request, "Whoops! something went wrong. try again")
     return JsonResponse({'status':300, 'message':'Whoops! something went wrong. try again'})
 
@@ -281,16 +278,18 @@ def FoodSellers(request):
 
 # Fast Food page 
 def FastFood(request, code):
-   
     user_code = UserProfile.objects.get(client_code=code)
-    admin= Seller.objects.get(owner=user_code)
+    store= Seller.objects.get(owner=user_code)
+    feature = Features.objects.filter(business=store)
     owner = UserAccount.objects.get(user=user_code.user)
     item = Product.objects.filter(seller=owner, tag='FS')
     print(item)
-    print(admin)
+    print(store)
+    print(feature)
     context= {
     'item':item,
-    'admin':admin
+    'store':store,
+    'features':feature
     }
     return render(request, 'fast_food.html', context)
 
@@ -304,6 +303,7 @@ def SellerProduct(request, code):
     context ={
     'products':products,
     'owner':owner,
+    'user_code':user_code
     }
     return render(request, 'dashboard/product_list.html', context)
 

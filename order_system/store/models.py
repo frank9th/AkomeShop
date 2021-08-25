@@ -62,7 +62,9 @@ post_save.connect(useraccount_receiver, sender=settings.AUTH_USER_MODEL)
 class Seller(models.Model):
     owner = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=200, null=True)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
+    tel_one = models.IntegerField(null=True, blank=True)
+    tel_two = models.IntegerField(null=True, blank=True)    
     town = models.CharField(max_length=20, null=True, blank=True)
     address = models.CharField(max_length=300, null=True, blank=True)
     fast_food = models.BooleanField(default=False)
@@ -70,6 +72,7 @@ class Seller(models.Model):
     services = models.BooleanField(default=False)
     skill = models.BooleanField(default=False)
     active= models.BooleanField(default=False)
+    verified = models.BooleanField(default=False)
     date_created = models.DateTimeField(auto_now_add= True )
     agent_code = models.ForeignKey(Agent, on_delete=models.SET_NULL, null=True, blank=True)
     image = models.ImageField(upload_to='cover', blank=True, null=True)
@@ -82,6 +85,18 @@ class Seller(models.Model):
         payment = self.Seller_set.all()
         total = sum([self.amount for amount in vendors])
         return total
+
+class Features(models.Model):
+    business = models.ForeignKey(Seller, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200, null=True, blank=True)
+
+    """docstring for Category"""
+    class Meta:
+        verbose_name_plural = 'Features'
+
+    def __str__(self):
+        return self.business.business_name
 
 
 class Category(models.Model):

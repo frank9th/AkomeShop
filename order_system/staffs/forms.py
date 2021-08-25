@@ -156,31 +156,72 @@ class SellerForm(forms.Form):
         'placeholder': 'Enter Business Address',
         'class':'form-control'
         }))
+	tel_one = forms.IntegerField(required=False, widget=forms.NumberInput(
+        attrs={
+        'id':'tel_oneId',
+        'placeholder': 'Enter Business mobile',
+        'class':'form-control'
+        }))
+	tel_two = forms.IntegerField(required=False, widget=forms.NumberInput(
+        attrs={
+        'id':'tel_twoId',
+        'placeholder': 'Enter Business telephone (optional)',
+        'class':'form-control'
+        }))
 	image = forms.FileField(required=False,)
 
+class SellerUpdatForm(ModelForm):
+	class Meta:
+		model = Seller
+		fields  = ['business_name', 'description', 
+		'tel_one', 'tel_two', 'town', 'address', 'fast_food', 'goods',
+		'services', 'skill', 'active', 'image']
+	
+		widgets = {
+			'business_name' : forms.TextInput(
+				attrs={
+				'id': 'busnameId', 
+		        'placeholder': 'Enter Busines name',
+		        'class':'form-control',
+				}),
+			'town' : forms.TextInput(
+				attrs={
+				'id': 'townId', 
+		        'placeholder': 'which City/Town is your business',
+		        'class':'form-control',
+				}),
+			'tel_one' : forms.TextInput(
+				attrs={
+				'id': 'tel-1', 
+		       'placeholder': 'Enter mobile number',
+				'class':'form-control',
+				}),
+			'tel_two' : forms.TextInput(
+				attrs={
+				'id': 'te2-1', 
+		       'placeholder': 'Enter telephone number',
+				'class':'form-control',
+				}),
+			'address': forms.Textarea(attrs={
+				'id': 'address-tId', 
+		        'rows': 2,
+		        'class':'form-control',
+		        'placeholder': 'Whats your business address',
+		    }),
+			'description': forms.Textarea(attrs={
+				'id': 'desc-textId', 
+		        'rows': 4,
+		        'class':'form-control',
+		        'placeholder': 'write a beautiful line for your busines',
+		    }),
+
+
+		}
 
 
 
 
 
-
-	"""
-		first_name
-		last_name
-		sex
-		email
-		apartment_address
-		street_address
-		phone1
-		phone2
-		business_name
-		product_name
-		goods
-		services
-		skill
-
-
-	"""	
 AGENT_TYPE =(
 
 		('D', 'Delivery Agent'),

@@ -143,17 +143,25 @@
 
  	</div>
  	<div class="col-sm">
+ 		{% if store.description %}
  		<h3><span class="badge bg-secondary">Why choose us </span></h3>
- 		<p> Mek's kitchen focus on the consumer wants and not our product.  <br> 
- 		We are here to serve what you want, how you want it and where you want it. just tell us what you want prepared and our chefs will get it done in minites.  
+ 		<p> {{store.description}} 
 
  	</p>
+ 	{% endif %}
+ 	{% if features %}
  		<h5><span class="badge bg-secondary" id="feature">Features </span></h5>
  		<ul>
- 			<li> Costom order service </li>
- 			<li> Out door / indoor Catering services  </li>
- 			<li> Fast delivery </li>
+ 			{% for item in features %}
+ 			<li> {{item.name}}
+ 				{% if item.description %}
+ 				<p> {{item.description}} </p>
+ 				{% endif %}
+ 			 </li>
+ 			 <hr>	
+ 			{% endfor %}
  		</ul>
+ 		{% endif %}
  	</div>
  		<div class="col-sm"> 
  			<h5><span class="badge bg-info">How it Works </span></h5>
@@ -170,8 +178,18 @@
  				<li>
  				Leave a review (optional)
  			</li>
- 				<a href="#menu">Menu</a>
  		</ol>
+ 		<h5 class="h5"> Contact Us @ </h5>
+ 		{% if store.town %}
+ 		<p> <b>City: </b>{{store.town}} </p>
+ 		{% endif %}
+ 		<p> <b>Address:</b>{{store.address}}</p>
+ 		{% if store.tel_one %}
+ 		<p> <b>Phone :</b>{{store.tel_one}} </p>
+ 		{% endif %}
+ 		{% if store.tel_two %}
+ 		<p> <b> Mobile :</b>{{store.tel_two}} </p>
+ 		{% endif %}
 
 
  	</div>

@@ -19,6 +19,7 @@ urlpatterns = [
     path('table/', views.table, name='table'),
     path('my-account/<code>/',views.my_account, name='my-account'),
     path('trader-account',views.TraderAccount, name='trade'),
+    path('edit-trader/<code>/', views.Edit_business, name='edit-trader'),
     path('edit-account/<code>/', views.edit_account, name='edit-account'),
     path('wallet/<code>/', views.wallet, name='wallet'),
     path('topup/', views.topUp, name='topup'),

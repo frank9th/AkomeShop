@@ -13,11 +13,27 @@
 		<div class="col-md-8">
 			<h1> Products </h1>
 			<p> You have {{products.count}} products in store </p>
-
 			
 		</div>
 		<div class="col">
+            <input type="text" name="code" value="{{user_code.client_code}}" id="sel_codeid" style="display:none;">
+              
 			<a href="{% url 'store:product' %}" class="btn" id="add_product_btn">Add Product</a>
+            <div class="nav-item">
+                  <ul>
+                <li>
+                    <a href="{% url 'edit-trader' user_code.client_code %}" class="nav-link" id="bus-details-btn">Business Details</a> 
+                    
+                </li>
+                <li>
+                    <a href="#" class="nav-link" id="bus-feature-btn">Add Features</a> 
+                    
+                </li>
+            </ul>
+                
+            </div>
+
+
 	
 		</div>
 	</div>

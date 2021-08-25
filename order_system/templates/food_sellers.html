@@ -231,7 +231,7 @@
 		   <div class="card-body">
 		   
 		    {% if obj.active == True %}
-		    <a href="{% url 'store:seller' obj.owner.client_code %}" class="btn btn-danger rounded-pill"> View Menu</a> <span class="badge rounded-pill bg-dark">BUY</span>
+		    <a href="{% url 'store:seller' obj.owner.client_code %}" class="btn btn-danger rounded-pill"> View Menu</a> 
 		    {% else %}
 		    <h5 class="" style="font-weight:bold; color: grey;"> On boarding...</h5>
 		    {% endif %}
@@ -239,32 +239,11 @@
 		</div>
 	</div>
 
-		<!---<div class="card mb-3" style="max-width: 540px;">
-	  <div class="row g-0">
-	    <div class="col-md-4">
-	      <img src="{{ obj.image.url }}" class="img-fluid rounded-start" alt="...">
-	    </div>
-	    <div class="col-md-8">
-	      <div class="card-body">
-	        <h5 class="card-title">{{obj}}</h5>
-	        <p class="card-text">{{obj.description}}</p>
-	        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
-	      </div>
-	    </div>
-	  </div>
-	</div>---->
-
-
-
-
 		{% endfor %}
 	</div>
 
 
 	</div>
-	
-
-
 </div>
 
 
