@@ -95,9 +95,13 @@
             </div>
 
             <div class="form-submit">
-              <button class="btn btn-block" type="submit" onclick="payWithPaystack()" > Pay &#8358; {{ order.ground_total }} </button>
+              <button class="btn btn-block" type="submit" onclick="payWithPaystack()" id="pay_order"> Pay &#8358; {{ order.ground_total }} </button>
             </div>
-          </form>           
+          </form>   
+          <hr>
+          <p> Your account will be debited with </p>
+          <h5> Total Order:  &#8358; {{ order.ground_total }} + <span id="charge"></span></h5>
+          <p> Online transactions are processed via Paystack </p>        
           </div>
 
         

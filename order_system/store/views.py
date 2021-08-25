@@ -64,7 +64,7 @@ def Home(request):
     }
     return render(request, 'index.html', context)
 
-
+'''
 
 # Card Payment 
 def CardPay(request):
@@ -73,7 +73,7 @@ def CardPay(request):
 
     }
     return render(request, 'paystack.html', context)
-
+'''
 
 # Product listing function 
 @login_required
@@ -101,8 +101,7 @@ def ProductList(request):
 
 
 # providers Gig function 
-def Provider(request, code):
-    
+def Provider(request, code): 
     user_code = UserProfile.objects.get(client_code=code)
     #admin= Seller.objects.get(owner=user_code)
     provider = UserAccount.objects.get(user=user_code.user)
@@ -198,7 +197,6 @@ def UpdateProduct(request, pk):
     return render(request, 'dashboard/update_product.html', context)
 
 
-
 # POST Requst to product update page 
 def UpdateStore(request):
     if request.method == 'POST':
@@ -283,10 +281,7 @@ def FoodSellers(request):
 
 # Fast Food page 
 def FastFood(request, code):
-    #print(shop)
-    #print(shop.owner)
-    #print(shop.owner.client_code)
-    #user_code = UserProfile.objects.get(user=shop.owner.user)
+   
     user_code = UserProfile.objects.get(client_code=code)
     admin= Seller.objects.get(owner=user_code)
     owner = UserAccount.objects.get(user=user_code.user)
@@ -705,6 +700,10 @@ def clientCheckout(request):
                 order_ref_code = create_ref_code()
                 order.note = order_note
                 order.save()
+                charge = total / 100 * 1.5 + 100
+                new_amount = total + charge
+                #print(new_amount)
+               
                 t_note = "Pendind online payment for order"
                 trans = Transactions(
                         payment_type = 'Online',
@@ -721,7 +720,8 @@ def clientCheckout(request):
                 #messages.success(request, "Your order was successful!")
                 return JsonResponse({
                     'status':200, 
-                    'amount':total,
+                    'amount':new_amount,
+                    'charge':charge,
                     'email':email,
                     'order_note':order_note,
                     'first_name':first_name,
@@ -755,17 +755,16 @@ def verifyPayment(request, ref):
     amt = response[3]['amount']
     con_amount = str(amt)
     amount = con_amount[:-2]
-  
     context = {
     'data':response,
     'amount':amount
     }
     #return data
     try:
-        order = Order.objects.get(user=request.user, ordered=False)
         trans = Transactions.objects.get(ref_code=ref, status='Pending')
         if status == 200:
             if trans.store_record == True:
+                order = Order.objects.get(user=request.user, ordered=True)
                 payment = Payment()
                 payment.user = request.user
                 #payment.amount = order.get_total()
@@ -780,24 +779,18 @@ def verifyPayment(request, ref):
                         sel_amount = item.quantity * item.item.cost_price
                     #geting the seller of the item 
                         seller = item.item.seller
-
                     # adding each item price to the seller's flex balance 
                         new_flex_bal = seller.flex_balance + sel_amount
-
                         seller.flex_balance = new_flex_bal
-
                         seller.save()
                         print(item.item.seller.wallet_balance)
                         item.save()
                     else:
                         sel_amount = item.quantity * item.item.price
                         seller = item.item.seller
-
                     # adding each item price to the seller's flex balance 
                         new_flex_bal = seller.flex_balance + sel_amount
-
                         seller.flex_balance = new_flex_bal
-
                         seller.save()
                         #print(item.item.seller.wallet_balance)
                         item.save()
@@ -807,11 +800,9 @@ def verifyPayment(request, ref):
                 order.ordered_date = date
                 order.ordered_time = time
                 #order.note = order_note
-
                 trans.status = 'Debited'
                 trans.note = 'Online payment for order was successful'
                 trans.save()
-
                 order.ref_code = ref
                 order.save()
                 context = {
@@ -824,8 +815,7 @@ def verifyPayment(request, ref):
                 return render(request, 'dashboard/thank_you.html', context)
                 #return redirect("/")
                 #return JsonResponse({'status':'ok', 'data': response })
-                print(response)
-            
+                print(response)      
             else:
                 print(trans)
                 wallet = UserAccount.objects.get(user=trans.account.user)
@@ -840,12 +830,10 @@ def verifyPayment(request, ref):
                 new_wal =  wallet.wallet_balance + trans.amount
 
                 # updating the other 
-
                 trans.status = 'Credited'
                 wallet.wallet_balance = new_wal
                 approver.save()
                 wallet.save()
-
                 trans.save()
                 messages.success(request, "Great! Account has been credited!")
                 return redirect("/wallet/" + staff_profile.client_code )
@@ -858,13 +846,6 @@ def verifyPayment(request, ref):
             return render(request, 'dashboard/thank_you.html', context)
  
     
-
-
-
-
-
-    
-  
 
 # checkout to enter client address and billing  
 class CheckoutView(View):
@@ -1059,7 +1040,6 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order")
             return redirect("store:order-summary")
-
 
 
 
@@ -1331,7 +1311,6 @@ def delete_item(request, pk):
     return render(request, 'delete.html', context)
 
 # Delete transactions and create Trans history 
-
 def delete_trans(request, pk):
     tran = Transactions.objects.get(id=pk)
     trash = Trashcan(
@@ -1350,8 +1329,6 @@ def delete_trans(request, pk):
     tran.delete()
     messages.success(request,  'transaction has been deleted')
     return redirect('/trans-history/' + request.user.userprofile.client_code)
-
-
 
 # Get Coupon 
 def get_coupon(request, code):
@@ -1435,13 +1412,11 @@ def AddClientCode(request):
         try:
             #client = get_client_code(request, code)
             client = UserProfile.objects.get(client_code=code)   
-           
             order = Order.objects.get(
                     user=request.user, ordered=False)
             order.client = client 
             order.save()
             messages.success(request, "Successfully added Client details")
-
             #messages.info(request, "Thank you ")
             return redirect('/confirm-checkout')
 

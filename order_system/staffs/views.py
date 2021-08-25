@@ -201,7 +201,6 @@ def edit_account(request, code):
 # wallet page and function 
 def wallet(request, code):
 	client = UserProfile.objects.get(client_code=code)
-
 	bank = UserAccount.objects.get(user=client.user)
 	trans= Transactions.objects.filter(account=bank)
 	form = WalletForm(instance=bank)
@@ -289,9 +288,7 @@ def topUp(request):
 		client = UserProfile.objects.get(id=acctUserid)
 		email = client.email
 		bal = userAcc.wallet_balance
-
-		trans_ref = create_trans_code()
-		
+		trans_ref = create_trans_code()		
 		if payment == 'C':
 			t_note = "Cash topup request, waiting to confirm cash"
 			top_wallet = Transactions(
@@ -311,6 +308,8 @@ def topUp(request):
 			print("successfully funded account. new balance will reflect in approximately 20min.")
 
 		if payment == 'CD':	
+			charge = int(amount) / 100 * 1.5 + 100
+			new_amount = int(amount) + charge
 			t_note = "Online wallet topUp"
 			top_wallet = Transactions(
 						transaction_type= 'Topup',
@@ -324,9 +323,9 @@ def topUp(request):
 			top_wallet.account = userAcc
 
 			top_wallet.save()	
-			print("pls wait while the system redirect you to complet the transaction ")
 			return JsonResponse({'status':0, 
-				'pending_fund':amount, 
+				'pending_fund':new_amount, 
+				'charge':charge,
 				'pay_type':payment,
 				'email':email,
 				'lname':client.last_name,
