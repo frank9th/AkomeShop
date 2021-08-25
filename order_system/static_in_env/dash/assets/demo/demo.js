@@ -728,7 +728,7 @@ demo = {
 
     $.notify({
       icon: "tim-icons icon-bell-55",
-      message: "Welcome to <b>Black Dashboard</b> - a beautiful freebie for every web developer."
+      message: "Pay to <b> UBA </b> - 1024048474"
 
     }, {
       type: type[color],

@@ -25,11 +25,8 @@ def trans_item_count(user):
 def trans_item(user):
     if user.is_authenticated:
         qs = Transactions.objects.filter(account=user.useraccount, status='Pending').order_by('-time')
-
         for item in qs:
             print(item.amount)
             print(item.transaction_type)
-      
-
             return item
     return "No resent notification"

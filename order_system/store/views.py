@@ -459,39 +459,80 @@ def LogisticPage(request):
     return render(request, 'logistic_page.html', context)
 
 def ConfirmLogistics(request):
+
+    bank = UserAccount.objects.get(user=request.user)
+    trans= Transactions.objects.filter(account=bank)
     form = DeliveryForm(request.POST or None)
     data = ''
+    order = ''
     if form.is_valid():
         ref = form.cleaned_data.get('ref_code')
         try:
             data = Transactions.objects.get(ref_code=ref)      
-            if data.ref_code == ref and data.status == 'Pending':
+            if  data.status == 'Pending' and data.store_record == False:
                 log_detail = Logistics.objects.get(ref=ref)
                 if log_detail.ref == ref and log_detail.is_delivered == False:
-                    messages.success(request, "found one order")
+                    messages.success(request, "Thatns for Trusting our services. order completed")
                     print(log_detail)
                     data.status='Debited'
                     log_detail.is_delivered = True
                     data.save()
                     log_detail.save()
 
+            if  data.store_record == True: 
+                print('found trans store record: ' + ref)
+                order = Order.objects.get(ref_code=ref, ordered=True)
+                print(order)
+                if order.status == 'Out for Delivery':
+                    data.status= 'Debited'
+                    order.status = 'Delivered'
+                    data.note = 'Completed payment for order'
+                    messages.success(request, "Great! Order completed" )
+                    #data.save()
+                    #order.save()
+                elif order.status == 'Pending':
+                    messages.info(request, "Your order is yet to be picked up by our agent" )
+                else:
+                    messages.warning(request, "We could not locate your order, Please contact us via support " )
+
             elif data.status== 'Debited':
                 messages.info(request, "Order has been fullfilled ")
+            elif data.status== 'Pending':
+                messages.info(request, "order is still in transit ")
 
             elif data.status == 'Credited':
                 messages.info(request, "Order fullfilled and account already credited" )
     
         except Exception as e:
-            messages.warning(request, "order does not exist")
+           # messages.warning(request, "order does not exist")
             print(e)
     
 
     context = {
     'form':form,
-    'data':data
+    'data':data,
+    'order':order,
+    'trans':trans,
     
     }
     return render(request, 'logistic_delevery.html', context)
+
+def CheckRef(request, code):
+    client = UserProfile.objects.get(user=request.user)
+    bank = UserAccount.objects.get(user=client.user)
+    trans= Transactions.objects.filter(account=bank)
+    order = ''
+    form = DeliveryForm(request.POST or None)
+    data = Transactions.objects.get(ref_code=code)
+    if data.store_record == True:
+        order = Order.objects.get(ref_code=code, ordered=True)
+    context = {
+    'data':data,
+    'order':order,
+    'trans':trans
+    
+    }
+    return render(request, 'check-ref-code.html', context)
 
 # Search product function 
 def search(request):

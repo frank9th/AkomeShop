@@ -374,7 +374,6 @@ class Transactions(models.Model):
     ('Save', 'Save'),
     ('Send', 'Send')
     )
-
     transaction_type = models.CharField(choices=TRANS_TYPE, max_length=20)
     payment_type = models.CharField(choices=PAY_TYPE, max_length=10)
     account = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True)

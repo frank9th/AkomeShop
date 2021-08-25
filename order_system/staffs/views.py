@@ -201,7 +201,9 @@ def edit_account(request, code):
 # wallet page and function 
 def wallet(request, code):
 	client = UserProfile.objects.get(client_code=code)
+
 	bank = UserAccount.objects.get(user=client.user)
+	trans= Transactions.objects.filter(account=bank)
 	form = WalletForm(instance=bank)
 	if request.method == 'POST':
 		form = WalletForm(request.POST , instance=bank) 
@@ -214,6 +216,7 @@ def wallet(request, code):
 	context = {
 	'bank':bank,
 	'client':client,
+	'trans':trans,
 	'form':form,
 	'tform':TopUpForm(),
 	'wform': TransForm(),
@@ -655,11 +658,12 @@ def invest(request):
 	else:
 		return JsonResponse({'status':0, })
 
+@login_required
 def trans_history(request, code):
 	client = UserProfile.objects.get(client_code=code)
 	bank = UserAccount.objects.get(user=client.user)
-	trans = bank.transaction_set.all().order_by('-date')
-	topup = bank.transaction_set.filter(status='Pending', transaction_type='T').order_by('-date')
+	trans = bank.transactions_set.all().order_by('-date')
+	topup = bank.transactions_set.filter(status='Pending', transaction_type='T').order_by('-date')
 	context={
 	'topup':topup,
 	'client':client,
@@ -675,43 +679,7 @@ class VendorView(ListView):
 	template_name = "dashboard/vendor-dashboard.html"
 	model = Seller
 	#model = Vpayment
-  
-'''
-def vendor_account(request, code):
-	#item = VendorItem.objects.get(vendor.vendor_code)
-	#payment = ''
-	try:
-		owner = UserProfile.objects.get(client_code=code)
-		payment = Seller.objects.get(owner=owner)
-	except Exception as e:
-		pass
-		print(payment)
-	
-	vendor = Seller.objects.get(owner=owner)
-	#client = vendor.info
-	orders = seller.order_set.all()
-	delivered = orders.filter(status='Delivered').count()
-	pending = orders.filter(status='Pending').count()
-	out_delivery = orders.filter(status='Out for Delivery').count()
 
-	total_order = orders.count()
-
-	context= {
-	#'item':item,
-	#'payment':payment,
-	#'client':client,
-	'vendor':vendor,
-	'orders':orders,
-	'total_order':total_order,
-	'orders': orders, 
-	'total_order': total_order, 
-	'delivered': delivered, 
-	'pending': pending, 
-	'out_delivery':out_delivery
-	}
-		
-	return render(request, 'dashboard/vendor-dashboard.html', context)
-'''
 
 @unauthenticated_user
 def loginPage(request):	

@@ -1,7 +1,4 @@
 
-
-
-
 {% extends 'dashboard/layouts/base.html' %}
 {% load static %}
 
@@ -29,7 +26,6 @@
         
         {% for obj in trans %}
         {% if obj.transaction_type == 'T' %}
-
         <div class="alert  alert-with-icon card " data-notify="container">
           <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
            <h5><i class="tim-icons icon-simple-remove"></i></h5> 
@@ -48,8 +44,9 @@
 
           <p><strong>Status: {{obj.status}} </strong>| Time: {{obj.time}}  | Type: {{obj.transaction_type}}  | Ref: {{obj.ref_code}}</p>
         </div>
+
         
-        {% else %}
+        {% elif obj.transaction_type == 'Debit' %}
           <div class="alert alert-info alert-with-icon" data-notify="container">
           <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
             <i class="tim-icons icon-simple-remove"></i>
@@ -63,7 +60,32 @@
                  {% endif %}
 
           <p><strong>Status: {{obj.status}} </strong>| Time: {{obj.time}} | Type: {{obj.transaction_type}}  | Ref: {{obj.ref_code}} </p>
-        </div>     
+        </div> 
+      
+        {% else %}
+         <div class="alert alert-success alert-with-icon" data-notify="container">
+          <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
+            <i class="tim-icons icon-simple-remove"></i>
+          </button>
+          <span data-notify="icon" class="tim-icons icon-bell-55"></span>
+
+          {% if obj.status == 'Debited' %}
+           <span data-notify="message">{{ obj.note }}  - &#8358; {{obj.amount}}</span>
+              {% else %}
+               <span data-notify="message">{{ obj.note }}  &#8358; {{obj.amount}}</span>
+                 {% endif %}
+
+          <p><strong>Status: {{obj.status}} </strong>| Time: {{obj.time}} | Type: {{obj.transaction_type}}  | Ref: {{obj.ref_code}} </p>
+        </div> 
+
+
+
+
+
+
+
+
+
 
         {% endif %}
 

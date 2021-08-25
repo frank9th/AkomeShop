@@ -9,10 +9,12 @@
      <div class="col-md-6">
           <!-- Heading -->
           <hr>
+    
+          {% if data.status == 'Pending' %}
           <h4 class="d-flex justify-content-between align-items-center mb-3">
-            <span class="text-muted"> Confirm Delivery </span>
+            <span class="text-muted"> Confirm Order Status </span>
           </h4>
-          <p> Enter the last 4 digit of the order refrence code to confirm the item has been delivered in good condition</p>
+          <p> Enter the order refrence code to confirm the item has been delivered in good condition or to confirm the status of an order </p>
 
           <!-- Promo code -->
           <form class="card p-2" method="POST" >
@@ -20,9 +22,29 @@
             <div class="input-group">
               {{form.ref_code}}
 
-                <button class="btn btn-secondary btn-md waves-effect m-0" type="submit" >Confirm Delivery</button>
+                <button class="btn btn-secondary btn-md waves-effect m-0" type="submit" >Confirm Order</button>
             </div>     
           </form>
+          {% endif %}
+            {% if not data %}
+           <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted"> Confirm Order delivered </span>
+          </h4>
+          <p> Enter the order refrence code to confirm the item has been delivered in good condition </p>
+
+          <!-- Promo code -->
+          <form class="card p-2" method="POST" >
+            {% csrf_token %}
+            <div class="input-group">
+              {{form.ref_code}}
+
+                <button class="btn btn-secondary btn-md waves-effect m-0" type="submit" >Confirm delivery</button>
+            </div>     
+          </form>
+          {% endif %}
+         
+
+
    </div>  
    <div class="col"></div>
   </div>
@@ -52,6 +74,17 @@
       </thead>
       <tbody>
          <h6> Transaction Details </h6>
+
+          {% if order %}
+         <tr>
+            {% for item in order.items.all %}
+           <td colspan="2"> Items: 
+            {{item}}
+           </td>
+           {% endfor %}
+         </tr>        
+        {% endif %}
+         
         <tr> 
           <td colspan="2"> Stataus: <span class="text-success"> <strong>{{data.status}}</strong></span> </td>    
           <td>Currency: NGN </td>  

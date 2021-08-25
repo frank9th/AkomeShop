@@ -1,0 +1,73 @@
+{% extends 'dashboard/layouts/base-store.html' %}
+
+{% block title %} Logistic | confirm {% endblock title %}
+{% block content %}
+
+
+
+
+
+<div class="row container">
+  <div class="col">
+
+  </div>
+  <div class="col-sm-6">
+    <div class="row">
+      <div class="col">
+        
+      </div>
+      <div class="col"></div>
+      <div class="col">
+      <h1 class="h1"> #Transaction Reciept  </h1>   
+  </div>
+    </div>
+    <h3 class="text-center"> <strong> #Ref: {{data.ref_code}}</strong></h3>
+   
+    <table class="table">
+      <thead>
+      
+      </thead>
+      <tbody>
+         {% if order %}
+         <tr>
+            {% for item in order.items.all %}
+           <td colspan="2"> Items: 
+            {{item}}
+           </td>
+           {% endfor %}
+         </tr>        
+        {% endif %}
+
+         <h6> Transaction Details </h6>
+        <tr> 
+          <td colspan="2"> Stataus: <span class="text-success"> <strong>{{data.status}}</strong></span> </td>    
+          <td>Currency: NGN </td>  
+        </tr>
+        <tr>  
+          <td>Date: {{data.date}} </td>
+          <td>Payment Type: {{data.payment_type}}  </td>
+          <td>*****{{data.3.authorization.last4}}   </td>
+        </tr>
+        <tr>     
+          <td > <strong>Note: </strong></td>
+          <td colspan="2"> {{data.note}} </td>
+        </tr> 
+        <tr>     
+          <td colspan="2"> <strong>Amount Paid: </strong></td>
+          <td><strong>&#8358; {{data.amount|floatformat:2}}</strong> </td>
+        </tr>    
+      </tbody>
+    </table>
+    <h3 class="text-center"> Thank You...</h3>
+
+  </div>
+  <div class="col"></div>
+  <div class="col"></div>
+</div>
+
+
+
+
+
+
+{% endblock %}

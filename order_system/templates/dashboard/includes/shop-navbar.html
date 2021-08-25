@@ -75,24 +75,15 @@
                   {% if trans %}
                   {% for item in trans %}
 
-                  <li class="nav-link"><a href="javascript:void(0)" class="nav-item dropdown-item"> &#8358; {{item.amount }} {{item.transaction_type}} Transaction {{item.status}} </a></li>
+                  <li class="nav-link"><a href="{% url 'store:check-ref' item.ref_code %}" class="nav-item dropdown-item"> &#8358; {{item.amount }} {{item.transaction_type}} Transaction {{item.status}} </a></li>
 
                   {% endfor %}
 
-                  {% else %}
-
-                 
+                  {% else %} 
 
                   <li class="nav-link"><a href="#" class="nav-item dropdown-item">you have no recent transaction </a></li>
 
-
                   {% endif %}
-
-
-
-
-
-
 
                 </ul>
               </li>
