@@ -387,6 +387,8 @@ class Transactions(models.Model):
 
     def __str__(self):
         return self.status
+    class Meta:
+        verbose_name_plural = 'Transactions'
 
 
 # This is to keep track of who confirm the topup
@@ -484,3 +486,17 @@ class Logistics(models.Model):
 
 
 
+class Trashcan(models.Model):
+    transaction_type = models.CharField(max_length=20, null=True, blank=True)
+    payment_type = models.CharField(max_length=10, null=True, blank=True)
+    account = models.ForeignKey(UserAccount, on_delete=models.SET_NULL, null=True)
+    amount = models.FloatField()
+    date = models.DateField()
+    time= models.TimeField()
+    status = models.CharField(max_length=10, null=True, blank=True)
+    note = models.CharField(max_length=200, null=True, blank=True)
+    ref_code = models.CharField(max_length=20, blank=True, null=True)
+    store_record = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.transaction_type

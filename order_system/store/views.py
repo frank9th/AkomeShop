@@ -185,80 +185,7 @@ def AddProduct(request):
         }
         return render(request, "dashboard/add_product.html", context)
 
-'''
-def AddStoreProduct(request, pk):
-    user_code = UserProfile.objects.get(id=pk)
-    admin= Seller.objects.get(owner=user_code)
-    owner = UserAccount.objects.get(user=user_code.user)
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            title = form.cleaned_data.get('title')
-            sel = form.cleaned_data.get('seller')
-            img = form.cleaned_data.get('image')
-            img2 = form.cleaned_data.get('image_two')
-            img3 = form.cleaned_data.get('image_three')
-            cost_price = form.cleaned_data.get('cost_price')
-            price = form.cleaned_data.get('price')
-            disc_price = form.cleaned_data.get('discount_price')
-            short_desc = form.cleaned_data.get('short_desc')
-            description = form.cleaned_data.get('description')
-            tag = form.cleaned_data.get('tag')
-            cate = form.cleaned_data.get('category')
-            label = form.cleaned_data.get('label')
-            unit = form.cleaned_data.get('unit')
-            active = form.cleaned_data.get('active')
 
-            print(unit)
-
-            try:
-                seller = UserProfile.objects.get(client_code=sel)
-                if seller.is_seller == True:
-                    seller_acct = UserAccount.objects.get(user=seller.user)
-
-                    category = Category.objects.get(name=cate)
-                    
-                    product = Product(
-                        category = category,
-                        seller = seller_acct,
-                        title = title,
-                        cost_price = cost_price,
-                        price = price,
-                        discount_price = disc_price,
-                        tag = tag,
-                        label = label,
-                        slug = title + create_slug(),
-                        short_desc = short_desc,
-                        description = description,
-                        image = img,
-                        image_two = img2,
-                        image_three = img3,
-                        unit=unit,
-                        active=active
-                        )
-
-                    product.save()
-                    messages.success(request, "Product has been added")
-
-                    return redirect('/product')
-                else:
-                    seller.is_seller == False
-                    messages.warning(request, "Whoops this user those not have a business account \n Upgrade user account and try again. ")
-                    return redirect('/product')
-
-            except ObjectDoesNotExist:
-                messages.warning(request, "Something went wrong")  
-                #form.save()
-                return redirect('/product')
-    else:
-        form = ProductForm()
-        context = {
-        'form':form,
-        'owner':owner,
-        }
-        return render(request, "dashboard/add_product.html", context)
-
-'''
 
 # Get Requst to product update page 
 def UpdateProduct(request, pk):
@@ -1402,6 +1329,28 @@ def delete_item(request, pk):
 
     context= {'item':item}
     return render(request, 'delete.html', context)
+
+# Delete transactions and create Trans history 
+
+def delete_trans(request, pk):
+    tran = Transactions.objects.get(id=pk)
+    trash = Trashcan(
+        transaction_type = tran.transaction_type,
+        payment_type = tran.payment_type,
+        account = tran.account,
+        amount = tran.amount,
+        date = tran.date,
+        time= tran.time,
+        status = tran.status,
+        note = tran.note,
+        ref_code = tran.ref_code,
+        store_record = tran.store_record
+        )
+    trash.save()
+    tran.delete()
+    messages.success(request,  'transaction has been deleted')
+    return redirect('/trans-history/' + request.user.userprofile.client_code)
+
 
 
 # Get Coupon 

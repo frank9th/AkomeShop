@@ -28,7 +28,7 @@
         {% if obj.transaction_type == 'T' %}
         <div class="alert  alert-with-icon card " data-notify="container">
           <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
-           <h5><i class="tim-icons icon-simple-remove"></i></h5> 
+           <h5><a href="#"><i class="tim-icons icon-simple-remove"></i></a></h5> 
           </button>
           <h5><span data-notify="icon" class="tim-icons icon-bell-55"></span></h5>
 
@@ -36,7 +36,7 @@
           <h5><strong>{{ obj.note }}  - &#8358; {{obj.amount}}</strong></h5>
                     
                         {% elif obj.status == 'Pending' %}
-                          <h5><strong>{{ obj.note }}  &#8358; {{obj.amount}} <input type="button" name="action" data-sid="{{obj.id}}" value="Action" class="btn btn-warning btn-sm btn-edit">
+                          <h5><strong>{{ obj.note }}  &#8358; {{obj.amount}} 
                           </strong> </h5>
                           {% else %}
                             <h5><strong>{{ obj.note }}  &#8358; {{obj.amount}}  </strong> </h5>
@@ -48,9 +48,8 @@
         
         {% elif obj.transaction_type == 'Debit' %}
           <div class="alert alert-info alert-with-icon" data-notify="container">
-          <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
-            <i class="tim-icons icon-simple-remove"></i>
-          </button>
+
+            <a href="{% url 'store:delete-trans' obj.id %}"><h5><i class="fas fa-trash float-right"></i></h5></a>
           <span data-notify="icon" class="tim-icons icon-bell-55"></span>
 
           {% if obj.status == 'Debited' %}
@@ -64,9 +63,12 @@
       
         {% else %}
          <div class="alert alert-success alert-with-icon" data-notify="container">
+          <!---
           <button type="button" aria-hidden="true" class="close" data-dismiss="alert" aria-label="Close">
             <i class="tim-icons icon-simple-remove"></i>
-          </button>
+          </button>---->
+            <a href="{% url 'store:delete-trans' obj.id %}"><h5><i class="fas fa-trash float-right"></i></h5></a>
+
           <span data-notify="icon" class="tim-icons icon-bell-55"></span>
 
           {% if obj.status == 'Debited' %}

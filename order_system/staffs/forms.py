@@ -43,8 +43,6 @@ class UpdateOrderForm(ModelForm):
 		model = Order
 		fields = '__all__'
 
-
-
 class AddClientForm(forms.Form):
 	title = forms.CharField(widget=forms.TextInput(
 		attrs={

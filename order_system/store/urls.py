@@ -29,7 +29,7 @@ urlpatterns = [
     path('product/<slug>/', ItemDetailView.as_view(), name='product'),
     path('product/', views.AddProduct, name='product'),
     path('service/provider/<code>/', views.Provider, name='provider'),
-    #path('add-product/<str:pk>/', views.AddStoreProduct, name='add-product'),
+
     path('product-list/', views.ProductList, name='product-list'),
     path('seller-store/<code>/', views.SellerProduct, name='seller-store'),
     path('update-product/<str:pk>/', views.UpdateProduct, name='update-product'),
@@ -47,6 +47,7 @@ urlpatterns = [
     path('remove-item-from-cart/<slug>/', remove_single_item_from_cart,
          name='remove-single-item-from-cart'),
     path('delete_item/<str:pk>/',views.delete_item, name='delete_order'),
+    path('delete-trans/<str:pk>/',views.delete_trans, name='delete-trans'),
     path('delete-product/<str:pk>/',views.delete_store_product, name='delete-product'),
     path('cardpay/', views.CardPay, name='cardpay'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
